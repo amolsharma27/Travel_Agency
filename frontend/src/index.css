@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+::selection {
+  background-color: #1f8a70;
+  color: #faf7f1;
+}
+
+/* Signature motif: a boarding-pass / ticket-stub perforation between the
+   image and detail panel of package & hotel cards. */
+.ticket-perforation {
+  position: relative;
+}
+
+.ticket-perforation::before {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: theme('colors.paper.DEFAULT');
+  z-index: 2;
+}
+
+.ticket-perforation::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  right: -9px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: theme('colors.paper.DEFAULT');
+  z-index: 2;
+}
+
+.ticket-dashes {
+  border-top: 2px dashed theme('colors.ink.soft' / 25%);
+}
+
+.dark .ticket-perforation::before,
+.dark .ticket-perforation::after {
+  background: theme('colors.ink.DEFAULT');
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.dark .glass {
+  background: rgba(16, 27, 38, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: theme('colors.paper.dim');
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer 1.6s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
