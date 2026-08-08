@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { FiUser, FiBookOpen, FiHeart, FiBell, FiCreditCard, FiGrid, FiMap, FiHome, FiUsers, FiCheckSquare, FiMessageSquare } from 'react-icons/fi';
+import { FiUser, FiBookOpen, FiHeart, FiBell, FiCreditCard, FiGrid, FiMap, FiHome, FiUsers, FiCheckSquare, FiMessageSquare, FiCamera } from 'react-icons/fi';
 
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
@@ -23,6 +23,7 @@ import { About, Contact, FAQ, Privacy, Terms, NotFound } from './pages/StaticPag
 import CustomerProfile from './pages/dashboard/CustomerProfile.jsx';
 import CustomerBookings from './pages/dashboard/CustomerBookings.jsx';
 import CustomerWishlist from './pages/dashboard/CustomerWishlist.jsx';
+import CustomerMemories from './pages/dashboard/CustomerMemories.jsx';
 import { CustomerNotifications, CustomerPayments } from './pages/dashboard/CustomerExtras.jsx';
 
 import AgencyOverview from './pages/dashboard/AgencyOverview.jsx';
@@ -37,6 +38,7 @@ import AdminSupport from './pages/dashboard/AdminSupport.jsx';
 
 const customerLinks = [
   { to: '/dashboard', label: 'Profile', icon: FiUser, end: true },
+  { to: '/dashboard/memories', label: 'Previous Trips & Spots', icon: FiCamera },
   { to: '/dashboard/bookings', label: 'My Bookings', icon: FiBookOpen },
   { to: '/dashboard/wishlist', label: 'Wishlist', icon: FiHeart },
   { to: '/dashboard/payments', label: 'Payments', icon: FiCreditCard },
@@ -100,6 +102,7 @@ function App() {
             element={<RoleRoute roles={['customer']}><DashboardLayout title="My Dashboard" links={customerLinks} /></RoleRoute>}
           >
             <Route index element={<CustomerProfile />} />
+            <Route path="memories" element={<CustomerMemories />} />
             <Route path="bookings" element={<CustomerBookings />} />
             <Route path="wishlist" element={<CustomerWishlist />} />
             <Route path="payments" element={<CustomerPayments />} />

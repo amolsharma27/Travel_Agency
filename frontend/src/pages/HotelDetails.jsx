@@ -29,15 +29,21 @@ const HotelDetails = () => {
       setLoading(true);
       try {
         const { data } = await api.get(`/hotels/${idOrSlug}`);
-        setHotel(data.data.hotel);
-        setRooms(data.data.rooms);
+        const hotelObj = data.data?.hotel || data.data;
+        const roomsList = data.data?.rooms || hotelObj?.rooms || [];
+        setHotel(hotelObj);
+        setRooms(roomsList);
 
-        const [reviewsRes, similarRes] = await Promise.all([
-          api.get('/reviews', { params: { targetType: 'hotel', targetId: data.data.hotel._id } }),
-          api.get(`/hotels/${data.data.hotel._id}/similar`),
-        ]);
-        setReviews(reviewsRes.data.data);
-        setSimilar(similarRes.data.data);
+        try {
+          const [reviewsRes, similarRes] = await Promise.all([
+            api.get('/reviews', { params: { targetType: 'hotel', targetId: hotelObj?._id } }),
+            api.get(`/hotels/${hotelObj?._id}/similar`),
+          ]);
+          setReviews(reviewsRes.data?.data || []);
+          setSimilar(similarRes.data?.data || []);
+        } catch {
+          // ignore sub-resource failures
+        }
       } catch {
         toast.error('Could not load this hotel');
       } finally {
@@ -71,19 +77,48 @@ const HotelDetails = () => {
     navigate(`/hotels/${hotel._id}/book/${roomId}`, { state: { checkIn, checkOut } });
   };
 
-  if (loading) return <div className="mx-auto max-w-7xl px-5 py-20 text-center text-sm">Loading hotel…</div>;
-  if (!hotel) return null;
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl px-5 py-24 text-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-lagoon-500 border-r-transparent" />
+        <p className="mt-3 text-sm text-ink/60 dark:text-paper/60">Loading hotel & resort details…</p>
+      </div>
+    );
+  }
+
+  if (!hotel) {
+    return (
+      <div className="mx-auto max-w-xl px-5 py-24 text-center">
+        <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 p-10 bg-white dark:bg-ink-light shadow-sm">
+          <h2 className="font-display text-2xl font-bold text-ink dark:text-paper">Hotel Not Found</h2>
+          <p className="mt-2 text-sm text-ink/60 dark:text-paper/60">This stay might have been updated or moved.</p>
+          <button
+            onClick={() => navigate('/hotels')}
+            className="mt-6 rounded-xl bg-lagoon-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-lagoon-600 shadow"
+          >
+            Browse Verified Stays
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-5 py-10 md:px-8">
       {/* Gallery */}
       <div className="grid gap-2 overflow-hidden rounded-xl2 md:h-96 md:grid-cols-4 md:grid-rows-2">
-        <img src={hotel.images?.[0] || PLACEHOLDER} alt={hotel.name} className="h-56 w-full object-cover md:col-span-2 md:row-span-2 md:h-full" />
+        <img
+          src={hotel.images?.[0] || PLACEHOLDER}
+          alt={hotel.name}
+          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
+          className="h-56 w-full object-cover md:col-span-2 md:row-span-2 md:h-full"
+        />
         {[1, 2, 3, 4].map((i) => (
           <img
             key={i}
             src={hotel.images?.[i] || PLACEHOLDER}
             alt=""
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
             className="hidden h-full w-full object-cover md:block"
           />
         ))}

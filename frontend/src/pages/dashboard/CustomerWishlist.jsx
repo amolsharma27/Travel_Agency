@@ -42,13 +42,30 @@ const CustomerWishlist = () => {
 
   return (
     <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-      {items.map((item) =>
-        item.itemType === 'hotel' && item.hotel ? (
-          <HotelCard key={item._id} hotel={item.hotel} wishlisted onToggleWishlist={() => remove('hotel', item.hotel._id)} />
-        ) : item.package ? (
-          <PackageCard key={item._id} pkg={item.package} wishlisted onToggleWishlist={() => remove('package', item.package._id)} />
-        ) : null
-      )}
+      {items.map((item) => {
+        const isHotel = (item.itemType === 'hotel' && item.hotel) || item.propertyType || item.starRating;
+        const hotelObj = item.hotel || item;
+        const pkgObj = item.package || item;
+
+        if (isHotel) {
+          return (
+            <HotelCard
+              key={item._id || hotelObj._id}
+              hotel={hotelObj}
+              wishlisted
+              onToggleWishlist={() => remove('hotel', hotelObj._id)}
+            />
+          );
+        }
+        return (
+          <PackageCard
+            key={item._id || pkgObj._id}
+            pkg={pkgObj}
+            wishlisted
+            onToggleWishlist={() => remove('package', pkgObj._id)}
+          />
+        );
+      })}
     </div>
   );
 };

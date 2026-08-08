@@ -23,9 +23,14 @@ const PackageDetails = () => {
       setLoading(true);
       try {
         const { data } = await api.get(`/packages/${idOrSlug}`);
-        setPkg(data.data);
-        const reviewsRes = await api.get('/reviews', { params: { targetType: 'package', targetId: data.data._id } });
-        setReviews(reviewsRes.data.data);
+        const packageData = data?.data;
+        setPkg(packageData);
+        try {
+          const reviewsRes = await api.get('/reviews', { params: { targetType: 'package', targetId: packageData?._id } });
+          setReviews(reviewsRes.data?.data || []);
+        } catch {
+          // ignore review load error
+        }
       } catch {
         toast.error('Could not load this package');
       } finally {
@@ -44,8 +49,31 @@ const PackageDetails = () => {
     navigate(`/packages/${pkg._id}/book`);
   };
 
-  if (loading) return <div className="mx-auto max-w-7xl px-5 py-20 text-center text-sm">Loading package…</div>;
-  if (!pkg) return null;
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl px-5 py-24 text-center">
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-lagoon-500 border-r-transparent" />
+        <p className="mt-3 text-sm text-ink/60 dark:text-paper/60">Loading package details…</p>
+      </div>
+    );
+  }
+
+  if (!pkg) {
+    return (
+      <div className="mx-auto max-w-xl px-5 py-24 text-center">
+        <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 p-10 bg-white dark:bg-ink-light shadow-sm">
+          <h2 className="font-display text-2xl font-bold text-ink dark:text-paper">Package Not Found</h2>
+          <p className="mt-2 text-sm text-ink/60 dark:text-paper/60">This package might have been updated or moved.</p>
+          <button
+            onClick={() => navigate('/packages')}
+            className="mt-6 rounded-xl bg-lagoon-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-lagoon-600 shadow"
+          >
+            Browse Tour Packages
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Ensure we have a list of images to render (if empty, pad with placeholder)
   const galleryImages = pkg.images && pkg.images.length > 0 
@@ -65,6 +93,7 @@ const PackageDetails = () => {
           <img 
             src={galleryImages[0]} 
             alt={pkg.title} 
+            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-102" 
           />
         </div>
@@ -73,6 +102,7 @@ const PackageDetails = () => {
             <img
               src={galleryImages[i] || galleryImages[0]}
               alt=""
+              onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
               className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
             />
           </div>

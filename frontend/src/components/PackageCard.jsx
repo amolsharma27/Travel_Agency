@@ -24,6 +24,10 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist }) => {
           <img
             src={pkg.images?.[0] || PLACEHOLDER}
             alt={pkg.title}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = PLACEHOLDER;
+            }}
             className="h-52 w-full object-cover transition duration-700 group-hover:scale-105"
           />
         </Link>
