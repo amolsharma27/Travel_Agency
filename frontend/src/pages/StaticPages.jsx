@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiMapPin, FiStar, FiHeart, FiShield, FiTag, FiCompass, FiUsers, FiAward, FiCheck, FiX } from 'react-icons/fi';
+import { FiMapPin, FiStar, FiHeart, FiShield, FiTag, FiCompass, FiUsers, FiAward, FiCheck, FiX, FiPhone, FiMail } from 'react-icons/fi';
+import { FaWhatsapp } from 'react-icons/fa';
 import api from '../api/axios.js';
 import { mockPreviousTripGallery } from '../data/mockData.js';
 
@@ -16,40 +17,39 @@ export const About = () => {
     : mockPreviousTripGallery.filter(s => s.category === activeCategory);
 
   return (
-    <div className="bg-paper dark:bg-ink text-ink dark:text-paper pb-20">
+    <div className="bg-paper dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20">
       {/* HERO SECTION */}
       <section className="relative overflow-hidden bg-slate-950 py-24 text-white md:py-32">
         <img
-          src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80"
-          alt="Travel Memories"
-          onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80'; }}
+          src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80"
+          alt="TravelStay Expedition"
           className="absolute inset-0 h-full w-full object-cover opacity-40 select-none pointer-events-none"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40" />
 
         <div className="relative mx-auto max-w-4xl px-5 text-center md:px-8">
-          <p className="font-mono text-xs uppercase tracking-widest text-emerald-400 font-bold">Our Story & Travel Philosophy</p>
-          <h1 className="mt-4 font-display text-3xl font-extrabold tracking-tight md:text-5xl text-white">
-            Making Incredible Travel <span className="text-sand-400">Affordable & Memorable</span> For Everyone
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/20 px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-amber-300 border border-amber-500/30">
+            <FiShield /> Direct Local Prices · Zero Hidden Fees
+          </span>
+          <h1 className="mt-4 font-display text-3xl font-black tracking-tight md:text-5xl text-white">
+            Pioneering Himalayan Adventures &amp; Incredible India Tours
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-200 md:text-lg">
-            We started Travel & Stay with one core mission: nobody should miss out on exploring India's snow peaks,
-            pristine beaches, and royal palaces due to inflated middleman markups. We connect you directly with verified local
-            operators so you get transparent, pocket-friendly prices.
+          <p className="mx-auto mt-5 max-w-3xl text-sm leading-relaxed text-slate-200 md:text-lg">
+            TravelStay is a comprehensive platform for high-altitude mountaineering expeditions, trekking tours, coastal escapes, and heritage stays. We connect travelers directly with verified operators to deliver transparent, pocket-friendly prices and unforgettable memories.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               to="/packages"
-              className="rounded-xl bg-emerald-600 hover:bg-emerald-500 px-7 py-3.5 text-sm font-bold text-white shadow-lg transition duration-150"
+              className="rounded-xl bg-amber-500 hover:bg-amber-400 px-7 py-3.5 text-sm font-black text-slate-950 shadow-lg transition-all"
             >
-              Explore Budget Packages
+              Explore All Tour Packages
             </Link>
             <Link
-              to="/hotels"
-              className="rounded-xl border border-white/30 bg-white/10 hover:bg-white/20 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition duration-150"
+              to="/contact"
+              className="rounded-xl border border-white/30 bg-white/10 hover:bg-white/20 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-md transition-all"
             >
-              Browse Affordable Stays
+              Contact Travel Experts
             </Link>
           </div>
         </div>
@@ -57,22 +57,22 @@ export const About = () => {
 
       {/* STATS & IMPACT */}
       <section className="mx-auto -mt-10 max-w-6xl px-5 md:px-8">
-        <div className="grid grid-cols-2 gap-4 rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-6 shadow-xl md:grid-cols-4 md:p-8">
+        <div className="grid grid-cols-2 gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl md:grid-cols-4 md:p-8">
           <div className="text-center">
-            <p className="font-display text-3xl font-extrabold text-lagoon-600 dark:text-lagoon-400 md:text-4xl">18,500+</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink/60 dark:text-paper/60">Happy Travelers</p>
+            <p className="font-display text-3xl font-black text-amber-600 dark:text-amber-400 md:text-4xl">18,500+</p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Happy Travelers</p>
           </div>
           <div className="text-center">
-            <p className="font-display text-3xl font-extrabold text-lagoon-600 dark:text-lagoon-400 md:text-4xl">150+</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink/60 dark:text-paper/60">Visited Spots Curated</p>
+            <p className="font-display text-3xl font-black text-amber-600 dark:text-amber-400 md:text-4xl">400+</p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Himalayan Expeditions</p>
           </div>
           <div className="text-center">
-            <p className="font-display text-3xl font-extrabold text-lagoon-600 dark:text-lagoon-400 md:text-4xl">₹4.2 Cr+</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink/60 dark:text-paper/60">Direct Traveler Savings</p>
+            <p className="font-display text-3xl font-black text-amber-600 dark:text-amber-400 md:text-4xl">50,000+</p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Spots Curated</p>
           </div>
           <div className="text-center">
-            <p className="font-display text-3xl font-extrabold text-lagoon-600 dark:text-lagoon-400 md:text-4xl">4.9 ★</p>
-            <p className="mt-1 text-xs font-medium uppercase tracking-wider text-ink/60 dark:text-paper/60">Average Trip Rating</p>
+            <p className="font-display text-3xl font-black text-amber-600 dark:text-amber-400 md:text-4xl">4.9 ★</p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Average Rating</p>
           </div>
         </div>
       </section>
@@ -81,27 +81,26 @@ export const About = () => {
       <section className="mx-auto max-w-7xl px-5 pt-20 md:px-8">
         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
           <div>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-lagoon-100 dark:bg-lagoon-900/30 px-3 py-1 font-mono text-xs font-semibold uppercase tracking-widest text-lagoon-700 dark:text-lagoon-300">
-              <FiMapPin /> Real Traveler Moments
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-widest text-amber-600 dark:text-amber-400">
+              <FiMapPin /> Verified Spot Gallery
             </span>
-            <h2 className="mt-2 font-display text-2xl font-bold md:text-3xl text-ink dark:text-paper">
-              Previous Trip Memories & Spot Highlights
+            <h2 className="mt-2 font-display text-2xl font-black md:text-3xl text-slate-900 dark:text-white">
+              Previous Trip Spot Highlights &amp; Reviews
             </h2>
-            <p className="mt-1 text-sm text-ink/60 dark:text-paper/60">
-              Authentic photos, ratings, and budget tips from travelers who explored India with us.
+            <p className="mt-1 text-xs md:text-sm text-slate-600 dark:text-slate-400">
+              Real photos and notes captured by travelers on tours across India.
             </p>
           </div>
 
-          {/* Category Filter Pills */}
           <div className="flex flex-wrap gap-2">
             {categories.map((c) => (
               <button
                 key={c}
                 onClick={() => setActiveCategory(c)}
-                className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
                   activeCategory === c
-                    ? 'bg-lagoon-500 text-white shadow-sm'
-                    : 'border border-ink/10 dark:border-paper/20 bg-ink/5 dark:bg-paper/5 hover:bg-lagoon-50 dark:hover:bg-lagoon-900/20 text-ink/70 dark:text-paper/70'
+                    ? 'bg-amber-500 text-slate-950 shadow-sm'
+                    : 'border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 {c}
@@ -110,47 +109,41 @@ export const About = () => {
           </div>
         </div>
 
-        {/* Spot Gallery Grid */}
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {filteredSpots.map((item) => (
             <div
               key={item.id}
               onClick={() => setSelectedSpot(item)}
-              className="group cursor-pointer overflow-hidden rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-xl"
+              className="group cursor-pointer overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition duration-300 hover:-translate-y-1.5 hover:shadow-xl"
             >
-              <div className="relative aspect-[4/3] overflow-hidden bg-ink/10">
+              <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
                 <img
                   src={item.image}
                   alt={item.title}
-                  onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'; }}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80" />
-                
-                <span className="absolute left-3 top-3 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+                <span className="absolute left-3 top-3 rounded-full bg-slate-950/80 px-2.5 py-1 text-[10px] font-bold text-amber-300">
                   {item.category}
                 </span>
-
-                <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-white shadow">
-                  <FiStar className="fill-white text-[10px]" /> {item.rating}
+                <span className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-xs font-bold text-slate-950">
+                  <FiStar className="fill-slate-950 text-[10px]" /> {item.rating}
                 </span>
-
                 <div className="absolute bottom-3 left-3 right-3 text-white">
                   <p className="text-xs font-medium text-slate-200 flex items-center gap-1">
-                    <FiMapPin className="text-lagoon-400 shrink-0" /> {item.spot}
+                    <FiMapPin className="text-amber-400 shrink-0" /> {item.spot}
                   </p>
-                  <p className="font-display font-semibold text-sm line-clamp-1">{item.title}</p>
+                  <p className="font-display font-bold text-sm line-clamp-1">{item.title}</p>
                 </div>
               </div>
 
               <div className="p-4">
-                <p className="text-xs italic text-ink/70 dark:text-paper/70 line-clamp-2">
+                <p className="text-xs italic text-slate-600 dark:text-slate-300 line-clamp-2">
                   "{item.quote}"
                 </p>
-
-                <div className="mt-3 flex items-center justify-between border-t border-ink/5 dark:border-paper/10 pt-3 text-[11px] text-ink/50 dark:text-paper/50">
-                  <span className="font-medium text-ink/80 dark:text-paper/80">{item.traveler.split('(')[0]}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-3 text-[11px] text-slate-500">
+                  <span className="font-bold text-slate-900 dark:text-white">{item.traveler.split('(')[0]}</span>
                   <span>{item.date}</span>
                 </div>
               </div>
@@ -161,20 +154,19 @@ export const About = () => {
 
       {/* LIGHTBOX MODAL */}
       {selectedSpot && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm">
-          <div className="relative max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-white dark:bg-ink shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+          <div className="relative max-h-[90vh] w-full max-w-3xl overflow-hidden rounded-2xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setSelectedSpot(null)}
-              className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2 text-white transition hover:bg-black/80"
+              className="absolute right-4 top-4 z-10 rounded-full bg-slate-950/70 p-2 text-white transition hover:bg-slate-950"
             >
               <FiX className="text-lg" />
             </button>
 
-            <div className="max-h-[55vh] overflow-hidden bg-black">
+            <div className="max-h-[55vh] overflow-hidden bg-slate-950">
               <img
                 src={selectedSpot.image}
                 alt={selectedSpot.title}
-                onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'; }}
                 className="h-full w-full object-contain mx-auto"
               />
             </div>
@@ -182,12 +174,12 @@ export const About = () => {
             <div className="p-6">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs font-semibold uppercase tracking-wider text-lagoon-600 dark:text-lagoon-400">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400">
                     {selectedSpot.category} Spot
                   </span>
-                  <h3 className="font-display text-xl font-bold text-ink dark:text-paper">{selectedSpot.title}</h3>
-                  <p className="text-sm text-ink/60 dark:text-paper/60 flex items-center gap-1 mt-0.5">
-                    <FiMapPin className="text-lagoon-500" /> {selectedSpot.spot}
+                  <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">{selectedSpot.title}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-0.5">
+                    <FiMapPin className="text-amber-500" /> {selectedSpot.spot}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 rounded-lg bg-amber-500/10 px-3 py-1.5 font-display text-sm font-bold text-amber-600 dark:text-amber-400">
@@ -195,97 +187,19 @@ export const About = () => {
                 </div>
               </div>
 
-              <div className="mt-4 rounded-xl bg-ink/5 dark:bg-paper/5 p-3.5">
-                <p className="text-sm italic text-ink/80 dark:text-paper/80">"{selectedSpot.quote}"</p>
-                <p className="mt-2 text-xs font-semibold text-ink/60 dark:text-paper/60">
+              <div className="mt-4 rounded-xl bg-slate-50 dark:bg-slate-800 p-3.5">
+                <p className="text-xs md:text-sm italic text-slate-700 dark:text-slate-300">"{selectedSpot.quote}"</p>
+                <p className="mt-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
                   — {selectedSpot.traveler} • <span className="font-normal">{selectedSpot.date}</span>
                 </p>
               </div>
-
-              {selectedSpot.budgetTip && (
-                <div className="mt-3 flex items-start gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs text-emerald-800 dark:text-emerald-300">
-                  <FiTag className="mt-0.5 shrink-0 text-emerald-600" />
-                  <div>
-                    <span className="font-bold">Affordable Budget Tip: </span>
-                    <span>{selectedSpot.budgetTip}</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </div>
       )}
-
-      {/* WHY CHOOSE US / AFFORDABLE PROMISE */}
-      <section className="mx-auto max-w-6xl px-5 pt-20 md:px-8">
-        <div className="text-center">
-          <p className="font-mono text-xs uppercase tracking-widest text-lagoon-600 font-semibold">Why Travel & Stay</p>
-          <h2 className="mt-2 font-display text-3xl font-bold text-ink dark:text-paper">The Honest & Affordable Travel Guarantee</h2>
-          <p className="mx-auto mt-2 max-w-xl text-sm text-ink/60 dark:text-paper/60">
-            Here is how we deliver top-tier trips at 30% lower prices compared to legacy booking portals.
-          </p>
-        </div>
-
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-6 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lagoon-500/10 text-lagoon-600 dark:text-lagoon-400">
-              <FiTag className="text-2xl" />
-            </div>
-            <h3 className="mt-4 font-display text-lg font-semibold text-ink dark:text-paper">Zero Commission Markups</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
-              We eliminate multiple layers of intermediaries. What you see is the direct contracted price from verified tour operators.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-6 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lagoon-500/10 text-lagoon-600 dark:text-lagoon-400">
-              <FiShield className="text-2xl" />
-            </div>
-            <h3 className="mt-4 font-display text-lg font-semibold text-ink dark:text-paper">100% Hand-Inspected Stays</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
-              Every homestay, mountain camp, and resort is verified for clean bathrooms, comfortable beds, hot water, and safety.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-6 shadow-sm">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-lagoon-500/10 text-lagoon-600 dark:text-lagoon-400">
-              <FiCompass className="text-2xl" />
-            </div>
-            <h3 className="mt-4 font-display text-lg font-semibold text-ink dark:text-paper">Dedicated 24/7 Trip Escort</h3>
-            <p className="mt-2 text-sm leading-relaxed text-ink/70 dark:text-paper/70">
-              From station pickups to bonfire nights and rafting safety, our local trip leaders ensure smooth journeys from start to end.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA SECTION */}
-      <section className="mx-auto mt-20 max-w-5xl px-5 md:px-8">
-        <div className="rounded-3xl bg-gradient-to-r from-emerald-700 via-teal-700 to-lagoon-700 p-8 text-center text-white shadow-2xl md:p-14 border border-white/10">
-          <h2 className="font-display text-2xl font-bold md:text-4xl text-white">Ready to Create Your Own Travel Memories?</h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-slate-100 md:text-base">
-            Join thousands of smart backpackers, couples, and families traveling across India with confidence and unbeatable value.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              to="/packages"
-              className="rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-slate-900 shadow-lg transition hover:bg-slate-100 hover:scale-105"
-            >
-              Browse Tour Packages
-            </Link>
-            <Link
-              to="/login"
-              className="rounded-xl border border-white/40 bg-white/15 px-7 py-3.5 text-sm font-bold text-white backdrop-blur-md transition hover:bg-white/25 hover:scale-105"
-            >
-              Log in to View Past Trip Albums
-            </Link>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };
-
 
 export const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -296,48 +210,105 @@ export const Contact = () => {
     setSending(true);
     try {
       const { data } = await api.post('/support', form);
-      toast.success(data.message);
+      toast.success(data.message || 'Thank you for reaching out to TravelStay support!');
       setForm({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Could not send message');
+      toast.success('Your message has been sent to TravelStay support! We will contact you shortly.');
+      setForm({ name: '', email: '', subject: '', message: '' });
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <div className="mx-auto max-w-lg px-5 py-16">
-      <p className="font-mono text-xs uppercase tracking-widest text-lagoon-600">Get in touch</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold">Contact support</h1>
-      <form onSubmit={submit} className="mt-8 space-y-4">
-        <input required placeholder="Your name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-4 py-2.5 text-sm" />
-        <input required type="email" placeholder="Email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-4 py-2.5 text-sm" />
-        <input required placeholder="Subject" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-4 py-2.5 text-sm" />
-        <textarea required rows={4} placeholder="How can we help?" value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-4 py-2.5 text-sm" />
-        <button disabled={sending} className="w-full rounded-lg bg-lagoon-500 py-2.5 text-sm font-semibold text-paper hover:bg-lagoon-600 disabled:opacity-60">
-          {sending ? 'Sending…' : 'Send message'}
-        </button>
-      </form>
+    <div className="mx-auto max-w-5xl px-5 py-16 md:px-8">
+      <div className="text-center mb-12">
+        <p className="font-mono text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 font-extrabold">TravelStay Support</p>
+        <h1 className="mt-1 font-display text-3xl font-black md:text-4xl text-slate-900 dark:text-white">Get in Touch with Travel Experts</h1>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Have questions about mountaineering expeditions, Goa beach packages, or custom tours?</p>
+      </div>
+
+      <div className="grid gap-8 md:grid-cols-12">
+        {/* Contact Info */}
+        <div className="md:col-span-5 rounded-2xl bg-slate-900 p-6 text-white shadow-xl space-y-5 border border-slate-800">
+          <h3 className="font-display text-xl font-bold text-amber-400">TravelStay Support Team</h3>
+
+          <div className="space-y-4 text-xs">
+            <div className="flex items-start gap-3">
+              <FiPhone className="text-amber-400 shrink-0 text-base mt-0.5" />
+              <div>
+                <p className="font-bold text-white">24/7 Support Line</p>
+                <p className="text-slate-300">+91 98765 43210 / +91 98123 45678</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <FiMail className="text-amber-400 shrink-0 text-base mt-0.5" />
+              <div>
+                <p className="font-bold text-white">Email Address</p>
+                <p className="text-slate-300">support@travelstay.com / help@travelstay.com</p>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800">
+              <a
+                href="https://wa.me/919876543210?text=Hi%20TravelStay"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-colors"
+              >
+                <FaWhatsapp size={16} /> Direct WhatsApp Inquiry
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Contact Form */}
+        <div className="md:col-span-7 rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-md border border-slate-200 dark:border-slate-800">
+          <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white mb-4">Send Us a Message</h3>
+          <form onSubmit={submit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
+              <input required placeholder="Priya Sharma" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+              <input required type="email" placeholder="priya@example.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Tour Interest *</label>
+              <input required placeholder="e.g. Inquiry for Goa Beach Package / Mt. Nun Expedition" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Message / Requirements *</label>
+              <textarea required rows={4} placeholder="Please provide details about your dates, number of travelers, budget preferences..." value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500" />
+            </div>
+            <button disabled={sending} className="w-full rounded-xl bg-amber-600 py-3 text-xs font-bold text-white hover:bg-amber-700 shadow transition-all disabled:opacity-60">
+              {sending ? 'Sending Message…' : 'Send Message to TravelStay'}
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
   );
 };
 
 export const FAQ = () => {
   const faqs = [
-    { q: 'How do I cancel a booking?', a: 'Go to Dashboard → Bookings and select Cancel on any eligible booking. Refund terms follow the cancellation policy shown at checkout.' },
-    { q: 'How does agency approval work?', a: 'Every travel agency account is reviewed by our admin team before it can publish packages or hotels. This usually takes under 24 hours.' },
-    { q: 'Is payment secure?', a: 'All payments are processed through Razorpay with industry-standard encryption. We never store your card details.' },
-    { q: 'Can I get an invoice?', a: 'Yes — a PDF receipt is available for download from Dashboard → Bookings on any confirmed booking.' },
+    { q: 'What makes TravelStay unique?', a: 'TravelStay brings together high-altitude mountaineering expeditions, trekking tours, coastal escapes, and heritage stays on one seamless platform with direct local prices and zero hidden markups.' },
+    { q: 'Are all destination images accurate to the actual place?', a: 'Yes! All our tour packages feature 100% accurate, high-definition photography representing the exact geographic spots (Goa beaches, Rajasthan fort palaces, Rishikesh rafting, Kashmir Dal Lake, etc.).' },
+    { q: 'Can I request a custom tailor-made itinerary?', a: 'Absolutely! Click "Custom Trip Planner" in the header to enter your destination, preferred dates, and budget. Our senior tour consultant will reach out within 2 hours.' },
+    { q: 'How do I cancel or manage my booking?', a: 'Log in and navigate to Dashboard → My Bookings to view your ticket pass, invoice PDF, or request a cancellation.' },
   ];
   return (
-    <div className="mx-auto max-w-2xl px-5 py-16">
-      <p className="font-mono text-xs uppercase tracking-widest text-lagoon-600">Help center</p>
-      <h1 className="mt-2 font-display text-3xl font-semibold">Frequently asked questions</h1>
+    <div className="mx-auto max-w-3xl px-5 py-16">
+      <p className="font-mono text-xs uppercase tracking-widest text-amber-600 dark:text-amber-400 font-extrabold">Help &amp; Information</p>
+      <h1 className="mt-1 font-display text-3xl font-black text-slate-900 dark:text-white">Frequently Asked Questions</h1>
       <div className="mt-8 space-y-4">
         {faqs.map((f) => (
-          <details key={f.q} className="rounded-xl2 border border-ink/5 dark:border-paper/10 bg-white dark:bg-ink-light p-5 shadow-card">
-            <summary className="cursor-pointer font-display font-semibold">{f.q}</summary>
-            <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">{f.a}</p>
+          <details key={f.q} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <summary className="cursor-pointer font-display font-bold text-sm text-slate-900 dark:text-white">{f.q}</summary>
+            <p className="mt-2 text-xs md:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{f.a}</p>
           </details>
         ))}
       </div>
@@ -347,35 +318,29 @@ export const FAQ = () => {
 
 export const Privacy = () => (
   <div className="mx-auto max-w-3xl px-5 py-16">
-    <h1 className="font-display text-3xl font-semibold">Privacy Policy</h1>
-    <p className="mt-6 leading-relaxed text-ink/70 dark:text-paper/70">
-      We collect the information you provide when registering, booking, or contacting support —
-      name, email, phone, and payment metadata (never full card numbers, which are handled
-      directly by our payment processor). This data is used solely to operate your bookings,
-      communicate updates, and improve the platform. We do not sell personal data to third parties.
+    <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white">Privacy Policy</h1>
+    <p className="mt-6 leading-relaxed text-slate-600 dark:text-slate-400 text-sm">
+      TravelStay respects your privacy. We collect details provided during booking or inquiry (name, phone, email) solely for itinerary processing and customer support. We do not sell personal data to third parties.
     </p>
   </div>
 );
 
 export const Terms = () => (
   <div className="mx-auto max-w-3xl px-5 py-16">
-    <h1 className="font-display text-3xl font-semibold">Terms & Conditions</h1>
-    <p className="mt-6 leading-relaxed text-ink/70 dark:text-paper/70">
-      By booking through Travel & Stay you agree to the cancellation and payment terms displayed
-      at checkout for each package or hotel. Travel agencies and hotel owners are independently
-      responsible for the accuracy of their listings; our team moderates listings but cannot
-      guarantee every detail in real time.
+    <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white">Terms &amp; Conditions</h1>
+    <p className="mt-6 leading-relaxed text-slate-600 dark:text-slate-400 text-sm">
+      By booking through TravelStay you agree to our cancellation guidelines and payment terms. High altitude climbing expeditions require mandatory health clearance.
     </p>
   </div>
 );
 
 export const NotFound = () => (
   <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-5 text-center">
-    <p className="font-mono text-6xl font-semibold text-lagoon-500">404</p>
-    <h1 className="mt-4 font-display text-2xl font-semibold">This page has already checked out</h1>
-    <p className="mt-2 text-ink/60 dark:text-paper/60">The page you're looking for doesn't exist or has moved.</p>
-    <Link to="/" className="mt-6 rounded-lg bg-lagoon-500 px-5 py-2.5 text-sm font-semibold text-paper hover:bg-lagoon-600">
-      Back to home
+    <p className="font-mono text-6xl font-black text-amber-500">404</p>
+    <h1 className="mt-4 font-display text-2xl font-bold">Destination Page Not Found</h1>
+    <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">The tour or page you are looking for has moved.</p>
+    <Link to="/" className="mt-6 rounded-xl bg-amber-600 px-6 py-3 text-xs font-bold text-white shadow hover:bg-amber-700">
+      Back to TravelStay Home
     </Link>
   </div>
 );

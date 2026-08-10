@@ -6,20 +6,19 @@ import RatingStars from './RatingStars.jsx';
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=60';
 
 const PackageCard = ({ pkg, wishlisted, onToggleWishlist }) => {
-  // Parse inclusions to show icons
-  const hasHotel = pkg.inclusions?.some(inc => /hotel|stay|resort/i.test(inc)) || true; // default true for package tours
+  const hasHotel = pkg.inclusions?.some(inc => /hotel|stay|resort/i.test(inc)) || true;
   const hasMeals = pkg.inclusions?.some(inc => /breakfast|dinner|lunch|meal/i.test(inc));
   const hasTransfers = pkg.inclusions?.some(inc => /transfer|cab|volvo|bus|ferry|flight/i.test(inc));
-  const hasSightseeing = pkg.inclusions?.some(inc => /sightseeing|tour|cruise|entry/i.test(inc));
 
-  // Calculate discount percentage
   const discountPercent = pkg.discountPrice 
     ? Math.round(((pkg.price - pkg.discountPrice) / pkg.price) * 100) 
     : 0;
 
   return (
-    <div className="group overflow-hidden rounded-xl2 border border-ink/5 dark:border-paper/10 bg-white dark:bg-ink-light shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-pop flex flex-col h-full">
-      <div className="relative overflow-hidden">
+    <div className="group overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl transition duration-300 flex flex-col h-full">
+      
+      {/* Thumbnail & Badges */}
+      <div className="relative overflow-hidden h-52 bg-slate-900">
         <Link to={`/packages/${pkg.slug || pkg._id}`}>
           <img
             src={pkg.images?.[0] || PLACEHOLDER}
@@ -28,105 +27,93 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist }) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = PLACEHOLDER;
             }}
-            className="h-52 w-full object-cover transition duration-700 group-hover:scale-105"
+            className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
           />
         </Link>
-        <button
-          onClick={() => onToggleWishlist?.(pkg._id)}
-          aria-label="Save to wishlist"
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full glass text-ink dark:text-paper shadow-sm hover:scale-110 active:scale-95 transition"
-        >
-          <FiHeart size={16} className={wishlisted ? 'fill-red-500 text-red-500' : ''} />
-        </button>
-        
-        {/* Dynamic badges */}
-        <div className="absolute left-3 top-3 flex flex-col gap-1.5 items-start">
-          <span className="rounded-full bg-ink/80 px-2.5 py-1 text-[10px] font-semibold tracking-wider uppercase text-paper">
+
+        {/* Cliffseas Style Orange Category Badge */}
+        <div className="absolute left-3 top-3 flex flex-col gap-1 items-start z-10">
+          <span className="rounded bg-[#e0882e] px-2.5 py-1 text-[11px] font-extrabold uppercase text-white shadow-md">
             {pkg.category}
           </span>
-          {pkg.rating >= 4.8 && (
-            <span className="rounded-full bg-sand-500 px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase text-ink shadow-sm">
-              Best Seller
-            </span>
-          )}
           {discountPercent > 0 && (
-            <span className="rounded-full bg-red-500 px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase text-white shadow-sm">
+            <span className="rounded bg-red-600 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white shadow-sm">
               {discountPercent}% OFF
             </span>
           )}
         </div>
 
-        {/* Travel Mode Badge */}
-        <div className="absolute bottom-3 right-3 rounded bg-white/95 dark:bg-ink-light/95 px-2 py-0.5 text-[10px] font-medium text-ink dark:text-paper">
+        <button
+          onClick={() => onToggleWishlist?.(pkg._id)}
+          aria-label="Save to wishlist"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/60 text-white hover:bg-slate-950 transition z-10"
+        >
+          <FiHeart size={15} className={wishlisted ? 'fill-red-500 text-red-500' : ''} />
+        </button>
+
+        <div className="absolute bottom-2 right-2 rounded bg-slate-950/80 backdrop-blur-md px-2 py-0.5 text-[10px] font-bold text-amber-300">
           By {pkg.travelMode}
         </div>
       </div>
 
-      <div className="relative mx-4 mt-0 ticket-perforation ticket-dashes" />
-
-      <div className="p-4 flex-1 flex flex-col justify-between">
+      {/* Card Content */}
+      <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div>
           <Link to={`/packages/${pkg.slug || pkg._id}`}>
-            <h3 className="font-display text-base font-semibold leading-snug text-ink dark:text-paper group-hover:text-lagoon-600 dark:group-hover:text-lagoon-300 transition duration-150 line-clamp-2 min-h-[2.5rem]">
+            <h3 className="font-display text-base font-bold leading-snug text-slate-900 dark:text-white group-hover:text-[#e0882e] transition duration-150 line-clamp-2 min-h-[2.5rem]">
               {pkg.title}
             </h3>
           </Link>
-          <p className="mt-1.5 flex items-center gap-1 text-xs text-ink/60 dark:text-paper/60">
-            <FiMapPin size={12} className="text-lagoon-500" /> {pkg.destination}
-          </p>
-          <p className="mt-1 flex items-center gap-1 text-xs text-ink/60 dark:text-paper/60">
-            <FiCalendar size={12} className="text-lagoon-500" /> {pkg.durationDays} Days / {pkg.durationNights} Nights
-          </p>
+          
+          <div className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+            <p className="flex items-center gap-1.5 font-medium">
+              <FiMapPin size={13} className="text-[#e0882e] shrink-0" /> {pkg.destination}
+            </p>
+            <p className="flex items-center gap-1.5 font-medium">
+              <FiCalendar size={13} className="text-[#e0882e] shrink-0" /> {pkg.durationDays} Days / {pkg.durationNights} Nights
+            </p>
+          </div>
 
-          {/* Inclusion Icons Grid */}
-          <div className="mt-3.5 flex gap-3 text-ink/40 dark:text-paper/40 border-b border-ink/5 dark:border-paper/5 pb-3">
-            {hasHotel && (
-              <span className="flex items-center gap-1 text-[11px]" title="Hotel Stay Included">
-                <FaHotel size={11} className="text-lagoon-500/70" /> Stay
-              </span>
-            )}
-            {hasMeals && (
-              <span className="flex items-center gap-1 text-[11px]" title="Meals Included">
-                <FiCoffee size={12} className="text-lagoon-500/70" /> Meals
-              </span>
-            )}
-            {hasTransfers && (
-              <span className="flex items-center gap-1 text-[11px]" title="Transfers Included">
-                <FaCar size={11} className="text-lagoon-500/70" /> Transfers
-              </span>
-            )}
-            {hasSightseeing && (
-              <span className="flex items-center gap-1 text-[11px]" title="Sightseeing Tours Included">
-                <FiCompass size={12} className="text-lagoon-500/70" /> Tours
-              </span>
-            )}
+          <div className="mt-3 flex items-center gap-3 text-slate-500 dark:text-slate-400 text-[11px] border-t border-slate-100 dark:border-slate-800 pt-2.5">
+            {hasHotel && <span className="flex items-center gap-1 font-semibold"><FaHotel className="text-[#e0882e]" /> Stay</span>}
+            {hasMeals && <span className="flex items-center gap-1 font-semibold"><FiCoffee className="text-[#e0882e]" /> Meals</span>}
+            {hasTransfers && <span className="flex items-center gap-1 font-semibold"><FaCar className="text-[#e0882e]" /> Transfers</span>}
           </div>
         </div>
 
-        <div className="mt-4">
-          <div className="flex items-center gap-1.5 mb-1.5">
-            <RatingStars rating={pkg.rating || 0} size={13} />
-            <span className="text-[11px] text-ink/40 dark:text-paper/40">({pkg.reviewsCount})</span>
-          </div>
-
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] text-ink/40 dark:text-paper/40 uppercase tracking-wider font-semibold">Starting from</p>
-              <div className="flex items-baseline gap-1.5">
-                {pkg.discountPrice ? (
-                  <>
-                    <span className="font-mono text-xl font-bold text-ink dark:text-paper">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
-                    <span className="font-mono text-xs text-ink/40 line-through dark:text-paper/40">₹{pkg.price.toLocaleString('en-IN')}</span>
-                  </>
-                ) : (
-                  <span className="font-mono text-xl font-bold text-ink dark:text-paper">₹{pkg.price.toLocaleString('en-IN')}</span>
-                )}
-                <span className="text-[10px] text-ink/50 dark:text-paper/50 font-medium">/ person</span>
-              </div>
+        <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1">
+              <RatingStars rating={pkg.rating || 4.9} size={12} />
+              <span className="text-[11px] font-bold text-slate-500">({pkg.reviewsCount || 45})</span>
             </div>
-            <span className="text-[10px] font-semibold text-lagoon-600 dark:text-lagoon-300 bg-lagoon-50 dark:bg-lagoon-700/20 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded">
               {pkg.availableSeats} seats left
             </span>
+          </div>
+
+          <div className="flex items-center justify-between mt-2">
+            <div>
+              <p className="text-[9px] uppercase tracking-wider font-extrabold text-slate-400">Starting Price</p>
+              <div className="flex items-baseline gap-1">
+                {pkg.discountPrice ? (
+                  <>
+                    <span className="font-mono text-lg font-black text-[#e0882e]">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
+                    <span className="font-mono text-xs text-slate-400 line-through">₹{pkg.price.toLocaleString('en-IN')}</span>
+                  </>
+                ) : (
+                  <span className="font-mono text-lg font-black text-[#e0882e]">₹{pkg.price.toLocaleString('en-IN')}</span>
+                )}
+              </div>
+            </div>
+
+            {/* Cliffseas Style View Details Button */}
+            <Link
+              to={`/packages/${pkg.slug || pkg._id}`}
+              className="rounded-md bg-[#e0882e] hover:bg-white text-white hover:text-[#e0882e] border border-[#e0882e] px-3.5 py-1.5 text-xs font-bold shadow-sm transition-all duration-200"
+            >
+              View Details »
+            </Link>
           </div>
         </div>
       </div>

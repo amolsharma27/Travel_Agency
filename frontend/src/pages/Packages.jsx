@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FiTag, FiSearch } from 'react-icons/fi';
+import { FiTag, FiSearch, FiCompass } from 'react-icons/fi';
 import api from '../api/axios.js';
 import PackageCard from '../components/PackageCard.jsx';
 import SkeletonCard from '../components/SkeletonCard.jsx';
 import Pagination from '../components/Pagination.jsx';
+import CustomTourModal from '../components/CustomTourModal.jsx';
 import { getStoredPackages } from '../data/mockData.js';
 
-const categories = ['All', 'Adventure', 'Beach', 'Honeymoon', 'Cultural', 'Historical', 'Pilgrimage'];
+const categories = ['All', 'Weekend Tours', 'Educational Journeys', 'Adventure', 'Beach', 'Honeymoon', 'Cultural', 'Pilgrimage'];
 
 const budgetRanges = [
   { label: 'All Budgets', min: '', max: '' },
-  { label: 'Under ₹5,000 (Super Budget)', min: '', max: '5000' },
-  { label: '₹5,000 - ₹10,000 (Affordable Escapes)', min: '5000', max: '10000' },
-  { label: '₹10,000 - ₹20,000 (Complete Holidays)', min: '10000', max: '20000' },
+  { label: 'Under ₹5,000 (Weekend Deals)', min: '', max: '5000' },
+  { label: '₹5,000 - ₹15,000 (Popular Trips)', min: '5000', max: '15000' },
+  { label: '₹15,000+ (Spiti & Luxury)', min: '15000', max: '' },
 ];
 
 const Packages = () => {
@@ -22,6 +23,7 @@ const Packages = () => {
   const [total, setTotal] = useState(0);
   const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [showCustomModal, setShowCustomModal] = useState(false);
 
   const [filters, setFilters] = useState({
     q: params.get('q') || '',
@@ -40,25 +42,54 @@ const Packages = () => {
           Object.entries(filters).filter(([, v]) => v !== '' && v !== 'All')
         );
         const { data } = await api.get('/packages', { params: cleanParams });
-        if (data?.data && data.data.length > 0) {
+        if (data?.data?.length) {
           setPackages(data.data);
           setTotal(data.total);
           setPages(data.pages || 1);
-        } else {
-          const fallback = getStoredPackages();
-          setPackages(fallback);
-          setTotal(fallback.length);
-          setPages(1);
+          setLoading(false);
+          return;
         }
       } catch {
-        const fallback = getStoredPackages();
-        setPackages(fallback);
-        setTotal(fallback.length);
-        setPages(1);
-      } finally {
-        setLoading(false);
+        // local fallback
       }
+
+      let local = getStoredPackages();
+
+      if (filters.q) {
+        const query = filters.q.toLowerCase();
+        local = local.filter(p =>
+          p.title.toLowerCase().includes(query) ||
+          p.destination.toLowerCase().includes(query) ||
+          p.category.toLowerCase().includes(query) ||
+          p.description.toLowerCase().includes(query)
+        );
+      }
+
+      if (filters.category && filters.category !== 'All') {
+        local = local.filter(p => p.category?.toLowerCase() === filters.category.toLowerCase());
+      }
+
+      if (filters.minPrice) {
+        local = local.filter(p => (p.discountPrice || p.price) >= parseInt(filters.minPrice));
+      }
+      if (filters.maxPrice) {
+        local = local.filter(p => (p.discountPrice || p.price) <= parseInt(filters.maxPrice));
+      }
+
+      if (filters.sort === 'price_asc') {
+        local.sort((a, b) => (a.discountPrice || a.price) - (b.discountPrice || b.price));
+      } else if (filters.sort === 'price_desc') {
+        local.sort((a, b) => (b.discountPrice || b.price) - (a.discountPrice || a.price));
+      } else if (filters.sort === 'rating_desc') {
+        local.sort((a, b) => b.rating - a.rating);
+      }
+
+      setPackages(local);
+      setTotal(local.length);
+      setPages(1);
+      setLoading(false);
     };
+
     fetchPackages();
   }, [filters]);
 
@@ -69,106 +100,129 @@ const Packages = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-lagoon-600 font-semibold">
-            {loading ? 'Searching tour packages…' : `${total} verified itineraries found`}
-          </p>
-          <h1 className="font-display text-2xl font-bold md:text-3xl">Tour Packages & Escapes</h1>
-        </div>
+    <div className="bg-[#FDF7F0] dark:bg-slate-950 min-h-screen py-10">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span className="font-mono text-xs uppercase tracking-widest text-[#e0882e] font-extrabold">
+              {loading ? 'Searching tour packages…' : `${total} Verified Packages Found`}
+            </span>
+            <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white mt-0.5">
+              Tours &amp; Holiday Packages
+            </h1>
+          </div>
 
-        <select
-          value={filters.sort}
-          onChange={(e) => update('sort', e.target.value)}
-          className="rounded-lg border border-ink/10 dark:border-paper/20 bg-white dark:bg-ink-light px-3 py-2 text-sm outline-none"
-        >
-          <option value="newest">Newest</option>
-          <option value="price_asc">Price: Low to High (Budget Friendly)</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="rating_desc">Highest Rated (4.8+)</option>
-        </select>
-      </div>
-
-      {/* QUICK BUDGET FILTER BUTTONS */}
-      <div className="mb-6 flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1 text-xs font-bold uppercase text-lagoon-600 mr-1">
-          <FiTag /> Budget Deals:
-        </span>
-        {budgetRanges.map((b) => {
-          const isSelected = filters.minPrice === b.min && filters.maxPrice === b.max;
-          return (
+          <div className="flex items-center gap-3">
             <button
-              key={b.label}
-              onClick={() => handleBudgetSelect(b.min, b.max)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
-                isSelected
-                  ? 'bg-lagoon-500 text-white shadow-sm'
-                  : 'border border-ink/10 dark:border-paper/20 bg-white dark:bg-ink-light text-ink/70 dark:text-paper/70 hover:border-lagoon-500'
-              }`}
+              onClick={() => setShowCustomModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#e0882e] hover:bg-white text-white hover:text-[#e0882e] border border-[#e0882e] px-4 py-2 text-xs font-bold shadow-sm transition-all"
             >
-              {b.label}
+              <FiCompass /> Request Custom Plan
             </button>
-          );
-        })}
-      </div>
 
-      {/* SEARCH AND CATEGORY CONTROLS */}
-      <div className="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-4 shadow-sm">
-        <div className="relative flex-1 min-w-[200px]">
-          <FiSearch className="absolute left-3 top-3 text-ink/40" />
-          <input
-            value={filters.q}
-            onChange={(e) => update('q', e.target.value)}
-            placeholder="Search destination (Manali, Goa, Rishikesh...)"
-            className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent pl-9 pr-3 py-2 text-sm outline-none focus:border-lagoon-500"
-          />
+            <select
+              value={filters.sort}
+              onChange={(e) => update('sort', e.target.value)}
+              className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none"
+            >
+              <option value="newest">Sort: Newest</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="rating_desc">Highest Rated (4.8+)</option>
+            </select>
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-1.5">
-          {categories.map((c) => {
-            const isSel = (filters.category === c) || (c === 'All' && !filters.category);
+        {/* QUICK PRICE DEALS */}
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <span className="flex items-center gap-1 text-xs font-bold uppercase text-[#e0882e] mr-1">
+            <FiTag /> Quick Deals:
+          </span>
+          {budgetRanges.map((b) => {
+            const isSelected = filters.minPrice === b.min && filters.maxPrice === b.max;
             return (
               <button
-                key={c}
-                onClick={() => update('category', c === 'All' ? '' : c)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-                  isSel
-                    ? 'bg-lagoon-500 text-white shadow-sm'
-                    : 'border border-ink/10 dark:border-paper/20 text-ink/70 dark:text-paper/70 hover:bg-ink/5'
+                key={b.label}
+                onClick={() => handleBudgetSelect(b.min, b.max)}
+                className={`rounded-full px-3.5 py-1 text-xs font-bold transition-all ${
+                  isSelected
+                    ? 'bg-[#e0882e] text-white shadow-sm'
+                    : 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-[#e0882e]'
                 }`}
               >
-                {c}
+                {b.label}
               </button>
             );
           })}
         </div>
-      </div>
 
-      {loading ? (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+        {/* SEARCH AND CATEGORY FILTER BAR */}
+        <div className="mb-8 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+          <div className="relative flex-1 min-w-[220px]">
+            <FiSearch className="absolute left-3.5 top-3 text-slate-400" />
+            <input
+              value={filters.q}
+              onChange={(e) => update('q', e.target.value)}
+              placeholder="Search tour, destination (Jibhi, Spiti, Rajasthan, Goa...)"
+              className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-10 pr-3 py-2.5 text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#e0882e]"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {categories.map((c) => {
+              const isSel = (filters.category === c) || (c === 'All' && !filters.category);
+              return (
+                <button
+                  key={c}
+                  onClick={() => update('category', c === 'All' ? '' : c)}
+                  className={`rounded-md px-3.5 py-2 text-xs font-bold transition-all ${
+                    isSel
+                      ? 'bg-[#e0882e] text-white shadow-sm'
+                      : 'border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                  }`}
+                >
+                  {c}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      ) : packages.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 py-16 text-center bg-white dark:bg-ink-light">
-          <p className="font-display text-lg font-semibold">No packages match your search</p>
-          <p className="mt-1 text-sm text-ink/60 dark:text-paper/60">Try searching another destination or clear budget filters.</p>
-          <button
-            onClick={() => setFilters({ q: '', category: '', minPrice: '', maxPrice: '', sort: 'newest', page: 1 })}
-            className="mt-4 rounded-xl bg-lagoon-500 px-4 py-2 text-xs font-semibold text-white"
-          >
-            Reset Filters
-          </button>
-        </div>
-      ) : (
-        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-          {packages.map((pkg) => <PackageCard key={pkg._id} pkg={pkg} />)}
-        </div>
-      )}
-      <Pagination page={filters.page} pages={pages} onChange={(p) => update('page', p)} />
+
+        {loading ? (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : packages.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-16 text-center bg-white dark:bg-slate-900 shadow-sm">
+            <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">No Tour Packages Match Your Search</h3>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Try resetting your destination query or budget filter.
+            </p>
+            <button
+              onClick={() => setFilters({ q: '', category: '', minPrice: '', maxPrice: '', sort: 'newest', page: 1 })}
+              className="mt-4 rounded-md bg-[#e0882e] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-amber-600"
+            >
+              Clear All Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {packages.map((pkg) => (
+              <PackageCard key={pkg._id} pkg={pkg} />
+            ))}
+          </div>
+        )}
+
+        {pages > 1 && (
+          <div className="mt-10">
+            <Pagination page={filters.page} pages={pages} onChange={(p) => setFilters((f) => ({ ...f, page: p }))} />
+          </div>
+        )}
+
+        <CustomTourModal isOpen={showCustomModal} onClose={() => setShowCustomModal(false)} />
+      </div>
     </div>
   );
 };
 
 export default Packages;
-

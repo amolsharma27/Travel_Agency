@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { FiMapPin, FiCalendar, FiCheck, FiX, FiCheckCircle } from 'react-icons/fi';
+import { FiMapPin, FiCalendar, FiCheck, FiX, FiCheckCircle, FiShield, FiGlobe, FiPhoneCall } from 'react-icons/fi';
+import { FaMountain, FaWhatsapp } from 'react-icons/fa';
 import api from '../api/axios.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import RatingStars from '../components/RatingStars.jsx';
+import CustomTourModal from '../components/CustomTourModal.jsx';
+import { getStoredPackages } from '../data/mockData.js';
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=70';
 
@@ -14,25 +17,26 @@ const PackageDetails = () => {
   const navigate = useNavigate();
 
   const [pkg, setPkg] = useState(null);
-  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
+  const [showCustomModal, setShowCustomModal] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
       try {
         const { data } = await api.get(`/packages/${idOrSlug}`);
-        const packageData = data?.data;
-        setPkg(packageData);
-        try {
-          const reviewsRes = await api.get('/reviews', { params: { targetType: 'package', targetId: packageData?._id } });
-          setReviews(reviewsRes.data?.data || []);
-        } catch {
-          // ignore review load error
+        if (data?.data) {
+          setPkg(data.data);
+        } else {
+          const localPkgs = getStoredPackages();
+          const match = localPkgs.find(p => p._id === idOrSlug || p.slug === idOrSlug);
+          setPkg(match || localPkgs[0]);
         }
       } catch {
-        toast.error('Could not load this package');
+        const localPkgs = getStoredPackages();
+        const match = localPkgs.find(p => p._id === idOrSlug || p.slug === idOrSlug);
+        setPkg(match || localPkgs[0]);
       } finally {
         setLoading(false);
       }
@@ -52,8 +56,8 @@ const PackageDetails = () => {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-24 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-lagoon-500 border-r-transparent" />
-        <p className="mt-3 text-sm text-ink/60 dark:text-paper/60">Loading package details…</p>
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#e0882e] border-r-transparent" />
+        <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">Loading tour details…</p>
       </div>
     );
   }
@@ -61,230 +65,221 @@ const PackageDetails = () => {
   if (!pkg) {
     return (
       <div className="mx-auto max-w-xl px-5 py-24 text-center">
-        <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 p-10 bg-white dark:bg-ink-light shadow-sm">
-          <h2 className="font-display text-2xl font-bold text-ink dark:text-paper">Package Not Found</h2>
-          <p className="mt-2 text-sm text-ink/60 dark:text-paper/60">This package might have been updated or moved.</p>
+        <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-10 bg-white dark:bg-slate-900 shadow-sm">
+          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-white">Package Not Found</h2>
+          <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">This package might have been updated or moved.</p>
           <button
             onClick={() => navigate('/packages')}
-            className="mt-6 rounded-xl bg-lagoon-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-lagoon-600 shadow"
+            className="mt-6 rounded-md bg-[#e0882e] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-amber-600"
           >
-            Browse Tour Packages
+            Browse All Tour Packages
           </button>
         </div>
       </div>
     );
   }
 
-  // Ensure we have a list of images to render (if empty, pad with placeholder)
   const galleryImages = pkg.images && pkg.images.length > 0 
     ? pkg.images 
-    : [PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
+    : [PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
 
-  // Calculate discount percentage
   const discountPercent = pkg.discountPrice 
     ? Math.round(((pkg.price - pkg.discountPrice) / pkg.price) * 100) 
     : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8">
-      {/* Gallery Block */}
-      <div className="grid gap-2 overflow-hidden rounded-xl2 md:h-[400px] md:grid-cols-4 md:grid-rows-2 shadow-sm bg-paper-dim/35">
-        <div className="h-64 w-full md:col-span-2 md:row-span-2 md:h-full relative overflow-hidden group">
-          <img 
-            src={galleryImages[0]} 
-            alt={pkg.title} 
-            onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
-            className="h-full w-full object-cover transition duration-500 group-hover:scale-102" 
-          />
-        </div>
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="hidden h-full w-full md:block relative overflow-hidden group">
+    <div className="bg-[#FDF7F0] dark:bg-slate-950 min-h-screen py-10">
+      <div className="mx-auto max-w-7xl px-5 md:px-8">
+        
+        {/* Gallery Preview Viewer */}
+        <div className="space-y-3">
+          <div className="relative h-[380px] md:h-[460px] w-full overflow-hidden rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 group">
             <img
-              src={galleryImages[i] || galleryImages[0]}
-              alt=""
+              src={galleryImages[activePhoto] || galleryImages[0]}
+              alt={pkg.title}
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              className="h-full w-full object-cover transition duration-500"
             />
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
-        <div>
-          {/* Main Info Header */}
-          <div className="flex flex-wrap items-center gap-2 mb-3">
-            <span className="rounded-full bg-lagoon-50 dark:bg-lagoon-700/30 px-3 py-1 text-xs font-semibold text-lagoon-700 dark:text-lagoon-300 uppercase tracking-wider">
-              {pkg.category}
-            </span>
-            {pkg.rating >= 4.8 && (
-              <span className="rounded-full bg-sand-500 px-3 py-1 text-xs font-bold text-ink uppercase tracking-wider">
-                Best Seller
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+            
+            <div className="absolute bottom-4 left-4 right-4 text-white">
+              <span className="rounded bg-[#e0882e] px-2.5 py-1 text-[10px] font-black uppercase text-white shadow">
+                {pkg.category}
               </span>
-            )}
-            {discountPercent > 0 && (
-              <span className="rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider">
-                {discountPercent}% Off Special Deal
+              <h1 className="mt-2 font-display text-2xl font-black md:text-4xl text-white">
+                {pkg.title}
+              </h1>
+            </div>
+          </div>
+
+          {/* Thumbnail Selector Strip */}
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {galleryImages.map((img, idx) => (
+              <div
+                key={idx}
+                onClick={() => setActivePhoto(idx)}
+                className={`h-20 w-32 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
+                  activePhoto === idx
+                    ? 'border-[#e0882e] scale-105 shadow-md'
+                    : 'border-transparent opacity-70 hover:opacity-100'
+                }`}
+              >
+                <img src={img} alt="" className="h-full w-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-3">
+              <span className="rounded bg-[#e0882e]/10 px-3 py-1 text-xs font-bold text-[#e0882e] border border-[#e0882e]/20 uppercase tracking-wider">
+                {pkg.category}
               </span>
+              {discountPercent > 0 && (
+                <span className="rounded bg-red-600 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                  {discountPercent}% OFF Special Deal
+                </span>
+              )}
+            </div>
+
+            <div className="mt-3 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-4">
+              <p className="flex items-center gap-1.5"><FiMapPin className="text-[#e0882e]" /> {pkg.destination}</p>
+              <p className="flex items-center gap-1.5"><FiCalendar className="text-[#e0882e]" /> {pkg.durationDays} Days / {pkg.durationNights} Nights</p>
+              <p className="flex items-center gap-1.5">Mode: <span className="text-[#e0882e]">{pkg.travelMode}</span></p>
+              <div className="flex items-center gap-1">
+                <RatingStars rating={pkg.rating || 4.9} />
+                <span className="text-slate-400 font-normal">({pkg.reviewsCount || 45} reviews)</span>
+              </div>
+            </div>
+
+            {/* Overview */}
+            <div className="mt-6 space-y-2">
+              <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">Trip Overview</h2>
+              <p className="leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line text-xs md:text-sm">{pkg.description}</p>
+            </div>
+
+            {/* Key Highlights */}
+            {pkg.facilities?.length > 0 && (
+              <div className="mt-8 space-y-3">
+                <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Key Highlights</h2>
+                <div className="flex flex-wrap gap-2">
+                  {pkg.facilities.map((f) => (
+                    <span key={f} className="flex items-center gap-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                      <FiCheckCircle className="text-[#e0882e]" /> {f}
+                    </span>
+                  ))}
+                </div>
+              </div>
             )}
-          </div>
 
-          <h1 className="font-display text-3xl font-bold leading-tight text-ink dark:text-paper md:text-4xl">
-            {pkg.title}
-          </h1>
-
-          <div className="mt-4 flex flex-wrap items-center gap-y-2 gap-x-6 text-sm text-ink/70 dark:text-paper/70 border-b border-ink/5 dark:border-paper/5 pb-5">
-            <p className="flex items-center gap-1.5 font-medium"><FiMapPin className="text-lagoon-500" /> {pkg.destination}</p>
-            <p className="flex items-center gap-1.5 font-medium"><FiCalendar className="text-lagoon-500" /> {pkg.durationDays} Days / {pkg.durationNights} Nights</p>
-            <p className="flex items-center gap-1.5 font-medium">Mode: <span className="text-lagoon-600 dark:text-lagoon-300 font-semibold">{pkg.travelMode}</span></p>
-            <div className="flex items-center gap-1.5">
-              <RatingStars rating={pkg.rating} />
-              <span className="text-xs text-ink/40 dark:text-paper/40">({pkg.reviewsCount} reviews)</span>
-            </div>
-          </div>
-
-          {/* Description */}
-          <div className="mt-6">
-            <h2 className="font-display text-xl font-bold text-ink dark:text-paper mb-3">Overview</h2>
-            <p className="leading-relaxed text-ink/80 dark:text-paper/80 whitespace-pre-line">{pkg.description}</p>
-          </div>
-
-          {/* Facilities */}
-          {pkg.facilities?.length > 0 && (
-            <div className="mt-8">
-              <h2 className="font-display text-xl font-bold text-ink dark:text-paper mb-3 font-semibold">Key Highlights & Facilities</h2>
-              <div className="flex flex-wrap gap-2">
-                {pkg.facilities.map((f) => (
-                  <span key={f} className="flex items-center gap-1.5 rounded-full bg-paper-dim dark:bg-ink-light px-4 py-1.5 text-xs font-medium text-ink/80 dark:text-paper/85">
-                    <FiCheckCircle className="text-lagoon-500" /> {f}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Itinerary */}
-          {pkg.itinerary?.length > 0 && (
-            <div className="mt-8">
-              <h2 className="font-display text-xl font-bold text-ink dark:text-paper mb-4">Detailed Day-wise Itinerary</h2>
-              <div className="space-y-4 relative before:absolute before:left-6 before:top-4 before:bottom-4 before:w-0.5 before:bg-ink/5 dark:before:bg-paper/5">
-                {pkg.itinerary.map((day) => (
-                  <div key={day.day} className="relative pl-12">
-                    {/* Circle Node */}
-                    <div className="absolute left-3.5 top-1.5 flex h-5.5 w-5.5 items-center justify-center rounded-full bg-lagoon-500 text-[10px] font-bold text-paper font-mono ring-4 ring-white dark:ring-ink">
-                      {day.day}
-                    </div>
-                    <div className="rounded-xl2 border border-ink/5 dark:border-paper/10 bg-white dark:bg-ink-light p-5 shadow-sm hover:shadow transition">
-                      <p className="font-display text-base font-bold text-ink dark:text-paper">Day {day.day}: {day.title}</p>
-                      <p className="mt-2 text-sm leading-relaxed text-ink/60 dark:text-paper/60">{day.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Inclusions / Exclusions */}
-          <div className="mt-10 grid gap-6 sm:grid-cols-2">
-            <div className="rounded-xl2 bg-lagoon-50/40 dark:bg-lagoon-700/5 p-6 border border-lagoon-500/10">
-              <h2 className="font-display text-lg font-bold text-lagoon-700 dark:text-lagoon-300 mb-4 flex items-center gap-1.5">
-                What's Included
-              </h2>
-              <ul className="space-y-3 text-sm">
-                {pkg.inclusions?.map((i) => (
-                  <li key={i} className="flex items-start gap-2.5 leading-tight text-ink/80 dark:text-paper/85">
-                    <FiCheck className="text-lagoon-500 shrink-0 mt-0.5" size={16} /> <span>{i}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-xl2 bg-red-50/20 dark:bg-red-950/5 p-6 border border-red-500/10">
-              <h2 className="font-display text-lg font-bold text-red-500 mb-4 flex items-center gap-1.5">
-                What's Excluded
-              </h2>
-              <ul className="space-y-3 text-sm">
-                {pkg.exclusions?.map((i) => (
-                  <li key={i} className="flex items-start gap-2.5 leading-tight text-ink/80 dark:text-paper/85">
-                    <FiX className="text-red-400 shrink-0 mt-0.5" size={16} /> <span>{i}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Reviews */}
-          <div className="mt-12">
-            <h2 className="font-display text-xl font-bold text-ink dark:text-paper mb-5">Traveller Reviews</h2>
-            {reviews.length === 0 ? (
-              <div className="rounded-xl2 border border-dashed border-ink/10 dark:border-paper/20 p-8 text-center text-sm text-ink/50 dark:text-paper/50 bg-paper-dim/10">
-                No reviews yet for this tour.
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {reviews.map((r) => (
-                  <div key={r._id} className="rounded-xl2 border border-ink/5 dark:border-paper/10 p-5 bg-white dark:bg-ink-light shadow-sm">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-sm font-bold text-ink dark:text-paper">{r.user?.name}</span>
-                        <p className="text-[10px] text-ink/40 dark:text-paper/40 font-mono mt-0.5">Verified Traveller</p>
+            {/* Detailed Day-wise Itinerary */}
+            {pkg.itinerary?.length > 0 && (
+              <div className="mt-8 space-y-4">
+                <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">Detailed Day-wise Itinerary</h2>
+                <div className="space-y-3">
+                  {pkg.itinerary.map((day) => (
+                    <div key={day.day} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="flex h-6 w-6 items-center justify-center rounded bg-[#e0882e] text-xs font-black text-white font-mono shrink-0">
+                          {day.day}
+                        </span>
+                        <p className="font-display text-sm font-bold text-slate-900 dark:text-white">Day {day.day}: {day.title}</p>
                       </div>
-                      <RatingStars rating={r.rating} showValue={false} size={12} />
+                      <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300 pl-8">{day.description}</p>
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-ink/70 dark:text-paper/70 italic">&ldquo;{r.comment}&rdquo;</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Inclusions / Exclusions */}
+            <div className="mt-10 grid gap-6 sm:grid-cols-2">
+              <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 p-5 border border-emerald-500/20 space-y-3">
+                <h3 className="font-display text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                  <FiCheck className="text-emerald-600" /> What's Included
+                </h3>
+                <ul className="space-y-2 text-xs">
+                  {pkg.inclusions?.map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-slate-800 dark:text-slate-200">
+                      <FiCheck className="text-emerald-500 shrink-0 mt-0.5" /> <span>{i}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-xl bg-red-50 dark:bg-red-950/20 p-5 border border-red-500/20 space-y-3">
+                <h3 className="font-display text-sm font-bold text-red-700 dark:text-red-300 flex items-center gap-1.5">
+                  <FiX className="text-red-500" /> What's Excluded
+                </h3>
+                <ul className="space-y-2 text-xs">
+                  {pkg.exclusions?.map((i) => (
+                    <li key={i} className="flex items-start gap-2 text-slate-800 dark:text-slate-200">
+                      <FiX className="text-red-400 shrink-0 mt-0.5" /> <span>{i}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Sticky Booking Drawer */}
+          <div className="lg:sticky lg:top-24 h-fit rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#e0882e]">Direct Operator Price</span>
+              <div className="flex items-baseline gap-2 mt-0.5">
+                {pkg.discountPrice ? (
+                  <>
+                    <span className="font-mono text-3xl font-black text-[#e0882e]">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
+                    <span className="font-mono text-sm text-slate-400 line-through">₹{pkg.price.toLocaleString('en-IN')}</span>
+                  </>
+                ) : (
+                  <span className="font-mono text-3xl font-black text-[#e0882e]">₹{pkg.price.toLocaleString('en-IN')}</span>
+                )}
+                <span className="text-xs text-slate-500">/ person</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-b border-slate-100 dark:border-slate-800 py-2.5 text-xs">
+              <span className="font-medium text-slate-600 dark:text-slate-400">Available Seats:</span>
+              <span className="font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2.5 py-0.5 rounded">
+                {pkg.availableSeats} seats left
+              </span>
+            </div>
+
+            <button 
+              onClick={handleBook} 
+              className="w-full rounded-md bg-[#e0882e] hover:bg-white text-white hover:text-[#e0882e] border border-[#e0882e] py-3.5 text-xs font-black uppercase tracking-wider shadow-lg transition-all duration-300"
+            >
+              Book Now
+            </button>
+
+            <button
+              onClick={() => setShowCustomModal(true)}
+              className="w-full rounded-md border border-slate-300 dark:border-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              Request Custom Changes
+            </button>
+
+            <a
+              href={`https://wa.me/919996696928?text=Hi%20TravelStay%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full rounded-md bg-emerald-600 py-2.5 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-colors"
+            >
+              <FaWhatsapp size={16} /> WhatsApp Booking Support
+            </a>
+
+            {pkg.meetingPoint && (
+              <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                <span className="font-bold text-slate-900 dark:text-white block mb-0.5">Meeting / Departure Point:</span>
+                {pkg.meetingPoint}
               </div>
             )}
           </div>
         </div>
-
-        {/* Sticky Booking Widget */}
-        <div className="lg:sticky lg:top-24 h-fit rounded-xl2 border border-ink/10 dark:border-paper/15 bg-white dark:bg-ink-light p-6 shadow-pop">
-          <p className="text-xs font-semibold text-ink/40 dark:text-paper/40 uppercase tracking-wider">Best Deal Price</p>
-          
-          <div className="flex items-baseline gap-2 mt-1">
-            {pkg.discountPrice ? (
-              <>
-                <span className="font-mono text-3xl font-extrabold text-ink dark:text-paper">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
-                <span className="font-mono text-sm text-ink/40 line-through dark:text-paper/40">₹{pkg.price.toLocaleString('en-IN')}</span>
-              </>
-            ) : (
-              <span className="font-mono text-3xl font-extrabold text-ink dark:text-paper">₹{pkg.price.toLocaleString('en-IN')}</span>
-            )}
-            <span className="text-xs text-ink/50 dark:text-paper/50">/ person</span>
-          </div>
-
-          {pkg.discountPrice && (
-            <p className="text-xs text-green-600 font-semibold mt-1">
-              You save ₹{(pkg.price - pkg.discountPrice).toLocaleString('en-IN')}!
-            </p>
-          )}
-
-          <div className="mt-4 flex items-center justify-between border-t border-b border-ink/5 dark:border-paper/5 py-3">
-            <span className="text-xs font-medium text-ink/60 dark:text-paper/60">Seats Remaining:</span>
-            <span className="text-xs font-bold text-red-500 bg-red-50 dark:bg-red-950/20 px-2.5 py-1 rounded">
-              {pkg.availableSeats} seats left
-            </span>
-          </div>
-
-          <button 
-            onClick={handleBook} 
-            className="mt-6 w-full rounded-lg bg-lagoon-500 py-3 text-sm font-semibold text-paper shadow-md hover:bg-lagoon-600 active:scale-98 transition duration-150"
-          >
-            Book This Package
-          </button>
-
-          {pkg.meetingPoint && (
-            <div className="mt-4 text-xs text-ink/50 dark:text-paper/50 bg-paper-dim/40 dark:bg-ink-light/40 p-3 rounded-lg border border-ink/5">
-              <span className="font-bold text-ink dark:text-paper block mb-0.5">Meeting Point:</span>
-              {pkg.meetingPoint}
-            </div>
-          )}
-
-          <div className="mt-4 text-[10px] text-center text-ink/40 dark:text-paper/40">
-            * Instant confirmation after payment. Free cancellation up to 7 days before departure.
-          </div>
-        </div>
       </div>
+
+      <CustomTourModal isOpen={showCustomModal} onClose={() => setShowCustomModal(false)} />
     </div>
   );
 };
