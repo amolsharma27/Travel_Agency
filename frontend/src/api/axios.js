@@ -276,17 +276,54 @@ const handleFallback = (error) => {
     });
   }
 
+  // GET /dashboard/admin/users
+  if (url.includes('/dashboard/admin/users')) {
+    return Promise.resolve({
+      data: {
+        success: true,
+        count: mockUsers ? 3 : 0,
+        data: [
+          { _id: 'u1', name: 'John Explorer', email: 'john@example.com', phone: '+91 9876543210', role: 'customer', status: 'active' },
+          { _id: 'u2', name: 'Himalayan Expeditions', agencyName: 'Himalayan Expeditions Ltd', email: 'agency@travelstay.com', phone: '+91 9996696928', role: 'agency', status: 'active', agencyStatus: 'approved' },
+          { _id: 'u3', name: 'Paradise Travels', agencyName: 'Paradise Travels Pvt Ltd', email: 'paradise@agency.com', phone: '+91 9468312343', role: 'agency', status: 'active', agencyStatus: 'pending' },
+        ]
+      }
+    });
+  }
+
   // GET /dashboard/admin
-  if (url.includes('/dashboard/admin')) {
+  if (url === '/dashboard/admin' || url === '/api/dashboard/admin' || (url.includes('/dashboard/admin') && !url.includes('/users'))) {
     return Promise.resolve({
       data: {
         success: true,
         data: {
-          users: { total: 1240, customers: 1180, agencies: 60 },
-          listings: { packages: 48, hotels: 32 },
-          revenue: { total: '4,82,500' },
-          pendingAgencies: 3,
+          users: { totalCustomers: 1180, totalAgencies: 60, pendingAgencies: 3 },
+          packages: { total: 48, pending: 4 },
+          hotels: { total: 32, pending: 2 },
+          bookings: { totalPackageBookings: 142, totalHotelBookings: 89 },
+          revenue: 482500,
+          support: { openTickets: 5 },
         }
+      }
+    });
+  }
+
+  // GET /packages/admin/pending
+  if (url.includes('/packages/admin/pending')) {
+    return Promise.resolve({
+      data: {
+        success: true,
+        data: getStoredPackages().slice(0, 2).map(p => ({ ...p, status: 'pending' }))
+      }
+    });
+  }
+
+  // GET /hotels/admin/pending
+  if (url.includes('/hotels/admin/pending')) {
+    return Promise.resolve({
+      data: {
+        success: true,
+        data: getStoredHotels().slice(0, 2).map(h => ({ ...h, status: 'pending' }))
       }
     });
   }

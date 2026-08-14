@@ -11,7 +11,10 @@ const AdminUsers = () => {
     setLoading(true);
     try {
       const { data } = await api.get('/dashboard/admin/users', { params: { role } });
-      setUsers(data.data);
+      setUsers(Array.isArray(data?.data) ? data.data : []);
+    } catch (err) {
+      console.error('Failed to load users:', err);
+      setUsers([]);
     } finally {
       setLoading(false);
     }
@@ -22,61 +25,123 @@ const AdminUsers = () => {
   const setAgencyStatus = async (id, agencyStatus) => {
     try {
       await api.put(`/dashboard/admin/agencies/${id}/status`, { agencyStatus });
-      toast.success(`Agency ${agencyStatus}`);
+      toast.success(`Agency status updated to ${agencyStatus}`);
       load();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Could not update agency');
+      toast.error(err.response?.data?.message || 'Could not update agency status');
     }
   };
 
   const setUserStatus = async (id, status) => {
     try {
       await api.put(`/dashboard/admin/users/${id}/status`, { status });
-      toast.success(`User ${status}`);
+      toast.success(`User status updated to ${status}`);
       load();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Could not update user');
+      toast.error(err.response?.data?.message || 'Could not update user status');
     }
   };
 
+  const userList = Array.isArray(users) ? users : [];
+
   return (
-    <div>
-      <div className="mb-5 flex gap-2 rounded-lg border border-ink/10 dark:border-paper/20 p-1 text-sm w-fit">
-        {['agency', 'customer'].map((r) => (
-          <button key={r} onClick={() => setRole(r)} className={`rounded-md px-4 py-1.5 font-medium capitalize ${role === r ? 'bg-lagoon-500 text-paper' : 'text-ink/60 dark:text-paper/60'}`}>
-            {r}s
-          </button>
-        ))}
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">Users & Agencies</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage customer accounts and agency approvals.</p>
+        </div>
+
+        <div className="flex gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800/60 p-1 text-xs">
+          {['agency', 'customer'].map((r) => (
+            <button
+              key={r}
+              onClick={() => setRole(r)}
+              className={`rounded-lg px-4 py-1.5 font-bold capitalize transition-all ${
+                role === r
+                  ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              {r}s
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? (
-        <p className="text-sm text-ink/50 dark:text-paper/50">Loading…</p>
+        <div className="flex items-center justify-center py-16">
+          <div className="animate-spin rounded-full h-7 w-7 border-b-2 border-amber-500"></div>
+          <span className="ml-3 text-xs text-slate-500">Loading accounts...</span>
+        </div>
+      ) : userList.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 py-14 text-center">
+          <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">No {role} accounts found</p>
+        </div>
       ) : (
         <div className="space-y-3">
-          {users.map((u) => (
-            <div key={u._id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl2 border border-ink/5 dark:border-paper/10 bg-white dark:bg-ink-light p-4 shadow-card">
-              <div>
-                <p className="font-medium">{u.name} {u.role === 'agency' && `— ${u.agencyName}`}</p>
-                <p className="text-xs text-ink/50 dark:text-paper/50">{u.email} · {u.phone}</p>
+          {userList.map((u) => (
+            <div
+              key={u._id}
+              className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm hover:shadow-md transition-all"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-slate-900 dark:text-white text-sm">{u.name}</p>
+                  {u.role === 'agency' && u.agencyName && (
+                    <span className="text-xs text-slate-500 dark:text-slate-400">({u.agencyName})</span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {u.email} {u.phone ? `· ${u.phone}` : ''}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                {u.role === 'agency' && (
-                  <span className="rounded-full bg-ink/5 dark:bg-paper/10 px-3 py-1 text-xs font-semibold capitalize">{u.agencyStatus}</span>
+
+              <div className="flex items-center gap-2.5">
+                {u.role === 'agency' && u.agencyStatus && (
+                  <span
+                    className={`rounded-full px-3 py-1 text-[11px] font-bold capitalize ${
+                      u.agencyStatus === 'approved'
+                        ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300'
+                        : u.agencyStatus === 'rejected'
+                        ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                        : 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300'
+                    }`}
+                  >
+                    Agency: {u.agencyStatus}
+                  </span>
                 )}
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${u.status === 'blocked' ? 'bg-red-50 text-red-600 dark:bg-red-900/20' : 'bg-lagoon-50 text-lagoon-700 dark:bg-lagoon-700/20 dark:text-lagoon-300'}`}>
-                  {u.status}
+
+                <span
+                  className={`rounded-full px-3 py-1 text-[11px] font-bold capitalize ${
+                    u.status === 'blocked'
+                      ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                      : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300'
+                  }`}
+                >
+                  Account: {u.status || 'active'}
                 </span>
 
                 {u.role === 'agency' && u.agencyStatus === 'pending' && (
-                  <>
-                    <button onClick={() => setAgencyStatus(u._id, 'approved')} className="rounded-lg bg-lagoon-500 px-3 py-1.5 text-xs font-semibold text-paper hover:bg-lagoon-600">Approve</button>
-                    <button onClick={() => setAgencyStatus(u._id, 'rejected')} className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-semibold text-red-500">Reject</button>
-                  </>
+                  <div className="flex items-center gap-1.5 ml-2">
+                    <button
+                      onClick={() => setAgencyStatus(u._id, 'approved')}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700 transition-colors shadow-sm"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      onClick={() => setAgencyStatus(u._id, 'rejected')}
+                      className="rounded-lg border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/40 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-100"
+                    >
+                      Reject
+                    </button>
+                  </div>
                 )}
 
                 <button
                   onClick={() => setUserStatus(u._id, u.status === 'blocked' ? 'active' : 'blocked')}
-                  className="rounded-lg border border-ink/10 dark:border-paper/20 px-3 py-1.5 text-xs font-semibold"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                 >
                   {u.status === 'blocked' ? 'Unblock' : 'Block'}
                 </button>
