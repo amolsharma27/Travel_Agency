@@ -1,11 +1,11 @@
-// Comprehensive TravelStay Data Store Inspired by Cliffseas & Premium Travel Platforms
-// Featuring Every Friday Weekend Tours, Educational Journeys, Himachal, Punjab, Rajasthan, Uttarakhand, Goa, & Location-Accurate Imagery
+// Comprehensive PCTE Travel Agency Data Store — Freedom To Evolve
+// Featuring Every Friday Weekend Tours, Educational Journeys, Himalayan Expeditions, & Heritage Stays
 
 export const mockUsers = {
   customer: {
     _id: 'cust_001',
     name: 'Priya Sharma',
-    email: 'customer@travelstay.com',
+    email: 'customer@pctetravels.com',
     role: 'customer',
     phone: '+91 98765 43210',
     avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
@@ -17,19 +17,19 @@ export const mockUsers = {
   },
   agency: {
     _id: 'agency_001',
-    name: 'Wanderlust & Cliffside Travels',
-    email: 'agency@travelstay.com',
+    name: 'PCTE Travel Agency',
+    email: 'info@pctetravels.com',
     role: 'agency',
-    agencyName: 'Wanderlust & Cliffside Travels',
-    agencyDescription: 'Trusted travel operator specializing in Every Friday Weekend Trips, Himalayan Treks, Educational Journeys, and Royal Heritage Stays.',
+    agencyName: 'PCTE Travel Agency',
+    agencyDescription: 'Official PCTE Travel Agency — Freedom To Evolve. Specializing in Every Friday Weekend Trips, Educational Journeys, Himalayan Treks, and Royal Heritage Expeditions.',
     agencyStatus: 'approved',
     phone: '+91 99966 96928',
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80',
   },
   admin: {
     _id: 'admin_001',
-    name: 'TravelStay Admin',
-    email: 'admin@travelstay.com',
+    name: 'PCTE Admin',
+    email: 'admin@pctetravels.com',
     role: 'admin',
     phone: '+91 98000 11223',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
@@ -516,7 +516,7 @@ export const mockCustomerBookings = [
     status: 'confirmed',
     paymentStatus: 'paid',
     paymentId: 'pay_ts_991238',
-    primaryGuest: { name: 'Priya Sharma', email: 'customer@travelstay.com', phone: '+91 98765 43210' }
+    primaryGuest: { name: 'Priya Sharma', email: 'customer@pctetravels.com', phone: '+91 98765 43210' }
   }
 ];
 

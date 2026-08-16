@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 520" width="100%" height="100%">
+  <defs>
+    <!-- Curve path for FREEDOM TO EVOLVE text -->
+    <path id="textArc" d="M 85 190 A 185 185 0 0 1 365 105" fill="none" />
+  </defs>
+
+  <!-- Tagline Curved Text -->
+  <text font-family="'Montserrat', 'Georgia', serif" font-weight="900" font-size="23" fill="#1B1464" letter-spacing="2.5">
+    <textPath href="#textArc" startOffset="50%" text-anchor="middle">
+      FREEDOM TO EVOLVE
+    </textPath>
+  </text>
+
+  <!-- Main Maroon Crest Emblem -->
+  <g transform="translate(0, 10)">
+    <!-- Base Circular Maroon Crest with Cutouts -->
+    <path d="M 140,210 
+             C 120,130 220,95 285,110 
+             L 285,160 
+             C 320,135 345,190 355,220 
+             C 385,300 320,380 260,420 
+             L 260,420 
+             C 215,370 140,320 140,210 Z" 
+          fill="#9B1C1C" />
+
+    <!-- Maroon main circle body -->
+    <path d="M 260,425 
+             C 140,350 120,230 160,150 
+             C 210,95 310,105 365,180 
+             C 400,240 375,340 260,425 Z" 
+          fill="#9B1C1C" />
+
+    <!-- Pillar / Cutout shape in bottom left of crest -->
+    <rect x="180" y="245" width="22" height="75" fill="#1B1464" rx="2" stroke="#FFFFFF" stroke-width="4" />
+
+    <!-- 3 Upper Right Diagonal Navy Bars -->
+    <!-- Top Bar -->
+    <path d="M 255,165 L 355,100 L 360,118 L 260,183 Z" fill="#1B1464" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" />
+    <!-- Middle Bar -->
+    <path d="M 255,200 L 395,105 L 400,123 L 260,218 Z" fill="#1B1464" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" />
+    <!-- Bottom Bar -->
+    <path d="M 295,215 L 400,145 L 405,163 L 300,233 Z" fill="#1B1464" stroke="#FFFFFF" stroke-width="4" stroke-linejoin="round" />
+
+    <!-- Bottom Point Accent -->
+    <path d="M 260,425 L 260,435 L 255,420 Z" fill="#9B1C1C" />
+  </g>
+
+  <!-- Bottom Logotype PCTE -->
+  <text x="250" y="485" text-anchor="middle" font-family="'Times New Roman', 'Georgia', serif" font-weight="900" font-size="82" fill="#1B1464" letter-spacing="4">
+    PCTE
+  </text>
+</svg>

@@ -80,8 +80,8 @@ const HotelDetails = () => {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-24 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-lagoon-500 border-r-transparent" />
-        <p className="mt-3 text-sm text-ink/60 dark:text-paper/60">Loading hotel & resort details…</p>
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#9B1C1C] border-r-transparent" />
+        <p className="mt-3 text-sm text-slate-600 dark:text-indigo-200/70">Loading hotel &amp; resort details…</p>
       </div>
     );
   }
@@ -89,12 +89,12 @@ const HotelDetails = () => {
   if (!hotel) {
     return (
       <div className="mx-auto max-w-xl px-5 py-24 text-center">
-        <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 p-10 bg-white dark:bg-ink-light shadow-sm">
-          <h2 className="font-display text-2xl font-bold text-ink dark:text-paper">Hotel Not Found</h2>
-          <p className="mt-2 text-sm text-ink/60 dark:text-paper/60">This stay might have been updated or moved.</p>
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-indigo-900 p-10 bg-white dark:bg-[#110D44] shadow-sm">
+          <h2 className="font-display text-2xl font-bold text-slate-900 dark:text-white">Hotel Not Found</h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-indigo-200/70">This stay might have been updated or moved.</p>
           <button
             onClick={() => navigate('/hotels')}
-            className="mt-6 rounded-xl bg-lagoon-500 px-6 py-2.5 text-sm font-semibold text-white hover:bg-lagoon-600 shadow"
+            className="mt-6 rounded-xl bg-[#9B1C1C] px-6 py-2.5 text-sm font-bold text-white hover:bg-[#1B1464] shadow"
           >
             Browse Verified Stays
           </button>
@@ -104,9 +104,9 @@ const HotelDetails = () => {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8">
+    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8 bg-[#FAFAF9] dark:bg-[#0B0830] min-h-screen">
       {/* Gallery */}
-      <div className="grid gap-2 overflow-hidden rounded-xl2 md:h-96 md:grid-cols-4 md:grid-rows-2">
+      <div className="grid gap-2 overflow-hidden rounded-xl md:h-96 md:grid-cols-4 md:grid-rows-2">
         <img
           src={hotel.images?.[0] || PLACEHOLDER}
           alt={hotel.name}
@@ -128,39 +128,39 @@ const HotelDetails = () => {
         <div>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <h1 className="font-display text-3xl font-semibold">{hotel.name}</h1>
-              <p className="mt-1 flex items-center gap-1 text-sm text-ink/60 dark:text-paper/60">
-                <FiMapPin size={14} /> {hotel.address}, {hotel.city}, {hotel.state}
+              <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white">{hotel.name}</h1>
+              <p className="mt-1 flex items-center gap-1 text-sm text-slate-600 dark:text-indigo-200/80">
+                <FiMapPin size={14} className="text-[#9B1C1C]" /> {hotel.address}, {hotel.city}, {hotel.state}
               </p>
             </div>
-            <span className="rounded-full bg-lagoon-50 dark:bg-lagoon-700/30 px-3 py-1.5 text-sm font-semibold text-lagoon-700 dark:text-lagoon-300">
+            <span className="rounded-full bg-[#1B1464]/10 dark:bg-indigo-900/50 px-3 py-1.5 text-sm font-bold text-[#1B1464] dark:text-amber-300">
               {hotel.starRating}★ {hotel.propertyType}
             </span>
           </div>
 
-          <div className="mt-3"><RatingStars rating={hotel.rating} /> <span className="text-xs text-ink/50 dark:text-paper/50">({hotel.reviewsCount} reviews)</span></div>
+          <div className="mt-3"><RatingStars rating={hotel.rating} /> <span className="text-xs text-slate-500 dark:text-indigo-300/60">({hotel.reviewsCount} reviews)</span></div>
 
-          <p className="mt-6 leading-relaxed text-ink/80 dark:text-paper/80">{hotel.description}</p>
+          <p className="mt-6 leading-relaxed text-slate-700 dark:text-indigo-200/90 text-sm">{hotel.description}</p>
 
-          <div className="mt-6 flex flex-wrap gap-4 text-sm">
-            <span className="flex items-center gap-1.5"><FiClock /> Check-in {hotel.checkInTime} · Check-out {hotel.checkOutTime}</span>
-            {hotel.policies?.breakfastIncluded && <span className="flex items-center gap-1.5"><FiCoffee /> Breakfast included</span>}
-            <span className="flex items-center gap-1.5"><FiCheckCircle /> {hotel.policies?.cancellationPolicy}</span>
+          <div className="mt-6 flex flex-wrap gap-4 text-xs font-bold text-slate-700 dark:text-indigo-200">
+            <span className="flex items-center gap-1.5"><FiClock className="text-[#9B1C1C]" /> Check-in {hotel.checkInTime} · Check-out {hotel.checkOutTime}</span>
+            {hotel.policies?.breakfastIncluded && <span className="flex items-center gap-1.5"><FiCoffee className="text-[#9B1C1C]" /> Breakfast included</span>}
+            <span className="flex items-center gap-1.5"><FiCheckCircle className="text-[#9B1C1C]" /> {hotel.policies?.cancellationPolicy}</span>
           </div>
 
           <div className="mt-8">
-            <h2 className="mb-3 font-display text-lg font-semibold">Amenities</h2>
+            <h2 className="mb-3 font-display text-lg font-bold text-slate-900 dark:text-white">Amenities</h2>
             <div className="flex flex-wrap gap-2">
               {hotel.amenities?.map((a) => (
-                <span key={a} className="rounded-full border border-ink/10 dark:border-paper/20 px-3 py-1.5 text-xs">{a}</span>
+                <span key={a} className="rounded-full border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-3.5 py-1.5 text-xs font-bold text-slate-800 dark:text-indigo-200">{a}</span>
               ))}
             </div>
           </div>
 
           {hotel.nearbyAttractions?.length > 0 && (
             <div className="mt-8">
-              <h2 className="mb-3 font-display text-lg font-semibold">Nearby attractions</h2>
-              <ul className="space-y-1.5 text-sm text-ink/70 dark:text-paper/70">
+              <h2 className="mb-3 font-display text-lg font-bold text-slate-900 dark:text-white">Nearby Attractions</h2>
+              <ul className="space-y-1.5 text-xs font-bold text-slate-600 dark:text-indigo-200/80">
                 {hotel.nearbyAttractions.map((n) => (
                   <li key={n.name}>{n.name} — {n.distanceKm} km</li>
                 ))}
@@ -169,31 +169,31 @@ const HotelDetails = () => {
           )}
 
           <div className="mt-8">
-            <h2 className="mb-3 font-display text-lg font-semibold">Location</h2>
+            <h2 className="mb-3 font-display text-lg font-bold text-slate-900 dark:text-white">Location Map</h2>
             <a
-              href={`https://www.google.com/maps/search/?api=1&query=${hotel.location.lat},${hotel.location.lng}`}
+              href={`https://www.google.com/maps/search/?api=1&query=${hotel.location?.lat || 32.2432},${hotel.location?.lng || 77.1892}`}
               target="_blank"
               rel="noreferrer"
-              className="flex h-56 items-center justify-center rounded-xl2 border border-dashed border-ink/15 dark:border-paper/20 text-sm text-lagoon-600 hover:bg-lagoon-50 dark:hover:bg-lagoon-700/10"
+              className="flex h-44 items-center justify-center rounded-xl border border-dashed border-slate-300 dark:border-indigo-800 text-sm font-bold text-[#9B1C1C] dark:text-red-400 hover:bg-slate-100 dark:hover:bg-indigo-950/40 transition-colors"
             >
-              Open in Google Maps →
+              Open in Google Maps &rarr;
             </a>
           </div>
 
           {/* Reviews */}
           <div className="mt-10">
-            <h2 className="mb-4 font-display text-lg font-semibold">Guest reviews</h2>
+            <h2 className="mb-4 font-display text-lg font-bold text-slate-900 dark:text-white">Guest Reviews</h2>
             {reviews.length === 0 ? (
-              <p className="text-sm text-ink/50 dark:text-paper/50">No reviews yet — be the first to stay and share your experience.</p>
+              <p className="text-xs text-slate-500 dark:text-indigo-300/60">No reviews yet — be the first to stay and share your experience.</p>
             ) : (
               <div className="space-y-4">
                 {reviews.map((r) => (
-                  <div key={r._id} className="rounded-xl2 border border-ink/5 dark:border-paper/10 p-4">
+                  <div key={r._id} className="rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-semibold">{r.user?.name}</span>
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">{r.user?.name}</span>
                       <RatingStars rating={r.rating} showValue={false} size={12} />
                     </div>
-                    <p className="mt-2 text-sm text-ink/70 dark:text-paper/70">{r.comment}</p>
+                    <p className="mt-2 text-xs text-slate-600 dark:text-indigo-200/80">{r.comment}</p>
                   </div>
                 ))}
               </div>
@@ -202,22 +202,22 @@ const HotelDetails = () => {
         </div>
 
         {/* Room booking panel */}
-        <div className="lg:sticky lg:top-24 h-fit rounded-xl2 border border-ink/5 dark:border-paper/10 bg-white dark:bg-ink-light p-5 shadow-card">
-          <h2 className="mb-3 font-display text-lg font-semibold">Select dates</h2>
+        <div className="lg:sticky lg:top-24 h-fit rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-5 shadow-xl">
+          <h2 className="mb-3 font-display text-lg font-bold text-slate-900 dark:text-white">Select Dates</h2>
           <div className="grid grid-cols-2 gap-2">
-            <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-3 py-2 text-sm" />
-            <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-3 py-2 text-sm" />
+            <input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} className="rounded-lg border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 px-3 py-2 text-xs text-slate-900 dark:text-white outline-none" />
+            <input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} className="rounded-lg border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 px-3 py-2 text-xs text-slate-900 dark:text-white outline-none" />
           </div>
 
           <div className="mt-5 space-y-4">
             {rooms.map((room) => (
-              <div key={room._id} className="rounded-xl2 border border-ink/10 dark:border-paper/20 p-4">
-                <h3 className="font-display text-sm font-semibold">{room.name}</h3>
-                <p className="mt-1 text-xs text-ink/60 dark:text-paper/60">{room.bedType} bed · up to {room.maxAdults} adults, {room.maxChildren} children</p>
-                <p className="mt-2 font-mono text-lg font-semibold">₹{room.basePrice} <span className="text-xs font-sans font-normal text-ink/50 dark:text-paper/50">/ night</span></p>
+              <div key={room._id} className="rounded-xl border border-slate-200 dark:border-indigo-800 p-4">
+                <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">{room.name}</h3>
+                <p className="mt-1 text-xs text-slate-500 dark:text-indigo-200/70">{room.bedType} bed · up to {room.maxAdults} adults, {room.maxChildren} children</p>
+                <p className="mt-2 font-mono text-lg font-bold text-[#9B1C1C] dark:text-red-400">₹{room.basePrice} <span className="text-xs font-sans font-normal text-slate-400">/ night</span></p>
 
                 {availability[room._id] && (
-                  <p className={`mt-1 text-xs font-medium ${availability[room._id].isAvailable ? 'text-lagoon-600' : 'text-red-500'}`}>
+                  <p className={`mt-1 text-xs font-bold ${availability[room._id].isAvailable ? 'text-emerald-600' : 'text-red-500'}`}>
                     {availability[room._id].isAvailable
                       ? `${availability[room._id].minAvailableAcrossStay} rooms left · ₹${availability[room._id].totalPrice} total`
                       : 'Not available for these dates'}
@@ -227,13 +227,13 @@ const HotelDetails = () => {
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => checkAvailability(room._id)}
-                    className="flex-1 rounded-lg border border-ink/10 dark:border-paper/20 py-2 text-xs font-semibold hover:border-lagoon-500"
+                    className="flex-1 rounded-lg border border-slate-300 dark:border-indigo-800 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-[#9B1C1C]"
                   >
-                    Check availability
+                    Check dates
                   </button>
                   <button
                     onClick={() => bookRoom(room._id)}
-                    className="flex-1 rounded-lg bg-lagoon-500 py-2 text-xs font-semibold text-paper hover:bg-lagoon-600"
+                    className="flex-1 rounded-lg bg-[#9B1C1C] py-2 text-xs font-bold text-white hover:bg-[#1B1464] shadow"
                   >
                     Book now
                   </button>
@@ -246,7 +246,7 @@ const HotelDetails = () => {
 
       {similar.length > 0 && (
         <div className="mt-16">
-          <h2 className="mb-5 font-display text-2xl font-semibold">Similar hotels in {hotel.city}</h2>
+          <h2 className="mb-5 font-display text-2xl font-black text-slate-900 dark:text-white">Similar hotels in {hotel.city}</h2>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {similar.map((h) => <HotelCard key={h._id} hotel={h} />)}
           </div>

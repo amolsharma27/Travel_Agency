@@ -85,13 +85,13 @@ const Hotels = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8">
+    <div className="mx-auto max-w-7xl px-5 py-10 md:px-8 bg-[#FAFAF9] dark:bg-[#0B0830] min-h-screen">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <p className="font-mono text-xs uppercase tracking-widest text-lagoon-600 font-semibold">
+          <p className="font-mono text-xs uppercase tracking-widest text-[#9B1C1C] dark:text-red-400 font-extrabold">
             {loading ? 'Searching stays…' : `${total} verified stays available`}
           </p>
-          <h1 className="font-display text-2xl font-bold md:text-3xl">
+          <h1 className="font-display text-2xl font-black md:text-3xl text-slate-900 dark:text-white">
             {filters.city ? `Hotels & Stays in ${filters.city}` : 'All Hotels, Hostels & Resorts'}
           </h1>
         </div>
@@ -100,7 +100,7 @@ const Hotels = () => {
           <select
             value={filters.sort}
             onChange={(e) => update('sort', e.target.value)}
-            className="rounded-lg border border-ink/10 dark:border-paper/20 bg-white dark:bg-ink-light px-3 py-2 text-sm outline-none"
+            className="rounded-lg border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-3 py-2 text-sm text-slate-800 dark:text-slate-200 outline-none"
           >
             <option value="newest">Newest</option>
             <option value="price_asc">Price: Low to High (Budget First)</option>
@@ -109,7 +109,7 @@ const Hotels = () => {
           </select>
           <button
             onClick={() => setShowFilters((s) => !s)}
-            className="flex items-center gap-2 rounded-lg border border-ink/10 dark:border-paper/20 px-3 py-2 text-sm md:hidden"
+            className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-indigo-800 px-3 py-2 text-sm md:hidden text-slate-800 dark:text-slate-200"
           >
             <FiFilter /> Filters
           </button>
@@ -118,7 +118,7 @@ const Hotels = () => {
 
       {/* QUICK BUDGET FILTER CHIPS */}
       <div className="mb-8 flex flex-wrap items-center gap-2">
-        <span className="flex items-center gap-1 text-xs font-bold uppercase text-lagoon-600 mr-1">
+        <span className="flex items-center gap-1 text-xs font-bold uppercase text-[#9B1C1C] dark:text-red-400 mr-1">
           <FiTag /> Quick Budgets:
         </span>
         {budgetRanges.map((b) => {
@@ -127,10 +127,10 @@ const Hotels = () => {
             <button
               key={b.label}
               onClick={() => handleBudgetQuickSelect(b.min, b.max)}
-              className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
                 isSelected
-                  ? 'bg-lagoon-500 text-white shadow-sm'
-                  : 'border border-ink/10 dark:border-paper/20 bg-white dark:bg-ink-light text-ink/70 dark:text-paper/70 hover:border-lagoon-500'
+                  ? 'bg-[#9B1C1C] text-white shadow-sm'
+                  : 'border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] text-slate-700 dark:text-indigo-200 hover:border-[#9B1C1C]'
               }`}
             >
               {b.label}
@@ -141,21 +141,21 @@ const Hotels = () => {
 
       <div className="grid gap-8 md:grid-cols-[260px_1fr]">
         <aside className={`space-y-6 ${showFilters ? 'block' : 'hidden'} md:block`}>
-          <div className="rounded-2xl border border-ink/10 dark:border-paper/10 bg-white dark:bg-ink-light p-5 space-y-5 shadow-sm">
+          <div className="rounded-2xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-5 space-y-5 shadow-sm">
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink/70 dark:text-paper/70">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-indigo-200">
                 City / Location
               </label>
               <input
                 value={filters.city}
                 onChange={(e) => update('city', e.target.value)}
                 placeholder="e.g. Manali, Goa, Jaipur"
-                className="w-full rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-lagoon-500"
+                className="w-full rounded-lg border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 px-3 py-2 text-sm outline-none focus:border-[#9B1C1C]"
               />
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink/70 dark:text-paper/70">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-indigo-200">
                 Price per night (₹)
               </label>
               <div className="flex gap-2">
@@ -164,20 +164,20 @@ const Hotels = () => {
                   placeholder="Min"
                   value={filters.minPrice}
                   onChange={(e) => update('minPrice', e.target.value)}
-                  className="w-1/2 rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-lagoon-500"
+                  className="w-1/2 rounded-lg border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 px-3 py-2 text-sm outline-none focus:border-[#9B1C1C]"
                 />
                 <input
                   type="number"
                   placeholder="Max"
                   value={filters.maxPrice}
                   onChange={(e) => update('maxPrice', e.target.value)}
-                  className="w-1/2 rounded-lg border border-ink/10 dark:border-paper/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-lagoon-500"
+                  className="w-1/2 rounded-lg border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 px-3 py-2 text-sm outline-none focus:border-[#9B1C1C]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink/70 dark:text-paper/70">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-indigo-200">
                 Star Category
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -185,10 +185,10 @@ const Hotels = () => {
                   <button
                     key={s || 'all'}
                     onClick={() => update('starRating', s)}
-                    className={`rounded-lg border px-3 py-1 text-xs font-medium ${
+                    className={`rounded-lg border px-3 py-1 text-xs font-bold ${
                       filters.starRating === s
-                        ? 'border-lagoon-500 bg-lagoon-500 text-white'
-                        : 'border-ink/10 dark:border-paper/20'
+                        ? 'border-[#9B1C1C] bg-[#9B1C1C] text-white'
+                        : 'border-slate-300 dark:border-indigo-800 text-slate-700 dark:text-indigo-200'
                     }`}
                   >
                     {s ? `${s}★+` : 'All'}
@@ -198,17 +198,17 @@ const Hotels = () => {
             </div>
 
             <div>
-              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink/70 dark:text-paper/70">
+              <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-indigo-200">
                 Amenities
               </label>
               <div className="space-y-2">
                 {amenityOptions.map((a) => (
-                  <label key={a} className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+                  <label key={a} className="flex items-center gap-2 text-xs font-bold cursor-pointer text-slate-700 dark:text-indigo-200">
                     <input
                       type="checkbox"
                       checked={filters.amenities.includes(a)}
                       onChange={() => toggleAmenity(a)}
-                      className="rounded border-ink/20 accent-lagoon-500"
+                      className="rounded accent-[#9B1C1C]"
                     />
                     {a}
                   </label>
@@ -216,22 +216,22 @@ const Hotels = () => {
               </div>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-ink/5 dark:border-paper/10">
-              <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+            <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-indigo-900/40">
+              <label className="flex items-center gap-2 text-xs font-bold cursor-pointer text-slate-700 dark:text-indigo-200">
                 <input
                   type="checkbox"
                   checked={filters.breakfastIncluded}
                   onChange={(e) => update('breakfastIncluded', e.target.checked)}
-                  className="rounded accent-lagoon-500"
+                  className="rounded accent-[#9B1C1C]"
                 />
                 Breakfast included
               </label>
-              <label className="flex items-center gap-2 text-xs font-medium cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-bold cursor-pointer text-slate-700 dark:text-indigo-200">
                 <input
                   type="checkbox"
                   checked={filters.freeCancellation}
                   onChange={(e) => update('freeCancellation', e.target.checked)}
-                  className="rounded accent-lagoon-500"
+                  className="rounded accent-[#9B1C1C]"
                 />
                 Free cancellation
               </label>
@@ -245,12 +245,12 @@ const Hotels = () => {
               {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
           ) : hotels.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-ink/15 dark:border-paper/20 py-16 text-center bg-white dark:bg-ink-light">
-              <p className="font-display text-lg font-semibold">No hotels match those exact filters</p>
-              <p className="mt-1 text-sm text-ink/60 dark:text-paper/60">Try clearing filters or setting price to All.</p>
+            <div className="rounded-2xl border border-dashed border-slate-300 dark:border-indigo-900 py-16 text-center bg-white dark:bg-[#110D44]">
+              <p className="font-display text-lg font-semibold text-slate-900 dark:text-white">No hotels match those exact filters</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-indigo-200/70">Try clearing filters or setting price to All.</p>
               <button
                 onClick={() => setFilters({ city: '', minPrice: '', maxPrice: '', minRating: '', starRating: '', breakfastIncluded: false, freeCancellation: false, amenities: [], sort: 'newest', page: 1 })}
-                className="mt-4 rounded-xl bg-lagoon-500 px-4 py-2 text-xs font-semibold text-white"
+                className="mt-4 rounded-xl bg-[#9B1C1C] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#1B1464]"
               >
                 Reset Filters
               </button>

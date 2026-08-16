@@ -56,7 +56,7 @@ const PackageDetails = () => {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-5 py-24 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#e0882e] border-r-transparent" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#9B1C1C] border-r-transparent" />
         <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">Loading tour details…</p>
       </div>
     );
@@ -70,7 +70,7 @@ const PackageDetails = () => {
           <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">This package might have been updated or moved.</p>
           <button
             onClick={() => navigate('/packages')}
-            className="mt-6 rounded-md bg-[#e0882e] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-amber-600"
+            className="mt-6 rounded-md bg-[#9B1C1C] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-[#1B1464]"
           >
             Browse All Tour Packages
           </button>
@@ -88,22 +88,22 @@ const PackageDetails = () => {
     : 0;
 
   return (
-    <div className="bg-[#FDF7F0] dark:bg-slate-950 min-h-screen py-10">
+    <div className="bg-[#FAFAF9] dark:bg-[#0B0830] min-h-screen py-10">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         
         {/* Gallery Preview Viewer */}
         <div className="space-y-3">
-          <div className="relative h-[380px] md:h-[460px] w-full overflow-hidden rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 group">
+          <div className="relative h-[380px] md:h-[460px] w-full overflow-hidden rounded-xl shadow-xl border border-slate-200 dark:border-indigo-900/60 group">
             <img
               src={galleryImages[activePhoto] || galleryImages[0]}
               alt={pkg.title}
               onError={(e) => { e.currentTarget.onerror = null; e.currentTarget.src = PLACEHOLDER; }}
               className="h-full w-full object-cover transition duration-500"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0830]/80 via-transparent to-transparent" />
             
             <div className="absolute bottom-4 left-4 right-4 text-white">
-              <span className="rounded bg-[#e0882e] px-2.5 py-1 text-[10px] font-black uppercase text-white shadow">
+              <span className="rounded bg-[#9B1C1C] px-2.5 py-1 text-[10px] font-black uppercase text-white shadow">
                 {pkg.category}
               </span>
               <h1 className="mt-2 font-display text-2xl font-black md:text-4xl text-white">
@@ -120,7 +120,7 @@ const PackageDetails = () => {
                 onClick={() => setActivePhoto(idx)}
                 className={`h-20 w-32 shrink-0 cursor-pointer overflow-hidden rounded-lg border-2 transition-all ${
                   activePhoto === idx
-                    ? 'border-[#e0882e] scale-105 shadow-md'
+                    ? 'border-[#9B1C1C] scale-105 shadow-md'
                     : 'border-transparent opacity-70 hover:opacity-100'
                 }`}
               >
@@ -133,20 +133,20 @@ const PackageDetails = () => {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
           <div>
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="rounded bg-[#e0882e]/10 px-3 py-1 text-xs font-bold text-[#e0882e] border border-[#e0882e]/20 uppercase tracking-wider">
+              <span className="rounded bg-[#9B1C1C]/10 px-3 py-1 text-xs font-bold text-[#9B1C1C] dark:text-red-400 border border-[#9B1C1C]/20 uppercase tracking-wider">
                 {pkg.category}
               </span>
               {discountPercent > 0 && (
-                <span className="rounded bg-red-600 px-3 py-1 text-xs font-bold text-white uppercase tracking-wider">
+                <span className="rounded bg-[#1B1464] px-3 py-1 text-xs font-bold text-white uppercase tracking-wider border border-indigo-400/30">
                   {discountPercent}% OFF Special Deal
                 </span>
               )}
             </div>
 
-            <div className="mt-3 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs font-bold text-slate-700 dark:text-slate-300 border-b border-slate-200 dark:border-slate-800 pb-4">
-              <p className="flex items-center gap-1.5"><FiMapPin className="text-[#e0882e]" /> {pkg.destination}</p>
-              <p className="flex items-center gap-1.5"><FiCalendar className="text-[#e0882e]" /> {pkg.durationDays} Days / {pkg.durationNights} Nights</p>
-              <p className="flex items-center gap-1.5">Mode: <span className="text-[#e0882e]">{pkg.travelMode}</span></p>
+            <div className="mt-3 flex flex-wrap items-center gap-y-2 gap-x-6 text-xs font-bold text-slate-700 dark:text-indigo-200 border-b border-slate-200 dark:border-indigo-900/40 pb-4">
+              <p className="flex items-center gap-1.5"><FiMapPin className="text-[#9B1C1C]" /> {pkg.destination}</p>
+              <p className="flex items-center gap-1.5"><FiCalendar className="text-[#9B1C1C]" /> {pkg.durationDays} Days / {pkg.durationNights} Nights</p>
+              <p className="flex items-center gap-1.5">Mode: <span className="text-[#9B1C1C] dark:text-red-400">{pkg.travelMode}</span></p>
               <div className="flex items-center gap-1">
                 <RatingStars rating={pkg.rating || 4.9} />
                 <span className="text-slate-400 font-normal">({pkg.reviewsCount || 45} reviews)</span>
@@ -156,7 +156,7 @@ const PackageDetails = () => {
             {/* Overview */}
             <div className="mt-6 space-y-2">
               <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">Trip Overview</h2>
-              <p className="leading-relaxed text-slate-700 dark:text-slate-300 whitespace-pre-line text-xs md:text-sm">{pkg.description}</p>
+              <p className="leading-relaxed text-slate-700 dark:text-indigo-200/80 whitespace-pre-line text-xs md:text-sm">{pkg.description}</p>
             </div>
 
             {/* Key Highlights */}
@@ -165,8 +165,8 @@ const PackageDetails = () => {
                 <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Key Highlights</h2>
                 <div className="flex flex-wrap gap-2">
                   {pkg.facilities.map((f) => (
-                    <span key={f} className="flex items-center gap-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
-                      <FiCheckCircle className="text-[#e0882e]" /> {f}
+                    <span key={f} className="flex items-center gap-1.5 rounded-md bg-white dark:bg-[#110D44] border border-slate-200 dark:border-indigo-900/60 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-indigo-200">
+                      <FiCheckCircle className="text-[#9B1C1C]" /> {f}
                     </span>
                   ))}
                 </div>
@@ -179,14 +179,14 @@ const PackageDetails = () => {
                 <h2 className="font-display text-xl font-bold text-slate-900 dark:text-white">Detailed Day-wise Itinerary</h2>
                 <div className="space-y-3">
                   {pkg.itinerary.map((day) => (
-                    <div key={day.day} className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+                    <div key={day.day} className="rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-4 shadow-sm">
                       <div className="flex items-center gap-2">
-                        <span className="flex h-6 w-6 items-center justify-center rounded bg-[#e0882e] text-xs font-black text-white font-mono shrink-0">
+                        <span className="flex h-6 w-6 items-center justify-center rounded bg-[#9B1C1C] text-xs font-black text-white font-mono shrink-0">
                           {day.day}
                         </span>
                         <p className="font-display text-sm font-bold text-slate-900 dark:text-white">Day {day.day}: {day.title}</p>
                       </div>
-                      <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300 pl-8">{day.description}</p>
+                      <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-indigo-200/80 pl-8">{day.description}</p>
                     </div>
                   ))}
                 </div>
@@ -223,24 +223,24 @@ const PackageDetails = () => {
           </div>
 
           {/* Sticky Booking Drawer */}
-          <div className="lg:sticky lg:top-24 h-fit rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl space-y-4">
+          <div className="lg:sticky lg:top-24 h-fit rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-6 shadow-2xl space-y-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#e0882e]">Direct Operator Price</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#9B1C1C] dark:text-red-400">Direct PCTE Price</span>
               <div className="flex items-baseline gap-2 mt-0.5">
                 {pkg.discountPrice ? (
                   <>
-                    <span className="font-mono text-3xl font-black text-[#e0882e]">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
+                    <span className="font-mono text-3xl font-black text-[#9B1C1C] dark:text-red-400">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
                     <span className="font-mono text-sm text-slate-400 line-through">₹{pkg.price.toLocaleString('en-IN')}</span>
                   </>
                 ) : (
-                  <span className="font-mono text-3xl font-black text-[#e0882e]">₹{pkg.price.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-3xl font-black text-[#9B1C1C] dark:text-red-400">₹{pkg.price.toLocaleString('en-IN')}</span>
                 )}
-                <span className="text-xs text-slate-500">/ person</span>
+                <span className="text-xs text-slate-500 dark:text-indigo-300/60">/ person</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-b border-slate-100 dark:border-slate-800 py-2.5 text-xs">
-              <span className="font-medium text-slate-600 dark:text-slate-400">Available Seats:</span>
+            <div className="flex items-center justify-between border-t border-b border-slate-100 dark:border-indigo-900/40 py-2.5 text-xs">
+              <span className="font-medium text-slate-600 dark:text-indigo-200/80">Available Seats:</span>
               <span className="font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-2.5 py-0.5 rounded">
                 {pkg.availableSeats} seats left
               </span>
@@ -248,20 +248,20 @@ const PackageDetails = () => {
 
             <button 
               onClick={handleBook} 
-              className="w-full rounded-md bg-[#e0882e] hover:bg-white text-white hover:text-[#e0882e] border border-[#e0882e] py-3.5 text-xs font-black uppercase tracking-wider shadow-lg transition-all duration-300"
+              className="w-full rounded-md bg-[#9B1C1C] hover:bg-[#1B1464] text-white py-3.5 text-xs font-black uppercase tracking-wider shadow-lg transition-all duration-300"
             >
               Book Now
             </button>
 
             <button
               onClick={() => setShowCustomModal(true)}
-              className="w-full rounded-md border border-slate-300 dark:border-slate-700 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="w-full rounded-md border border-slate-300 dark:border-indigo-800 py-3 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-indigo-900/60 transition-colors"
             >
               Request Custom Changes
             </button>
 
             <a
-              href={`https://wa.me/919996696928?text=Hi%20TravelStay%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
+              href={`https://wa.me/919996696928?text=Hi%20PCTE%20Travels%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full rounded-md bg-emerald-600 py-2.5 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-colors"
@@ -270,7 +270,7 @@ const PackageDetails = () => {
             </a>
 
             {pkg.meetingPoint && (
-              <div className="text-xs text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+              <div className="text-xs text-slate-600 dark:text-indigo-200/80 bg-slate-50 dark:bg-indigo-950/60 p-3 rounded-lg border border-slate-200 dark:border-indigo-800">
                 <span className="font-bold text-slate-900 dark:text-white block mb-0.5">Meeting / Departure Point:</span>
                 {pkg.meetingPoint}
               </div>

@@ -145,55 +145,54 @@ const CustomerBookings = () => {
       {/* TICKET / INVOICE MODAL */}
       {ticketModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-[#110D44] p-6 shadow-2xl border border-slate-200 dark:border-indigo-900 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-indigo-900/60 pb-4">
               <div>
-                <span className="text-xs font-bold text-amber-500 uppercase tracking-wider">TravelStay Official Pass</span>
+                <span className="text-xs font-bold text-[#9B1C1C] dark:text-red-400 uppercase tracking-wider">PCTE Travel Agency Official Pass</span>
                 <h3 className="font-display text-xl font-black">{ticketModalData.itemTitle || 'Booking Pass'}</h3>
               </div>
               <button
                 onClick={() => setTicketModalData(null)}
-                className="rounded-full bg-slate-100 dark:bg-slate-800 p-2 text-slate-600 dark:text-slate-300"
+                className="rounded-full bg-slate-100 dark:bg-indigo-950 p-2 text-slate-600 dark:text-slate-300"
               >
                 ✕
               </button>
             </div>
 
             <div className="py-4 space-y-3 text-xs">
-              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span className="text-slate-500">Booking Reference:</span>
-                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{ticketModalData.paymentId || 'TS-BK9823'}</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
+                <span className="text-slate-500 dark:text-indigo-200/70">Booking Reference:</span>
+                <span className="font-mono font-bold text-[#9B1C1C] dark:text-red-400">{ticketModalData.paymentId || 'PCTE-BK9823'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span className="text-slate-500">Primary Guest:</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
+                <span className="text-slate-500 dark:text-indigo-200/70">Primary Guest:</span>
                 <span className="font-bold">{ticketModalData.primaryGuest?.name || 'Priya Sharma'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span className="text-slate-500">Destination:</span>
-                <span className="font-bold">{ticketModalData.destination || 'Goa / Manali'}</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
+                <span className="text-slate-500 dark:text-indigo-200/70">Destination:</span>
+                <span className="font-bold">{ticketModalData.destination || 'Jibhi / Manali'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
-                <span className="text-slate-500">Amount Paid:</span>
-                <span className="font-mono font-bold text-emerald-600">₹{Number(ticketModalData.totalAmount || 4999).toLocaleString('en-IN')} (Paid via UPI/Card)</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
+                <span className="text-slate-500 dark:text-indigo-200/70">Amount Paid:</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">₹{Number(ticketModalData.totalAmount || 4999).toLocaleString('en-IN')} (Paid via UPI/Card)</span>
               </div>
 
               {/* QR Code Simulation */}
               <div className="pt-3 text-center">
-                <div className="mx-auto flex h-28 w-28 items-center justify-center rounded-xl bg-slate-900 p-2 text-white font-mono text-[9px] shadow">
-                  [QR CODE VERIFIED]
-                  <br />
-                  TRAVELSTAY
+                <div className="mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-xl bg-[#0B0830] p-2 text-white font-mono text-[9px] shadow border border-indigo-500/30">
+                  <span className="text-amber-300 font-bold">[VERIFIED]</span>
+                  PCTE TRAVELS
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2">Show this digital ticket at meeting point / hotel check-in desk.</p>
+                <p className="text-[10px] text-slate-400 dark:text-indigo-300/60 mt-2">Show this digital ticket at meeting point / hotel check-in desk.</p>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-indigo-900/60">
               <button
                 onClick={() => {
                   window.print();
                 }}
-                className="flex items-center gap-1.5 rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 shadow hover:bg-amber-400"
+                className="flex items-center gap-1.5 rounded-xl bg-[#9B1C1C] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#1B1464] transition-all"
               >
                 <FiPrinter /> Print / Save PDF Pass
               </button>

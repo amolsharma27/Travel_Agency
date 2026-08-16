@@ -45,11 +45,11 @@ const CustomTourModal = ({ isOpen, onClose }) => {
           className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-slate-200 dark:border-slate-800"
         >
           {/* Header Bar */}
-          <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-emerald-700 px-6 py-5 text-white">
+          <div className="bg-gradient-to-r from-[#9B1C1C] via-[#771D1D] to-[#1B1464] px-6 py-5 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-100 backdrop-blur-md">
-                  <FiCompass /> TravelStay Custom Planner
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-xs font-bold uppercase tracking-wider text-amber-300 backdrop-blur-md">
+                  <FiCompass /> PCTE Travel Agency Custom Planner
                 </span>
                 <h3 className="mt-2 font-display text-xl font-extrabold md:text-2xl">
                   Design Your Custom Dream Itinerary
@@ -261,7 +261,7 @@ const CustomTourModal = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-amber-600 px-6 py-2.5 text-sm font-bold text-white shadow-lg hover:bg-amber-700 transition-all"
+                  className="rounded-xl bg-[#9B1C1C] hover:bg-[#1B1464] px-6 py-2.5 text-sm font-bold text-white shadow-lg transition-all"
                 >
                   Submit Custom Itinerary Request
                 </button>

@@ -100,12 +100,12 @@ const Packages = () => {
   };
 
   return (
-    <div className="bg-[#FDF7F0] dark:bg-slate-950 min-h-screen py-10">
+    <div className="bg-[#FAFAF9] dark:bg-[#0B0830] min-h-screen py-10">
       <div className="mx-auto max-w-7xl px-5 md:px-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#e0882e] font-extrabold">
-              {loading ? 'Searching tour packages…' : `${total} Verified Packages Found`}
+            <span className="font-mono text-xs uppercase tracking-widest text-[#9B1C1C] dark:text-red-400 font-extrabold">
+              {loading ? 'Searching PCTE tour packages…' : `${total} Verified Packages Found`}
             </span>
             <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white mt-0.5">
               Tours &amp; Holiday Packages
@@ -115,7 +115,7 @@ const Packages = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowCustomModal(true)}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#e0882e] hover:bg-white text-white hover:text-[#e0882e] border border-[#e0882e] px-4 py-2 text-xs font-bold shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#9B1C1C] hover:bg-[#1B1464] text-white px-4 py-2 text-xs font-bold shadow-sm transition-all"
             >
               <FiCompass /> Request Custom Plan
             </button>
@@ -123,7 +123,7 @@ const Packages = () => {
             <select
               value={filters.sort}
               onChange={(e) => update('sort', e.target.value)}
-              className="rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none"
+              className="rounded-md border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none"
             >
               <option value="newest">Sort: Newest</option>
               <option value="price_asc">Price: Low to High</option>
@@ -135,7 +135,7 @@ const Packages = () => {
 
         {/* QUICK PRICE DEALS */}
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1 text-xs font-bold uppercase text-[#e0882e] mr-1">
+          <span className="flex items-center gap-1 text-xs font-bold uppercase text-[#9B1C1C] dark:text-red-400 mr-1">
             <FiTag /> Quick Deals:
           </span>
           {budgetRanges.map((b) => {
@@ -146,8 +146,8 @@ const Packages = () => {
                 onClick={() => handleBudgetSelect(b.min, b.max)}
                 className={`rounded-full px-3.5 py-1 text-xs font-bold transition-all ${
                   isSelected
-                    ? 'bg-[#e0882e] text-white shadow-sm'
-                    : 'border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:border-[#e0882e]'
+                    ? 'bg-[#9B1C1C] text-white shadow-sm'
+                    : 'border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] text-slate-700 dark:text-indigo-200 hover:border-[#9B1C1C]'
                 }`}
               >
                 {b.label}
@@ -157,14 +157,14 @@ const Packages = () => {
         </div>
 
         {/* SEARCH AND CATEGORY FILTER BAR */}
-        <div className="mb-8 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
+        <div className="mb-8 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-4 shadow-sm">
           <div className="relative flex-1 min-w-[220px]">
             <FiSearch className="absolute left-3.5 top-3 text-slate-400" />
             <input
               value={filters.q}
               onChange={(e) => update('q', e.target.value)}
               placeholder="Search tour, destination (Jibhi, Spiti, Rajasthan, Goa...)"
-              className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-10 pr-3 py-2.5 text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#e0882e]"
+              className="w-full rounded-md border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 pl-10 pr-3 py-2.5 text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#9B1C1C]"
             />
           </div>
 
@@ -177,8 +177,8 @@ const Packages = () => {
                   onClick={() => update('category', c === 'All' ? '' : c)}
                   className={`rounded-md px-3.5 py-2 text-xs font-bold transition-all ${
                     isSel
-                      ? 'bg-[#e0882e] text-white shadow-sm'
-                      : 'border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-[#9B1C1C] text-white shadow-sm'
+                      : 'border border-slate-200 dark:border-indigo-800 text-slate-700 dark:text-indigo-200 hover:bg-slate-100 dark:hover:bg-indigo-900/60'
                   }`}
                 >
                   {c}
@@ -193,14 +193,14 @@ const Packages = () => {
             {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : packages.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-800 p-16 text-center bg-white dark:bg-slate-900 shadow-sm">
+          <div className="rounded-xl border border-dashed border-slate-300 dark:border-indigo-900 p-16 text-center bg-white dark:bg-[#110D44] shadow-sm">
             <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">No Tour Packages Match Your Search</h3>
-            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-xs text-slate-500 dark:text-indigo-200/70">
               Try resetting your destination query or budget filter.
             </p>
             <button
               onClick={() => setFilters({ q: '', category: '', minPrice: '', maxPrice: '', sort: 'newest', page: 1 })}
-              className="mt-4 rounded-md bg-[#e0882e] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-amber-600"
+              className="mt-4 rounded-md bg-[#9B1C1C] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-[#1B1464]"
             >
               Clear All Filters
             </button>
