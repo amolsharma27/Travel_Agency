@@ -1,36 +1,39 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import { FiDownload, FiCheckCircle, FiXCircle, FiPrinter, FiCalendar, FiMapPin, FiUser } from 'react-icons/fi';
+import {
+  FiDownload, FiCheckCircle, FiXCircle, FiPrinter, FiCalendar,
+  FiMapPin, FiUser, FiShield, FiTruck, FiActivity, FiHome, FiCompass
+} from 'react-icons/fi';
+import { FaPassport, FaPlane, FaBus, FaTrain } from 'react-icons/fa';
 import api from '../../api/axios.js';
-import { getStoredBookings } from '../../data/mockData.js';
+import { getStoredBookings, getStoredPassportRequests } from '../../data/mockData.js';
 
 const statusColor = {
-  pending_payment: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
-  pending_approval: 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300',
-  confirmed: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300 font-bold',
-  rejected: 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-300',
-  cancelled: 'bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-  completed: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300',
+  confirmed: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
+  paid: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
+  under_review: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300',
+  pending: 'bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300',
+  completed: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
+  cancelled: 'bg-slate-100 text-slate-500 border border-slate-200 dark:bg-slate-800 dark:text-slate-400',
 };
 
 const CustomerBookings = () => {
-  const [tab, setTab] = useState('package');
-  const [hotelBookings, setHotelBookings] = useState([]);
-  const [packageBookings, setPackageBookings] = useState([]);
+  const [activeTab, setActiveTab] = useState('all'); // 'all' | 'package' | 'hotel' | 'activity' | 'transportation' | 'passport'
+  const [allBookings, setAllBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [ticketModalData, setTicketModalData] = useState(null);
 
   const load = async () => {
     setLoading(true);
     try {
-      const [h, p] = await Promise.all([
-        api.get('/hotel-bookings/my'),
-        api.get('/package-bookings/my'),
-      ]);
-      setHotelBookings(h.data?.data || []);
-      setPackageBookings(p.data?.data || []);
+      const res = await api.get('/bookings/my');
+      if (res.data?.data?.length) {
+        setAllBookings(res.data.data);
+      } else {
+        setAllBookings(getStoredBookings());
+      }
     } catch {
-      // ignore & use stored fallback
+      setAllBookings(getStoredBookings());
     } finally {
       setLoading(false);
     }
@@ -40,101 +43,135 @@ const CustomerBookings = () => {
 
   const cancel = (id) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
+    setAllBookings(prev => prev.map(b => b._id === id ? { ...b, status: 'cancelled' } : b));
     toast.success('Booking cancellation request processed.');
   };
 
-  const downloadInvoice = (b) => {
-    setTicketModalData(b);
-  };
-
-  const storedAll = getStoredBookings();
-  const rawBookings = tab === 'hotel' 
-    ? (hotelBookings?.length ? hotelBookings : storedAll.filter(b => b.hotel || b.bookingType === 'hotel'))
-    : (packageBookings?.length ? packageBookings : storedAll.filter(b => b.package || b.bookingType === 'package'));
+  const filteredBookings = allBookings.filter((b) => {
+    if (activeTab === 'all') return true;
+    if (activeTab === 'package') return b.bookingType === 'package' || b.package;
+    if (activeTab === 'hotel') return b.bookingType === 'hotel' || b.hotel;
+    if (activeTab === 'activity') return b.bookingType === 'activity' || b.activity;
+    if (activeTab === 'transportation') return b.bookingType === 'transportation';
+    if (activeTab === 'passport') return b.bookingType === 'passport';
+    return true;
+  });
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="font-display text-2xl font-black text-slate-900 dark:text-white">My Tour &amp; Stay Bookings</h2>
-
-        <div className="flex gap-1.5 rounded-xl border border-slate-200 dark:border-slate-800 p-1 text-xs bg-slate-50 dark:bg-slate-900">
-          <button
-            onClick={() => setTab('package')}
-            className={`rounded-lg px-4 py-2 font-bold capitalize transition-all ${
-              tab === 'package' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            Tour Packages
-          </button>
-          <button
-            onClick={() => setTab('hotel')}
-            className={`rounded-lg px-4 py-2 font-bold capitalize transition-all ${
-              tab === 'hotel' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-600 dark:text-slate-400'
-            }`}
-          >
-            Hotel Stays
-          </button>
+      
+      {/* Header & Tabs */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 className="font-display text-2xl font-black text-slate-900 dark:text-white">My Bookings &amp; Service Requests</h2>
+          <p className="text-xs text-slate-500 mt-0.5">Manage all tour bookings, stays, activities, transit tickets, and passport assistance requests.</p>
         </div>
       </div>
 
+      {/* Filter Tabs */}
+      <div className="flex overflow-x-auto gap-1.5 p-1 rounded-xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 shadow-sm scrollbar-none">
+        {[
+          { id: 'all', label: 'All Bookings', count: allBookings.length },
+          { id: 'package', label: 'Tours', icon: FiCompass },
+          { id: 'hotel', label: 'Stays & Hotels', icon: FiHome },
+          { id: 'activity', label: 'Activities', icon: FiActivity },
+          { id: 'transportation', label: 'Transportation', icon: FiTruck },
+          { id: 'passport', label: 'Passport Requests', icon: FiShield },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${
+              activeTab === tab.id
+                ? 'bg-[#0F2942] text-white shadow-sm'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
+            }`}
+          >
+            <span>{tab.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Bookings List */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-slate-500">Loading your bookings…</div>
-      ) : rawBookings.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 py-16 text-center bg-white dark:bg-slate-900">
-          <p className="font-display text-lg font-bold text-slate-900 dark:text-white">No {tab} bookings found</p>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Explore our packages and book your next journey!</p>
+        <div className="py-16 text-center text-xs text-slate-500">Loading your reservations…</div>
+      ) : filteredBookings.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 py-16 text-center bg-white dark:bg-[#0F1D30]">
+          <p className="font-display text-base font-bold text-slate-900 dark:text-white">No {activeTab !== 'all' ? activeTab : ''} bookings found</p>
+          <p className="text-xs text-slate-500 mt-1">Explore our services and book your next trip!</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {rawBookings.map((b) => (
+          {filteredBookings.map((b) => (
             <div
               key={b._id}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm space-y-4"
+              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-4"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex gap-4">
                   {b.image && (
-                    <img src={b.image} alt="" className="h-16 w-20 rounded-xl object-cover shrink-0" />
+                    <img src={b.image} alt="" className="h-16 w-20 rounded-xl object-cover shrink-0 bg-slate-900" />
                   )}
-                  <div>
-                    <span className="font-mono text-[11px] font-bold text-amber-600 dark:text-amber-400">
-                      {b.paymentId || `TS-${b._id?.slice(-8).toUpperCase()}`}
-                    </span>
-                    <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
-                      {tab === 'hotel' ? (b.hotel?.name || b.itemTitle || 'Beachside Stay') : (b.package?.title || b.itemTitle || 'Tour Package')}
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[9px] font-bold uppercase text-slate-600 dark:text-slate-300">
+                        {b.bookingType || 'Booking'}
+                      </span>
+                      <span className="font-mono text-[10px] font-bold text-[#E11D48]">
+                        Ref: {b.applicationTrackingId || b.ticketReference || b.paymentId || b._id}
+                      </span>
+                    </div>
+
+                    <h3 className="font-display text-sm md:text-base font-bold text-slate-900 dark:text-white">
+                      {b.itemTitle || b.package?.title || b.hotel?.name || 'Travel Reservation'}
                     </h3>
-                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 flex items-center gap-2">
-                      <FiMapPin className="text-amber-500" /> {b.destination || 'India'}
+
+                    <p className="text-xs text-slate-500 flex items-center gap-1.5">
+                      <FiMapPin className="text-[#E11D48] shrink-0" size={12} />
+                      {b.destination || b.preferredPSK || b.location || 'India'}
+                      {b.slotTime && <span>· Slot: <b>{b.slotTime}</b></span>}
                     </p>
                   </div>
                 </div>
 
-                <span className={`rounded-full px-3 py-1 text-xs capitalize ${statusColor[b.status] || 'bg-emerald-100 text-emerald-800'}`}>
+                <span className={`rounded-full px-3 py-1 text-xs font-bold capitalize ${statusColor[b.status] || statusColor.confirmed}`}>
                   ✓ {(b.status || 'confirmed').replace('_', ' ')}
                 </span>
               </div>
 
+              {/* Passport specific metadata */}
+              {b.bookingType === 'passport' && (
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3 text-xs space-y-1 border border-slate-200 dark:border-slate-700">
+                  <p><b>Applicant Name:</b> {b.applicantName || 'Primary Applicant'}</p>
+                  <p><b>PSK Appointment Center:</b> {b.destination || b.preferredPSK}</p>
+                  <p className="text-slate-500">Document pre-screening kit verified. Appointment assistance tracking active.</p>
+                </div>
+              )}
+
+              {/* Actions & Price Bar */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800 pt-3">
-                <div className="text-xs text-slate-600 dark:text-slate-400">
-                  <span className="font-semibold text-slate-900 dark:text-white">Total Amount:</span>{' '}
-                  <span className="font-mono text-base font-black text-amber-600 dark:text-amber-400">
+                <div className="text-xs text-slate-500">
+                  <span>Total Amount Paid:</span>{' '}
+                  <span className="font-mono text-base font-black text-slate-900 dark:text-white ml-1">
                     ₹{Number(b.totalAmount || 4999).toLocaleString('en-IN')}
                   </span>
                 </div>
 
                 <div className="flex gap-2">
                   <button
-                    onClick={() => downloadInvoice(b)}
-                    className="flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 px-3.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                    onClick={() => setTicketModalData(b)}
+                    className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                   >
-                    <FiDownload size={14} /> View Pass / Ticket
+                    <FiDownload size={13} /> View Invoice &amp; Pass
                   </button>
-                  <button
-                    onClick={() => cancel(b._id)}
-                    className="rounded-xl border border-red-200 dark:border-red-900/40 px-3.5 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
-                  >
-                    Cancel
-                  </button>
+                  {b.status !== 'cancelled' && (
+                    <button
+                      onClick={() => cancel(b._id)}
+                      className="rounded-lg border border-red-200 dark:border-red-900/40 px-3.5 py-1.5 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -145,56 +182,50 @@ const CustomerBookings = () => {
       {/* TICKET / INVOICE MODAL */}
       {ticketModalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-[#110D44] p-6 shadow-2xl border border-slate-200 dark:border-indigo-900 text-slate-900 dark:text-white">
-            <div className="flex items-center justify-between border-b border-slate-200 dark:border-indigo-900/60 pb-4">
+          <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-[#0F1D30] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
               <div>
-                <span className="text-xs font-bold text-[#9B1C1C] dark:text-red-400 uppercase tracking-wider">PCTE Travel Agency Official Pass</span>
-                <h3 className="font-display text-xl font-black">{ticketModalData.itemTitle || 'Booking Pass'}</h3>
+                <span className="text-[10px] font-black uppercase text-[#E11D48] tracking-wider">PCTE Travel Agency — Official Receipt</span>
+                <h3 className="font-display text-lg font-black">{ticketModalData.itemTitle || 'Reservation Pass'}</h3>
               </div>
               <button
                 onClick={() => setTicketModalData(null)}
-                className="rounded-full bg-slate-100 dark:bg-indigo-950 p-2 text-slate-600 dark:text-slate-300"
+                className="rounded-full bg-slate-100 dark:bg-slate-800 p-2 text-slate-600 dark:text-slate-300"
               >
                 ✕
               </button>
             </div>
 
-            <div className="py-4 space-y-3 text-xs">
-              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
-                <span className="text-slate-500 dark:text-indigo-200/70">Booking Reference:</span>
-                <span className="font-mono font-bold text-[#9B1C1C] dark:text-red-400">{ticketModalData.paymentId || 'PCTE-BK9823'}</span>
+            <div className="py-4 space-y-2.5 text-xs">
+              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="text-slate-500">Reference Tracking ID:</span>
+                <span className="font-mono font-bold text-[#0F2942] dark:text-amber-400">{ticketModalData.applicationTrackingId || ticketModalData.paymentId || 'PCTE-BK-9823'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
-                <span className="text-slate-500 dark:text-indigo-200/70">Primary Guest:</span>
-                <span className="font-bold">{ticketModalData.primaryGuest?.name || 'Priya Sharma'}</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="text-slate-500">Service Category:</span>
+                <span className="font-bold uppercase">{ticketModalData.bookingType || 'Tour'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
-                <span className="text-slate-500 dark:text-indigo-200/70">Destination:</span>
-                <span className="font-bold">{ticketModalData.destination || 'Jibhi / Manali'}</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="text-slate-500">Primary Contact:</span>
+                <span className="font-bold">{ticketModalData.primaryGuest?.name || ticketModalData.applicantName || 'Amol Sharma'}</span>
               </div>
-              <div className="flex justify-between border-b border-slate-100 dark:border-indigo-900/40 pb-2">
-                <span className="text-slate-500 dark:text-indigo-200/70">Amount Paid:</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">₹{Number(ticketModalData.totalAmount || 4999).toLocaleString('en-IN')} (Paid via UPI/Card)</span>
+              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="text-slate-500">Total Amount:</span>
+                <span className="font-mono font-bold text-emerald-600">₹{Number(ticketModalData.totalAmount || 4999).toLocaleString('en-IN')} (Paid)</span>
               </div>
 
-              {/* QR Code Simulation */}
-              <div className="pt-3 text-center">
-                <div className="mx-auto flex h-28 w-28 flex-col items-center justify-center rounded-xl bg-[#0B0830] p-2 text-white font-mono text-[9px] shadow border border-indigo-500/30">
-                  <span className="text-amber-300 font-bold">[VERIFIED]</span>
-                  PCTE TRAVELS
-                </div>
-                <p className="text-[10px] text-slate-400 dark:text-indigo-300/60 mt-2">Show this digital ticket at meeting point / hotel check-in desk.</p>
+              <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                <span className="text-slate-500">Status:</span>
+                <span className="font-bold text-emerald-600 uppercase">Confirmed / Verified</span>
               </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-indigo-900/60">
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
               <button
-                onClick={() => {
-                  window.print();
-                }}
-                className="flex items-center gap-1.5 rounded-xl bg-[#9B1C1C] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#1B1464] transition-all"
+                onClick={() => window.print()}
+                className="flex items-center gap-1.5 rounded-lg bg-[#0F2942] px-4 py-2 text-xs font-bold text-white shadow hover:bg-[#E11D48] transition-all"
               >
-                <FiPrinter /> Print / Save PDF Pass
+                <FiPrinter /> Print Receipt
               </button>
             </div>
           </div>

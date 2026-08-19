@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FiMenu, FiX, FiMoon, FiSun, FiUser, FiPhone, FiMail, FiSearch, FiCompass, FiChevronDown, FiShield, FiCalendar
+  FiMenu, FiX, FiMoon, FiSun, FiUser, FiPhone, FiMail, FiSearch,
+  FiCompass, FiChevronDown, FiShield, FiCalendar, FiMapPin,
+  FiFileText, FiTruck, FiActivity, FiHome, FiHeart, FiLogOut, FiAward
 } from 'react-icons/fi';
-import { FaInstagram, FaFacebook, FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaInstagram, FaFacebook, FaSuitcase } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useTheme } from '../context/ThemeContext.jsx';
-import CustomTourModal from './CustomTourModal.jsx';
-import PcteLogo from './PcteLogo.jsx';
-import { getStoredPackages } from '../data/mockData.js';
+import { getStoredPackages, getStoredHotels, getStoredActivities } from '../data/mockData.js';
+import pcteLogo from '../assets/pcte-logo.png';
 
 const dashboardPathFor = (role) => {
   if (role === 'admin') return '/admin';
@@ -17,10 +18,17 @@ const dashboardPathFor = (role) => {
   return '/dashboard';
 };
 
+const roleBadgeName = {
+  admin: 'Super Admin',
+  agency: 'Agency Partner',
+  customer: 'Explorer Member'
+};
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
-  const [showCustomModal, setShowCustomModal] = useState(false);
   const [toursDropdownOpen, setToursDropdownOpen] = useState(false);
+  const [staysDropdownOpen, setStaysDropdownOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -28,19 +36,40 @@ const Navbar = () => {
   const { user, logout } = useAuth();
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setOpen(false);
+    setUserDropdownOpen(false);
+    setToursDropdownOpen(false);
+    setStaysDropdownOpen(false);
+  }, [location.pathname]);
 
   const packages = getStoredPackages();
+  const hotels = getStoredHotels();
+  const activities = getStoredActivities();
+
   const filteredSearch = searchQuery.trim()
-    ? packages.filter(p =>
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.destination.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
+    ? [
+        ...packages.filter(p =>
+          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.destination.toLowerCase().includes(searchQuery.toLowerCase())
+        ).map(p => ({ ...p, itemType: 'Tour Package', url: `/packages/${p._id}` })),
+        ...hotels.filter(h =>
+          h.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          h.city.toLowerCase().includes(searchQuery.toLowerCase())
+        ).map(h => ({ title: h.name, destination: h.city, discountPrice: h.startingPrice, images: h.images, _id: h._id, itemType: 'Stay', url: `/hotels/${h._id}` })),
+        ...activities.filter(a =>
+          a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          a.location.toLowerCase().includes(searchQuery.toLowerCase())
+        ).map(a => ({ title: a.title, destination: a.location, discountPrice: a.discountPrice, images: [a.image], _id: a._id, itemType: 'Activity', url: `/activities/${a._id}` }))
+      ].slice(0, 6)
     : [];
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 40) {
+      if (window.scrollY > 30) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -59,363 +88,526 @@ const Navbar = () => {
   };
 
   return (
-    <>
-      <header className="sticky top-0 z-50 transition-all duration-300">
-        {/* PCTE TOP BAR STRIP */}
-        <div className="bg-[#1B1464] px-4 py-2 text-white border-b border-indigo-900/60 text-xs">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3">
-            {/* Left Phone & Email */}
-            <div className="flex flex-wrap items-center gap-4 text-slate-200 font-medium">
-              <a href="tel:9996696928" className="flex items-center gap-1.5 hover:text-amber-300 transition-colors">
-                <FiPhone className="text-amber-400" /> +91 99966 96928
-              </a>
-              <span className="hidden text-indigo-400/60 sm:inline">|</span>
-              <a href="tel:9468312343" className="hidden sm:flex items-center gap-1.5 hover:text-amber-300 transition-colors">
-                <FiPhone className="text-amber-400" /> +91 94683 12343
-              </a>
-              <span className="hidden text-indigo-400/60 md:inline">|</span>
-              <a href="mailto:info@pctetravels.com" className="hidden md:flex items-center gap-1.5 hover:text-amber-300 transition-colors">
-                <FiMail className="text-amber-400" /> info@pctetravels.com
-              </a>
-            </div>
+    <header className="sticky top-0 z-50 transition-all duration-200">
+      {/* PCTE TOP ANNOUNCEMENT & CONTACT BAR */}
+      <div className="bg-[#0F2942] px-4 py-1.5 text-white border-b border-slate-700/50 text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          
+          {/* Left: Contact Numbers & Email */}
+          <div className="flex items-center gap-3.5 text-slate-300 font-medium text-[11px] md:text-xs">
+            <span className="hidden lg:inline text-slate-400 font-bold">PCTE Travel Desk:</span>
+            <a href="tel:9814519578" className="flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
+              <FiPhone className="text-amber-400" /> +91 98145 19578
+            </a>
+            <span className="text-slate-600">/</span>
+            <a href="tel:9988110021" className="hidden sm:flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
+              +91 99881 10021
+            </a>
+            <span className="hidden md:inline text-slate-600">|</span>
+            <a href="mailto:amolsharma2705@gmail.com" className="hidden md:flex items-center gap-1 text-slate-200 hover:text-white transition-colors">
+              <FiMail className="text-amber-400" /> amolsharma2705@gmail.com
+            </a>
+          </div>
 
-            {/* Right Social & Search */}
-            <div className="flex items-center gap-4 ml-auto">
-              <div className="relative hidden lg:block">
-                <form onSubmit={handleSearchSubmit} className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search PCTE tours..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setShowSearchResults(true);
-                    }}
-                    onFocus={() => setShowSearchResults(true)}
-                    className="w-48 rounded-full border border-indigo-400/30 bg-indigo-950/80 py-1 pl-7 pr-3 text-xs text-white placeholder-indigo-300/60 focus:border-amber-400 focus:outline-none"
-                  />
-                  <FiSearch className="absolute left-2.5 top-1.5 text-indigo-300 text-xs" />
-                </form>
-
-                {showSearchResults && filteredSearch.length > 0 && (
-                  <div className="absolute top-full left-0 mt-1.5 w-72 rounded-xl bg-[#110D44] border border-indigo-800 shadow-2xl overflow-hidden z-50">
-                    {filteredSearch.map(pkg => (
-                      <div
-                        key={pkg._id}
-                        onClick={() => {
-                          setShowSearchResults(false);
-                          setSearchQuery('');
-                          navigate(`/packages/${pkg._id}`);
-                        }}
-                        className="flex items-center gap-2.5 p-2.5 hover:bg-indigo-900/60 cursor-pointer transition-colors border-b border-indigo-900/50 last:border-0"
-                      >
-                        <img src={pkg.images[0]} alt={pkg.title} className="h-9 w-9 rounded-lg object-cover" />
-                        <div className="overflow-hidden">
-                          <p className="text-xs font-bold text-white truncate">{pkg.title}</p>
-                          <p className="text-[10px] text-amber-300">{pkg.destination} · ₹{pkg.discountPrice.toLocaleString('en-IN')}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2.5 text-slate-200">
-                <a href="https://wa.me/919996696928" target="_blank" rel="noreferrer" className="hover:text-emerald-400 transition-colors">
-                  <FaWhatsapp size={15} />
-                </a>
-                <a href="#" className="hover:text-amber-300 transition-colors">
-                  <FaInstagram size={15} />
-                </a>
-                <a href="#" className="hover:text-amber-300 transition-colors">
-                  <FaFacebook size={15} />
-                </a>
-              </div>
-            </div>
+          {/* Right: Social Media, Passport & WhatsApp */}
+          <div className="flex items-center gap-3 text-[11px] font-medium text-slate-300">
+            <a
+              href="https://instagram.com/amol_sharma_27"
+              target="_blank"
+              rel="noreferrer"
+              title="Instagram @amol_sharma_27"
+              className="hidden sm:flex items-center gap-1 text-pink-400 hover:text-pink-300 transition-colors"
+            >
+              <FaInstagram /> <span className="hidden xl:inline">@amol_sharma_27</span>
+            </a>
+            <a
+              href="https://facebook.com/amol.sharma.27"
+              target="_blank"
+              rel="noreferrer"
+              title="Facebook Amol Sharma"
+              className="hidden sm:flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
+            >
+              <FaFacebook /> <span className="hidden xl:inline">Amol Sharma</span>
+            </a>
+            <span className="hidden sm:inline text-slate-600">|</span>
+            <Link to="/passport-services" className="hidden sm:flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-bold">
+              <FiShield className="text-amber-400" /> Passport Help
+            </Link>
+            <a
+              href="https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20need%20assistance%20with%20travel%20booking"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold"
+            >
+              <FaWhatsapp /> <span className="hidden sm:inline">WhatsApp</span>
+            </a>
           </div>
         </div>
+      </div>
 
-        {/* PCTE STICKY NAVBAR */}
-        <nav className={`transition-all duration-300 border-b border-slate-200 dark:border-slate-800 ${
-          scrolled 
-            ? 'bg-white/95 dark:bg-[#110D44]/95 backdrop-blur-md shadow-lg py-2' 
-            : 'bg-white dark:bg-[#110D44] py-3'
-        }`}>
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8">
-            
-            {/* PCTE Official Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
-              <PcteLogo className="h-11 md:h-12 w-auto" />
-              <div className="hidden sm:flex flex-col">
-                <span className="leading-tight text-[#1B1464] dark:text-white font-black text-lg tracking-tight group-hover:text-[#9B1C1C] transition-colors">
-                  PCTE <span className="text-[#9B1C1C]">Travel Agency</span>
-                </span>
-                <span className="text-[9px] font-bold text-slate-500 dark:text-indigo-200/70 tracking-widest uppercase">
-                  Freedom To Evolve
+      {/* MAIN NAVIGATION BAR */}
+      <nav className={`transition-all duration-200 border-b ${
+        scrolled
+          ? 'bg-white/95 dark:bg-[#0B1727]/95 backdrop-blur-md border-slate-200 dark:border-slate-800 shadow-md py-2'
+          : 'bg-white dark:bg-[#0B1727] border-slate-200 dark:border-slate-800 py-2.5'
+      }`}>
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8 gap-4">
+          
+          {/* Brand Logo & Name */}
+          <Link to="/" className="flex items-center gap-3 shrink-0 group">
+            <img
+              src={pcteLogo}
+              alt="PCTE Logo"
+              className="h-10 w-auto md:h-12 object-contain transition-transform group-hover:scale-105"
+            />
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="leading-none text-[#0F2942] dark:text-white font-black text-lg md:text-xl tracking-tight">
+                  PCTE <span className="text-[#E11D48]">TRAVEL AGENCY</span>
                 </span>
               </div>
-            </Link>
+              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">
+                Freedom To Evolve · Tours · Stays · Passport
+              </span>
+            </div>
+          </Link>
 
-            {/* Main Menu Links */}
-            <div className="hidden items-center gap-7 lg:flex">
+          {/* Quick Search Input (Desktop) */}
+          <div className="relative hidden xl:block w-56">
+            <form onSubmit={handleSearchSubmit} className="relative">
+              <input
+                type="text"
+                placeholder="Search trips, stays, spots…"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSearchResults(true);
+                }}
+                onFocus={() => setShowSearchResults(true)}
+                className="w-full rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 py-1.5 pl-8 pr-3 text-xs text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:border-[#0F2942] dark:focus:border-amber-400 focus:outline-none"
+              />
+              <FiSearch className="absolute left-2.5 top-2 text-slate-400 text-xs" />
+            </form>
+
+            {/* Quick Live Search Results Dropdown */}
+            {showSearchResults && filteredSearch.length > 0 && (
+              <div className="absolute top-full left-0 mt-2 w-80 rounded-xl bg-white dark:bg-[#0F2942] border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden z-50">
+                <div className="p-2 border-b border-slate-100 dark:border-slate-800 text-[10px] font-bold uppercase text-slate-400">
+                  Search Matches
+                </div>
+                {filteredSearch.map((item, idx) => (
+                  <div
+                    key={idx}
+                    onClick={() => {
+                      setShowSearchResults(false);
+                      setSearchQuery('');
+                      navigate(item.url);
+                    }}
+                    className="flex items-center gap-3 p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors border-b border-slate-100 dark:border-slate-800/50 last:border-0"
+                  >
+                    <img src={item.images?.[0]} alt={item.title} className="h-10 w-10 rounded-lg object-cover bg-slate-900" />
+                    <div className="overflow-hidden">
+                      <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        {item.itemType}
+                      </span>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate mt-0.5">{item.title}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-300">{item.destination} · ₹{item.discountPrice?.toLocaleString('en-IN')}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Main Category Menu Links (6 Core Categories) */}
+          <div className="hidden items-center gap-5 lg:flex">
+            
+            {/* 1. Tours (with Dropdown) */}
+            <div
+              className="relative"
+              onMouseEnter={() => setToursDropdownOpen(true)}
+              onMouseLeave={() => setToursDropdownOpen(false)}
+            >
               <NavLink
-                to="/"
+                to="/packages"
                 className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
+                  `flex items-center gap-1 text-xs font-bold uppercase tracking-wider py-1 transition-colors ${
+                    isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48]' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
                   }`
                 }
               >
-                Home
+                Tours <FiChevronDown size={13} className="text-slate-400" />
               </NavLink>
 
-              <NavLink
-                to="/about"
-                className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
-                  }`
-                }
-              >
-                About Us
-              </NavLink>
-
-              <NavLink
-                to="/packages?category=Educational+Journeys"
-                className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
-                  }`
-                }
-              >
-                Educational Journeys
-              </NavLink>
-
-              <NavLink
-                to="/about"
-                className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
-                  }`
-                }
-              >
-                Gallery
-              </NavLink>
-
-              {/* Tours Dropdown */}
-              <div
-                className="relative"
-                onMouseEnter={() => setToursDropdownOpen(true)}
-                onMouseLeave={() => setToursDropdownOpen(false)}
-              >
-                <button className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 hover:text-[#9B1C1C] py-1">
-                  Tours <FiChevronDown className="text-[#9B1C1C]" />
-                </button>
-
-                {toursDropdownOpen && (
-                  <div className="absolute top-full left-0 w-64 rounded-xl bg-white dark:bg-[#110D44] border border-slate-200 dark:border-indigo-900 shadow-2xl p-2 z-50">
+              {toursDropdownOpen && (
+                <div className="absolute top-full left-0 w-64 rounded-xl bg-white dark:bg-[#0F2942] border border-slate-200 dark:border-slate-700 shadow-xl p-2 z-50 space-y-1">
+                  <Link
+                    to="/packages?category=Group+Tours"
+                    className="flex items-center justify-between rounded-lg p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  >
+                    <span>👥 Group Tour Packages</span>
+                    <span className="text-[10px] text-amber-500 font-bold">Popular</span>
+                  </Link>
+                  <Link
+                    to="/packages?category=Private+Tours"
+                    className="flex items-center justify-between rounded-lg p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  >
+                    <span>🚗 Individual / Private Tours</span>
+                    <span className="text-[10px] text-slate-400">Custom</span>
+                  </Link>
+                  <Link
+                    to="/packages?category=Adventure+Tours"
+                    className="flex items-center justify-between rounded-lg p-2.5 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200"
+                  >
+                    <span>🏔️ Adventure &amp; Treks</span>
+                    <span className="text-[10px] text-emerald-500 font-bold">Spiti &amp; Rishikesh</span>
+                  </Link>
+                  <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
                     <Link
-                      to="/packages?category=Weekend+Tours"
-                      className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-[#FDF2F2] dark:hover:bg-indigo-900/60 text-xs font-bold text-[#9B1C1C]"
+                      to="/packages"
+                      className="block text-center rounded-lg p-2 text-xs font-bold text-[#E11D48] hover:bg-red-50 dark:hover:bg-red-950/30"
                     >
-                      ⚡ Every Friday Weekend Tours
-                    </Link>
-                    <Link
-                      to="/packages?q=Himachal"
-                      className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-slate-100 dark:hover:bg-indigo-900/60 text-xs font-semibold text-slate-800 dark:text-slate-200 border-t border-slate-100 dark:border-indigo-900/40"
-                    >
-                      🏔️ Himachal Tours (Jibhi &amp; Spiti)
-                    </Link>
-                    <Link
-                      to="/packages?q=Punjab"
-                      className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-slate-100 dark:hover:bg-indigo-900/60 text-xs font-semibold text-slate-800 dark:text-slate-200 border-t border-slate-100 dark:border-indigo-900/40"
-                    >
-                      🕌 Punjab Tours (Amritsar)
-                    </Link>
-                    <Link
-                      to="/packages?q=Rajasthan"
-                      className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-slate-100 dark:hover:bg-indigo-900/60 text-xs font-semibold text-slate-800 dark:text-slate-200 border-t border-slate-100 dark:border-indigo-900/40"
-                    >
-                      🏰 Rajasthan Royal Tours
-                    </Link>
-                    <Link
-                      to="/packages?q=Uttarakhand"
-                      className="flex items-center gap-2 rounded-lg p-2.5 hover:bg-slate-100 dark:hover:bg-indigo-900/60 text-xs font-semibold text-slate-800 dark:text-slate-200 border-t border-slate-100 dark:border-indigo-900/40"
-                    >
-                      🌊 Uttarakhand Rafting &amp; Treks
+                      View All Tour Packages &rarr;
                     </Link>
                   </div>
-                )}
-              </div>
-
-              <NavLink
-                to="/hotels"
-                className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
-                  }`
-                }
-              >
-                Hotels
-              </NavLink>
-
-              <NavLink
-                to="/contact"
-                className={({ isActive }) =>
-                  `text-xs font-bold uppercase tracking-wider transition-colors hover:text-[#9B1C1C] ${
-                    isActive ? 'text-[#9B1C1C] font-extrabold border-b-2 border-[#9B1C1C] pb-1' : 'text-slate-800 dark:text-slate-200'
-                  }`
-                }
-              >
-                Contact Us
-              </NavLink>
-            </div>
-
-            {/* PCTE Crimson Action Button & User Controls */}
-            <div className="hidden items-center gap-3 lg:flex">
-              <button
-                onClick={toggle}
-                aria-label="Toggle theme"
-                className="rounded-full p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-indigo-900/60 transition-colors"
-              >
-                {dark ? <FiSun size={17} /> : <FiMoon size={17} />}
-              </button>
-
-              <Link
-                to="/packages"
-                className="rounded-md bg-[#9B1C1C] hover:bg-[#771D1D] text-white px-5 py-2 text-xs font-extrabold uppercase tracking-wider shadow-md transition-all duration-300 active:scale-95"
-              >
-                Book Now
-              </Link>
-
-              {user ? (
-                <div className="flex items-center gap-2">
-                  <Link
-                    to={dashboardPathFor(user.role)}
-                    className="flex items-center gap-1.5 rounded-md border border-slate-300 dark:border-indigo-800 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-[#9B1C1C]"
-                  >
-                    <FiUser /> {user.name ? user.name.split(' ')[0] : 'Account'}
-                  </Link>
-                  <button
-                    onClick={() => {
-                      logout();
-                      navigate('/');
-                    }}
-                    className="text-xs font-semibold text-slate-500 hover:text-red-500"
-                  >
-                    Log out
-                  </button>
                 </div>
-              ) : (
-                <Link
-                  to="/login"
-                  className="text-xs font-bold text-[#1B1464] dark:text-slate-200 hover:text-[#9B1C1C] px-2"
-                >
-                  Log In / Sign Up
-                </Link>
               )}
             </div>
 
-            {/* Mobile Menu Toggle */}
-            <div className="flex items-center gap-2 lg:hidden">
-              <Link
-                to="/packages"
-                className="rounded-md bg-[#9B1C1C] px-3 py-1.5 text-xs font-bold text-white shadow"
+            {/* 2. Stays */}
+            <div
+              className="relative"
+              onMouseEnter={() => setStaysDropdownOpen(true)}
+              onMouseLeave={() => setStaysDropdownOpen(false)}
+            >
+              <NavLink
+                to="/hotels"
+                className={({ isActive }) =>
+                  `flex items-center gap-1 text-xs font-bold uppercase tracking-wider py-1 transition-colors ${
+                    isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48]' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
+                  }`
+                }
               >
-                Book Now
-              </Link>
-              <button onClick={toggle} className="p-2 text-slate-700 dark:text-slate-200">
-                {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
-              </button>
-              <button onClick={() => setOpen(true)} aria-label="Open menu" className="p-1 text-slate-800 dark:text-white">
-                <FiMenu size={24} />
-              </button>
-            </div>
-          </div>
-        </nav>
+                Stays <FiChevronDown size={13} className="text-slate-400" />
+              </NavLink>
 
-        {/* MOBILE SLIDE-OUT MENU */}
-        <AnimatePresence>
-          {open && (
+              {staysDropdownOpen && (
+                <div className="absolute top-full left-0 w-60 rounded-xl bg-white dark:bg-[#0F2942] border border-slate-200 dark:border-slate-700 shadow-xl p-2 z-50 space-y-1">
+                  <Link to="/hotels?category=Hotels" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    🏨 Luxury &amp; Heritage Hotels
+                  </Link>
+                  <Link to="/hotels?category=Resorts" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    🌴 Mountain &amp; Beach Resorts
+                  </Link>
+                  <Link to="/hotels?category=Homestays" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    🏡 Traditional Wooden Homestays
+                  </Link>
+                  <Link to="/hotels?category=Hostels" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    🎒 Backpacker Hostels &amp; Dorms
+                  </Link>
+                  <Link to="/hotels?category=Camping" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    ⛺ Riverside Swiss Camps
+                  </Link>
+                  <Link to="/hotels?category=Villas" className="block rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">
+                    🏡 Private Villas &amp; Apartments
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* 3. Transportation */}
+            <NavLink
+              to="/transportation"
+              className={({ isActive }) =>
+                `text-xs font-bold uppercase tracking-wider transition-colors ${
+                  isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48] pb-1' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
+                }`
+              }
+            >
+              Transportation
+            </NavLink>
+
+            {/* 4. Activities */}
+            <NavLink
+              to="/activities"
+              className={({ isActive }) =>
+                `text-xs font-bold uppercase tracking-wider transition-colors ${
+                  isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48] pb-1' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
+                }`
+              }
+            >
+              Activities
+            </NavLink>
+
+            {/* 5. Nearby Getaways */}
+            <NavLink
+              to="/nearby-getaways"
+              className={({ isActive }) =>
+                `text-xs font-bold uppercase tracking-wider transition-colors ${
+                  isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48] pb-1' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
+                }`
+              }
+            >
+              Nearby Getaways
+            </NavLink>
+
+            {/* 6. Passport Services */}
+            <NavLink
+              to="/passport-services"
+              className={({ isActive }) =>
+                `text-xs font-bold uppercase tracking-wider transition-colors ${
+                  isActive ? 'text-[#E11D48] border-b-2 border-[#E11D48] pb-1' : 'text-slate-800 dark:text-slate-200 hover:text-[#E11D48]'
+                }`
+              }
+            >
+              Passport Services
+            </NavLink>
+          </div>
+
+          {/* User Controls & Book CTA */}
+          <div className="hidden items-center gap-3 lg:flex">
+            {/* Dark mode toggle */}
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="rounded-full p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+            >
+              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+            </button>
+
+            {/* User Account Dropdown */}
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-[#0F2942] bg-slate-50 dark:bg-slate-800/80 shadow-sm"
+                >
+                  <div className="h-6 w-6 rounded-full bg-[#0F2942] text-white flex items-center justify-center text-[10px] font-black uppercase">
+                    {user.name ? user.name.charAt(0) : 'U'}
+                  </div>
+                  <div className="flex flex-col text-left">
+                    <span className="leading-tight truncate max-w-[90px]">{user.name ? user.name.split(' ')[0] : 'Account'}</span>
+                    <span className="text-[9px] text-[#E11D48] font-bold uppercase">{roleBadgeName[user.role] || 'Member'}</span>
+                  </div>
+                  <FiChevronDown size={13} className="text-slate-400" />
+                </button>
+
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#0F2942] border border-slate-200 dark:border-slate-700 shadow-2xl p-2 z-50 space-y-1">
+                    <div className="p-2.5 border-b border-slate-100 dark:border-slate-800">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">{user.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                      <span className="inline-block mt-1 text-[9px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        {roleBadgeName[user.role] || 'Member'}
+                      </span>
+                    </div>
+
+                    <Link
+                      to={dashboardPathFor(user.role)}
+                      className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <FiUser size={14} className="text-[#0F2942] dark:text-amber-400" /> 
+                      {user.role === 'admin' ? 'Admin Analytics & Ops' : user.role === 'agency' ? 'Agency Portal' : 'My Profile & Account'}
+                    </Link>
+
+                    {user.role === 'customer' && (
+                      <>
+                        <Link
+                          to="/dashboard/bookings"
+                          className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                          <FiCalendar size={14} className="text-emerald-500" /> My Bookings &amp; Tickets
+                        </Link>
+                        <Link
+                          to="/dashboard/wishlist"
+                          className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        >
+                          <FiHeart size={14} className="text-rose-500" /> Saved Wishlist
+                        </Link>
+                      </>
+                    )}
+
+                    {user.role === 'agency' && (
+                      <Link
+                        to="/agency/packages"
+                        className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      >
+                        <FiCompass size={14} className="text-amber-500" /> Manage Packages
+                      </Link>
+                    )}
+
+                    {user.role === 'admin' && (
+                      <Link
+                        to="/admin/listings"
+                        className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      >
+                        <FiShield size={14} className="text-red-500" /> Moderate Listings
+                      </Link>
+                    )}
+
+                    <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setUserDropdownOpen(false);
+                          navigate('/');
+                        }}
+                        className="flex items-center gap-2 w-full text-left rounded-lg p-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      >
+                        <FiLogOut size={14} /> Log Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="rounded-md border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-[#0F2942]"
+                >
+                  Log In
+                </Link>
+                <Link
+                  to="/register"
+                  className="rounded-md bg-[#E11D48] hover:bg-[#BE123C] text-white px-3.5 py-1.5 text-xs font-bold shadow-sm"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile Menu Actions */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <button onClick={toggle} className="p-2 text-slate-700 dark:text-slate-200">
+              {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            </button>
+            <button
+              onClick={() => setOpen(true)}
+              aria-label="Open menu"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 p-2 text-slate-800 dark:text-white"
+            >
+              <FiMenu size={20} />
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE RESPONSIVE DRAWER */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm lg:hidden"
+          >
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'tween', duration: 0.25 }}
-              className="fixed inset-0 z-50 bg-white dark:bg-[#110D44] lg:hidden overflow-y-auto"
+              className="absolute right-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-[#0F2942] shadow-2xl flex flex-col overflow-y-auto"
             >
-              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-indigo-900">
-                <div className="flex items-center gap-2">
-                  <PcteLogo className="h-8 w-auto" />
-                  <span className="font-display text-sm font-black text-[#1B1464] dark:text-white">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <img src={pcteLogo} alt="PCTE Logo" className="h-8 w-auto object-contain" />
+                  <span className="font-display text-xs font-black text-[#0F2942] dark:text-white">
                     PCTE Travel Agency
                   </span>
                 </div>
-                <button onClick={() => setOpen(false)} aria-label="Close menu">
-                  <FiX size={24} className="text-slate-700 dark:text-white" />
+                <button onClick={() => setOpen(false)} className="p-1 text-slate-500 hover:text-slate-900 dark:text-slate-300">
+                  <FiX size={22} />
                 </button>
               </div>
 
-              <div className="p-5 space-y-4">
-                <Link
-                  to="/packages"
-                  onClick={() => setOpen(false)}
-                  className="block w-full rounded-md bg-[#9B1C1C] py-3 text-center text-sm font-bold text-white shadow-lg"
-                >
-                  Book Now
+              {/* Mobile Search */}
+              <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+                <form onSubmit={handleSearchSubmit} className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search trips, stays..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 py-2 pl-8 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none"
+                  />
+                  <FiSearch className="absolute left-2.5 top-2.5 text-slate-400 text-xs" />
+                </form>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="p-4 space-y-3 flex-1 text-xs font-bold text-slate-800 dark:text-slate-200">
+                <Link to="/" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiHome className="text-[#E11D48]" /> Home
                 </Link>
+                <Link to="/packages" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiCompass className="text-[#E11D48]" /> Tours &amp; Holiday Packages
+                </Link>
+                <Link to="/hotels" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiHome className="text-[#E11D48]" /> Stays, Hotels &amp; Resorts
+                </Link>
+                <Link to="/transportation" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiTruck className="text-[#E11D48]" /> Transportation (Flights/Trains/Buses/Cabs)
+                </Link>
+                <Link to="/activities" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiActivity className="text-[#E11D48]" /> Activities &amp; Adventures
+                </Link>
+                <Link to="/nearby-getaways" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiMapPin className="text-[#E11D48]" /> Nearby Getaways (From Punjab)
+                </Link>
+                <Link to="/passport-services" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800 text-amber-500">
+                  <FiShield className="text-amber-400" /> Passport Application Assistance
+                </Link>
+                <Link to="/contact" className="flex items-center gap-2 py-2 border-b border-slate-100 dark:border-slate-800">
+                  <FiPhone className="text-[#E11D48]" /> Contact &amp; Support
+                </Link>
+              </div>
 
-                <div className="flex flex-col gap-2 text-sm font-bold text-slate-800 dark:text-slate-200">
-                  <Link to="/" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    Home
-                  </Link>
-                  <Link to="/about" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    About PCTE Travels
-                  </Link>
-                  <Link to="/packages?category=Weekend+Tours" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5 text-[#9B1C1C]">
-                    Every Friday Weekend Tours
-                  </Link>
-                  <Link to="/packages?category=Educational+Journeys" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    Educational Journeys
-                  </Link>
-                  <Link to="/packages" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    All Tours &amp; Packages
-                  </Link>
-                  <Link to="/hotels" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    Hotels &amp; Stays
-                  </Link>
-                  <Link to="/contact" onClick={() => setOpen(false)} className="border-b border-slate-100 dark:border-indigo-900/40 py-2.5">
-                    Contact Us
-                  </Link>
-                </div>
-
+              {/* User / Auth footer */}
+              <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
                 {user ? (
-                  <div className="pt-4 border-t border-slate-200 dark:border-indigo-900 space-y-3">
-                    <Link to={dashboardPathFor(user.role)} onClick={() => setOpen(false)} className="block text-base font-bold text-slate-800 dark:text-slate-200">
-                      Dashboard ({user.role})
+                  <>
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-900 dark:text-white">{user.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400">{user.email}</p>
+                    </div>
+                    <Link
+                      to={dashboardPathFor(user.role)}
+                      className="block w-full text-center rounded-md bg-[#0F2942] py-2 text-xs font-bold text-white shadow"
+                    >
+                      Go to Dashboard ({roleBadgeName[user.role]})
                     </Link>
-                    <button onClick={() => { logout(); setOpen(false); navigate('/'); }} className="text-base font-bold text-red-500">
-                      Log out
+                    <button
+                      onClick={() => { logout(); setOpen(false); navigate('/'); }}
+                      className="block w-full text-center py-1.5 text-xs font-bold text-red-500"
+                    >
+                      Log Out
                     </button>
-                  </div>
+                  </>
                 ) : (
-                  <div className="pt-4 border-t border-slate-200 dark:border-indigo-900 flex gap-3">
-                    <Link to="/login" onClick={() => setOpen(false)} className="w-1/2 text-center rounded-md border border-slate-300 dark:border-indigo-800 py-2.5 text-sm font-bold text-slate-800 dark:text-white">
-                      Log in
+                  <div className="flex gap-2">
+                    <Link
+                      to="/login"
+                      className="flex-1 text-center rounded-md border border-slate-300 dark:border-slate-700 py-2 text-xs font-bold text-slate-800 dark:text-white"
+                    >
+                      Log In
                     </Link>
-                    <Link to="/register" onClick={() => setOpen(false)} className="w-1/2 text-center rounded-md bg-[#9B1C1C] py-2.5 text-sm font-bold text-white shadow-md">
-                      Sign up
+                    <Link
+                      to="/register"
+                      className="flex-1 text-center rounded-md bg-[#E11D48] py-2 text-xs font-bold text-white shadow"
+                    >
+                      Register
                     </Link>
                   </div>
                 )}
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </header>
-
-      <CustomTourModal isOpen={showCustomModal} onClose={() => setShowCustomModal(false)} />
-    </>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 };
 

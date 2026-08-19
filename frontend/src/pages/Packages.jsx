@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { FiTag, FiSearch, FiCompass } from 'react-icons/fi';
+import { FiSearch, FiTag, FiCompass, FiSliders, FiCheck } from 'react-icons/fi';
 import api from '../api/axios.js';
 import PackageCard from '../components/PackageCard.jsx';
 import SkeletonCard from '../components/SkeletonCard.jsx';
@@ -8,13 +8,13 @@ import Pagination from '../components/Pagination.jsx';
 import CustomTourModal from '../components/CustomTourModal.jsx';
 import { getStoredPackages } from '../data/mockData.js';
 
-const categories = ['All', 'Weekend Tours', 'Educational Journeys', 'Adventure', 'Beach', 'Honeymoon', 'Cultural', 'Pilgrimage'];
+const tourCategories = ['All', 'Group Tours', 'Private Tours', 'Adventure Tours'];
 
 const budgetRanges = [
   { label: 'All Budgets', min: '', max: '' },
-  { label: 'Under ₹5,000 (Weekend Deals)', min: '', max: '5000' },
-  { label: '₹5,000 - ₹15,000 (Popular Trips)', min: '5000', max: '15000' },
-  { label: '₹15,000+ (Spiti & Luxury)', min: '15000', max: '' },
+  { label: 'Under ₹6,000 (Weekend Getaways)', min: '', max: '6000' },
+  { label: '₹6,000 - ₹15,000 (Popular Trips)', min: '6000', max: '15000' },
+  { label: '₹15,000+ (Spiti & Luxury Holidays)', min: '15000', max: '' },
 ];
 
 const Packages = () => {
@@ -50,7 +50,7 @@ const Packages = () => {
           return;
         }
       } catch {
-        // local fallback
+        // fallback
       }
 
       let local = getStoredPackages();
@@ -66,7 +66,11 @@ const Packages = () => {
       }
 
       if (filters.category && filters.category !== 'All') {
-        local = local.filter(p => p.category?.toLowerCase() === filters.category.toLowerCase());
+        const cat = filters.category.toLowerCase();
+        local = local.filter(p =>
+          p.category?.toLowerCase() === cat ||
+          p.tourType?.toLowerCase() === cat
+        );
       }
 
       if (filters.minPrice) {
@@ -100,14 +104,16 @@ const Packages = () => {
   };
 
   return (
-    <div className="bg-[#FAFAF9] dark:bg-[#0B0830] min-h-screen py-10">
-      <div className="mx-auto max-w-7xl px-5 md:px-8">
+    <div className="bg-[#F8FAFC] dark:bg-[#0B1727] min-h-screen py-10">
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        
+        {/* Title & Action Bar */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#9B1C1C] dark:text-red-400 font-extrabold">
-              {loading ? 'Searching PCTE tour packages…' : `${total} Verified Packages Found`}
+            <span className="font-mono text-xs uppercase tracking-wider text-[#E11D48] font-bold">
+              {loading ? 'Searching packages…' : `${total} Verified Tour Packages Available`}
             </span>
-            <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white mt-0.5">
+            <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-0.5">
               Tours &amp; Holiday Packages
             </h1>
           </div>
@@ -115,7 +121,7 @@ const Packages = () => {
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowCustomModal(true)}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#9B1C1C] hover:bg-[#1B1464] text-white px-4 py-2 text-xs font-bold shadow-sm transition-all"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-[#0F2942] hover:bg-[#E11D48] text-white px-4 py-2 text-xs font-bold shadow-sm transition-all"
             >
               <FiCompass /> Request Custom Plan
             </button>
@@ -123,9 +129,9 @@ const Packages = () => {
             <select
               value={filters.sort}
               onChange={(e) => update('sort', e.target.value)}
-              className="rounded-md border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none"
+              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#0F1D30] px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 outline-none"
             >
-              <option value="newest">Sort: Newest</option>
+              <option value="newest">Sort: Recommended</option>
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
               <option value="rating_desc">Highest Rated (4.8+)</option>
@@ -133,10 +139,10 @@ const Packages = () => {
           </div>
         </div>
 
-        {/* QUICK PRICE DEALS */}
+        {/* Quick Budget Chips */}
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1 text-xs font-bold uppercase text-[#9B1C1C] dark:text-red-400 mr-1">
-            <FiTag /> Quick Deals:
+          <span className="flex items-center gap-1 text-xs font-bold uppercase text-slate-400 mr-1">
+            <FiTag /> Quick Filters:
           </span>
           {budgetRanges.map((b) => {
             const isSelected = filters.minPrice === b.min && filters.maxPrice === b.max;
@@ -146,8 +152,8 @@ const Packages = () => {
                 onClick={() => handleBudgetSelect(b.min, b.max)}
                 className={`rounded-full px-3.5 py-1 text-xs font-bold transition-all ${
                   isSelected
-                    ? 'bg-[#9B1C1C] text-white shadow-sm'
-                    : 'border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] text-slate-700 dark:text-indigo-200 hover:border-[#9B1C1C]'
+                    ? 'bg-[#0F2942] text-white shadow-sm'
+                    : 'border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] text-slate-700 dark:text-slate-300 hover:border-[#0F2942]'
                 }`}
               >
                 {b.label}
@@ -156,29 +162,29 @@ const Packages = () => {
           })}
         </div>
 
-        {/* SEARCH AND CATEGORY FILTER BAR */}
-        <div className="mb-8 flex flex-wrap items-center gap-3 rounded-xl border border-slate-200 dark:border-indigo-900/60 bg-white dark:bg-[#110D44] p-4 shadow-sm">
-          <div className="relative flex-1 min-w-[220px]">
-            <FiSearch className="absolute left-3.5 top-3 text-slate-400" />
+        {/* Search & Category Filter Bar */}
+        <div className="mb-8 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 shadow-sm">
+          <div className="relative flex-1 min-w-[240px]">
+            <FiSearch className="absolute left-3.5 top-3 text-slate-400 text-sm" />
             <input
               value={filters.q}
               onChange={(e) => update('q', e.target.value)}
-              placeholder="Search tour, destination (Jibhi, Spiti, Rajasthan, Goa...)"
-              className="w-full rounded-md border border-slate-300 dark:border-indigo-800 bg-slate-50 dark:bg-indigo-950/60 pl-10 pr-3 py-2.5 text-xs font-medium text-slate-900 dark:text-white outline-none focus:border-[#9B1C1C]"
+              placeholder="Search destination, region (Manali, Spiti, Rajasthan, Kashmir, Goa...)"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 pl-10 pr-3 py-2 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]"
             />
           </div>
 
           <div className="flex flex-wrap gap-1.5">
-            {categories.map((c) => {
+            {tourCategories.map((c) => {
               const isSel = (filters.category === c) || (c === 'All' && !filters.category);
               return (
                 <button
                   key={c}
                   onClick={() => update('category', c === 'All' ? '' : c)}
-                  className={`rounded-md px-3.5 py-2 text-xs font-bold transition-all ${
+                  className={`rounded-lg px-3.5 py-2 text-xs font-bold transition-all ${
                     isSel
-                      ? 'bg-[#9B1C1C] text-white shadow-sm'
-                      : 'border border-slate-200 dark:border-indigo-800 text-slate-700 dark:text-indigo-200 hover:bg-slate-100 dark:hover:bg-indigo-900/60'
+                      ? 'bg-[#0F2942] text-white shadow-sm'
+                      : 'border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   }`}
                 >
                   {c}
@@ -188,19 +194,20 @@ const Packages = () => {
           </div>
         </div>
 
+        {/* Packages Grid */}
         {loading ? (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {[1, 2, 3, 4, 5, 6].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : packages.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 dark:border-indigo-900 p-16 text-center bg-white dark:bg-[#110D44] shadow-sm">
-            <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white">No Tour Packages Match Your Search</h3>
-            <p className="mt-2 text-xs text-slate-500 dark:text-indigo-200/70">
-              Try resetting your destination query or budget filter.
+          <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 p-16 text-center bg-white dark:bg-[#0F1D30] shadow-sm">
+            <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white">No Tour Packages Match Your Search</h3>
+            <p className="mt-2 text-xs text-slate-500">
+              Try clearing filters or changing your destination keyword.
             </p>
             <button
               onClick={() => setFilters({ q: '', category: '', minPrice: '', maxPrice: '', sort: 'newest', page: 1 })}
-              className="mt-4 rounded-md bg-[#9B1C1C] px-6 py-2.5 text-xs font-bold text-white shadow hover:bg-[#1B1464]"
+              className="mt-4 rounded-lg bg-[#0F2942] px-6 py-2 text-xs font-bold text-white shadow hover:bg-[#E11D48]"
             >
               Clear All Filters
             </button>

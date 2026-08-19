@@ -1,107 +1,138 @@
 import { Link } from 'react-router-dom';
-import { FiInstagram, FiFacebook, FiPhone, FiMail, FiMapPin, FiShield } from 'react-icons/fi';
-import { FaWhatsapp } from 'react-icons/fa';
-import PcteLogo from './PcteLogo.jsx';
+import { FiPhone, FiMail, FiMapPin, FiShield, FiCheckCircle } from 'react-icons/fi';
+import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
+import pcteLogo from '../assets/pcte-logo.png';
 
 const columns = [
   {
-    title: 'Weekend & Holiday Tours',
+    title: 'Tours & Packages',
     links: [
-      { to: '/packages?category=Weekend+Tours', label: 'Every Friday Weekend Trips' },
-      { to: '/packages?q=Jibhi', label: 'Jibhi & Tirthan Valley Tour' },
-      { to: '/packages?q=Kasol', label: 'Kasol Kheerganga Trek' },
-      { to: '/packages?q=Spiti', label: 'Spiti Valley Circuit (9 Days)' },
-      { to: '/packages?q=Triund', label: 'Mcleodganj & Triund Trek' },
+      { to: '/packages?category=Group+Tours', label: 'Himachal Group Tours (Jibhi/Kasol)' },
+      { to: '/packages?q=Amritsar', label: 'Amritsar Golden Temple Weekend' },
+      { to: '/packages?category=Group+Tours', label: 'Kashmir Paradise Group Tour' },
+      { to: '/packages?category=Group+Tours', label: 'Rajasthan Royal Heritage' },
+      { to: '/packages?category=Private+Tours', label: 'Couples & Honeymoon Trips' },
+      { to: '/packages?category=Adventure+Tours', label: 'Spiti Valley 4x4 Expedition' },
+      { to: '/packages?category=Adventure+Tours', label: 'Rishikesh Rafting & Camping' },
     ],
   },
   {
-    title: 'Top Destinations',
+    title: 'Stays & Hospitality',
     links: [
-      { to: '/packages?q=Himachal', label: 'Himachal Tours & Homestays' },
-      { to: '/packages?q=Punjab', label: 'Punjab Heritage & Golden Temple' },
-      { to: '/packages?q=Rajasthan', label: 'Rajasthan Royal Desert & Forts' },
-      { to: '/packages?q=Uttarakhand', label: 'Uttarakhand Rafting & Camps' },
-      { to: '/packages?q=Goa', label: 'Goa Coastal Beach Getaways' },
-      { to: '/packages?category=Educational+Journeys', label: 'Educational Student Journeys' },
+      { to: '/hotels?category=Resorts', label: 'Mountain & Beach Resorts' },
+      { to: '/hotels?category=Hotels', label: 'Heritage Haveli Hotels' },
+      { to: '/hotels?category=Homestays', label: 'Jibhi Wooden Homestays' },
+      { to: '/hotels?category=Hostels', label: 'Backpacker Hostels & Co-living' },
+      { to: '/hotels?category=Camping', label: 'Riverside Glamping & Swiss Tents' },
+      { to: '/hotels?category=Villas', label: 'Private Villas & Apartments' },
+    ],
+  },
+  {
+    title: 'Mobility & Services',
+    links: [
+      { to: '/transportation', label: 'Flight Booking & Quotes' },
+      { to: '/transportation', label: 'Train Ticket Assistance' },
+      { to: '/transportation', label: 'Volvo AC Bus Bookings' },
+      { to: '/transportation', label: 'Intercity Cabs & Innova Crysta' },
+      { to: '/activities', label: 'Adventure Sports & Bungee' },
+      { to: '/nearby-getaways', label: 'Weekend Getaways from Punjab' },
+      { to: '/passport-services', label: 'Passport Application Assistance' },
     ],
   },
   {
     title: 'Company & Support',
     links: [
       { to: '/about', label: 'About PCTE Travel Agency' },
-      { to: '/contact', label: 'Contact Us & Hotline' },
-      { to: '/dashboard/payments', label: 'Pay Online' },
-      { to: '/faq', label: 'FAQs & Gear Advice' },
+      { to: '/contact', label: 'Contact Support & Desk' },
+      { to: '/faq', label: 'Travel FAQs & Guidelines' },
       { to: '/privacy-policy', label: 'Privacy Policy' },
       { to: '/terms', label: 'Terms & Conditions' },
+      { to: '/terms', label: 'Cancellation Policy' },
     ],
   },
 ];
 
 const Footer = () => (
-  <footer className="bg-[#0B0830] text-slate-300 border-t border-indigo-900/60">
-    <div className="mx-auto max-w-7xl px-5 py-16 md:px-8">
-      <div className="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div className="space-y-4">
+  <footer className="bg-[#0B1727] text-slate-300 border-t border-slate-800">
+    <div className="mx-auto max-w-7xl px-5 py-14 md:px-8">
+      <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
+        
+        {/* Company Identity */}
+        <div className="space-y-4 sm:col-span-2 lg:col-span-1">
           <Link to="/" className="flex items-center gap-3 group">
-            <PcteLogo variant="white" className="h-12 w-auto" />
+            <img src={pcteLogo} alt="PCTE Logo" className="h-11 w-auto object-contain bg-white/90 rounded-lg p-1" />
             <div className="flex flex-col">
-              <span className="leading-tight text-white font-black text-xl tracking-tight group-hover:text-[#F8B4B4] transition-colors">
-                PCTE <span className="text-[#F05252]">Travel Agency</span>
+              <span className="leading-tight text-white font-black text-lg tracking-tight">
+                PCTE <span className="text-[#E11D48]">TRAVEL AGENCY</span>
               </span>
-              <span className="text-[10px] font-bold text-amber-300 tracking-widest uppercase">
+              <span className="text-[9px] font-bold text-amber-400 tracking-wider uppercase">
                 Freedom To Evolve
               </span>
             </div>
           </Link>
-          
-          <p className="text-xs leading-relaxed text-indigo-200/80 max-w-xs">
-            Official PCTE Travel Agency — Freedom To Evolve. Offering Every Friday weekend departures, Himalayan treks, educational group journeys, and luxury stays with 100% verified safety.
+
+          <p className="text-xs leading-relaxed text-slate-400 max-w-sm">
+            Premier travel company providing end-to-end holiday planning, group departures, premium stays, transportation logistics, activities, and official passport application assistance.
           </p>
 
-          <div className="space-y-2 text-xs text-slate-300 pt-2 border-t border-indigo-900/60">
+          {/* Contact snippets */}
+          <div className="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-800/80">
             <p className="flex items-center gap-2">
               <FiPhone className="text-amber-400 shrink-0" />
-              +91 99966 96928 / +91 94683 12343
+              <a href="tel:9814519578" className="hover:text-white font-mono">+91 98145 19578</a> / <a href="tel:9988110021" className="hover:text-white font-mono">+91 99881 10021</a>
             </p>
             <p className="flex items-center gap-2">
               <FiMail className="text-amber-400 shrink-0" />
-              info@pctetravels.com / support@pctetravels.com
+              <a href="mailto:amolsharma2705@gmail.com" className="hover:text-white">amolsharma2705@gmail.com</a>
             </p>
-            <p className="flex items-start gap-2 text-indigo-200/70">
+            <p className="flex items-start gap-2 text-slate-400">
               <FiMapPin className="text-amber-400 shrink-0 mt-0.5" />
-              PCTE Campus &amp; Ludhiana, Punjab Headquarters, India
+              <span>PCTE Group of Institutes, Baddowal Cantt, Ferozepur Road, Ludhiana, Punjab - 142021</span>
             </p>
           </div>
 
+          {/* Social Icons */}
           <div className="flex gap-3 pt-2">
             <a
-              href="https://wa.me/919996696928?text=Hi%20PCTE%20Travels"
+              href="https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
+              title="WhatsApp +91 98145 19578"
             >
-              <FaWhatsapp size={16} />
+              <FaWhatsapp size={15} />
             </a>
-            {[FiInstagram, FiFacebook].map((Icon, i) => (
-              <a
-                key={i}
-                href="#"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-indigo-800 hover:border-amber-400 hover:text-amber-300 transition-colors"
-              >
-                <Icon size={16} />
-              </a>
-            ))}
+            <a
+              href="https://instagram.com/amol_sharma_27"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:border-pink-500 hover:text-pink-400 transition-colors"
+              title="Instagram @amol_sharma_27"
+            >
+              <FaInstagram size={14} />
+            </a>
+            <a
+              href="https://facebook.com/amol.sharma.27"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
+              title="Facebook Amol Sharma"
+            >
+              <FaFacebook size={14} />
+            </a>
           </div>
         </div>
 
+        {/* Dynamic Column Links */}
         {columns.map((col) => (
           <div key={col.title}>
-            <h4 className="mb-4 font-display text-xs font-extrabold uppercase tracking-wider text-amber-300">{col.title}</h4>
-            <ul className="space-y-2.5">
-              {col.links.map((link) => (
-                <li key={link.label}>
-                  <Link to={link.to} className="text-xs text-indigo-200/70 hover:text-white transition-colors">
+            <h4 className="mb-3.5 text-xs font-black uppercase tracking-wider text-white">
+              {col.title}
+            </h4>
+            <ul className="space-y-2">
+              {col.links.map((link, idx) => (
+                <li key={idx}>
+                  <Link to={link.to} className="text-xs text-slate-400 hover:text-white transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -111,10 +142,20 @@ const Footer = () => (
         ))}
       </div>
 
-      <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-indigo-900/60 pt-6 text-xs text-indigo-300/60 md:flex-row">
+      {/* Mandatory Passport Assistance Legal Advisory */}
+      <div className="mt-10 rounded-xl bg-slate-900/90 border border-slate-800 p-4 text-[11px] text-slate-400 leading-relaxed flex flex-col md:flex-row items-start md:items-center gap-3">
+        <FiShield className="text-amber-400 text-xl shrink-0" />
+        <div>
+          <span className="font-bold text-slate-200 uppercase tracking-wider">Passport Assistance Disclosure: </span>
+          Official passport applications are issued and processed exclusively through the Ministry of External Affairs, Government of India (passportindia.gov.in). Our agency provides independent consultancy, document pre-screening, appointment slot scheduling, and procedural guidance.
+        </div>
+      </div>
+
+      {/* Copyright Bar */}
+      <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 text-xs text-slate-400 md:flex-row">
         <span>© {new Date().getFullYear()} PCTE Travel Agency. All rights reserved.</span>
-        <span className="flex items-center gap-1.5 text-amber-300 font-semibold">
-          <FiShield /> Freedom To Evolve · Direct Local Operator Prices · 100% Safe Travel Guarantee
+        <span className="flex items-center gap-2 text-slate-300">
+          <FiCheckCircle className="text-emerald-400" /> Verified Partners · 100% Secure Bookings · Dedicated Travel Support
         </span>
       </div>
     </div>
