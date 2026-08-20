@@ -11,6 +11,8 @@ import api from '../api/axios.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getStoredActivities } from '../data/mockData.js';
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
+
 const ActivityDetails = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -141,8 +143,13 @@ const ActivityDetails = () => {
         {/* Hero Image & Title */}
         <div className="relative h-[320px] md:h-[420px] w-full overflow-hidden rounded-2xl shadow-md bg-slate-900">
           <img
-            src={activity.image}
+            src={activity.image || FALLBACK_IMAGE}
             alt={activity.title}
+            onError={(e) => {
+              if (e.currentTarget.dataset.fallbackApplied) return;
+              e.currentTarget.dataset.fallbackApplied = 'true';
+              e.currentTarget.src = FALLBACK_IMAGE;
+            }}
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent" />

@@ -6,6 +6,8 @@ import {
 } from 'react-icons/fi';
 import { getStoredMemories, saveMemory } from '../../data/mockData.js';
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
+
 const popularSpotBadges = [
   { name: 'Solang Valley Snow Point', location: 'Manali, HP', icon: '❄️', category: 'Mountain' },
   { name: 'Baga & Vagator Cliffs', location: 'Goa', icon: '🌊', category: 'Coastal' },
@@ -152,8 +154,13 @@ const CustomerMemories = () => {
                 {/* Trip Header Image */}
                 <div className="relative aspect-[16/9] w-full overflow-hidden bg-ink/20">
                   <img
-                    src={trip.coverImage}
+                    src={trip.coverImage || FALLBACK_IMAGE}
                     alt={trip.packageTitle}
+                    onError={(e) => {
+                      if (e.currentTarget.dataset.fallbackApplied) return;
+                      e.currentTarget.dataset.fallbackApplied = 'true';
+                      e.currentTarget.src = FALLBACK_IMAGE;
+                    }}
                     className="h-full w-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent" />
@@ -214,7 +221,16 @@ const CustomerMemories = () => {
                             onClick={() => setActivePhotoModal(photo)}
                             className="group relative h-16 w-24 shrink-0 overflow-hidden rounded-lg bg-ink/10"
                           >
-                            <img src={photo} alt="Trip snap" className="h-full w-full object-cover transition group-hover:scale-110" />
+                            <img 
+                              src={photo || FALLBACK_IMAGE} 
+                              alt="Trip snap" 
+                              onError={(e) => {
+                                if (e.currentTarget.dataset.fallbackApplied) return;
+                                e.currentTarget.dataset.fallbackApplied = 'true';
+                                e.currentTarget.src = FALLBACK_IMAGE;
+                              }}
+                              className="h-full w-full object-cover transition group-hover:scale-110" 
+                            />
                             <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition group-hover:opacity-100">
                               <FiEye className="text-white text-sm" />
                             </div>
@@ -394,7 +410,16 @@ const CustomerMemories = () => {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
         >
           <div className="relative max-h-[85vh] max-w-2xl overflow-hidden rounded-2xl bg-black">
-            <img src={activePhotoModal} alt="Enlarged trip memory" className="h-full w-full object-contain" />
+            <img 
+              src={activePhotoModal || FALLBACK_IMAGE} 
+              alt="Enlarged trip memory" 
+              onError={(e) => {
+                if (e.currentTarget.dataset.fallbackApplied) return;
+                e.currentTarget.dataset.fallbackApplied = 'true';
+                e.currentTarget.src = FALLBACK_IMAGE;
+              }}
+              className="h-full w-full object-contain" 
+            />
           </div>
         </div>
       )}

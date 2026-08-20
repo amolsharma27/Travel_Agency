@@ -7,6 +7,8 @@ import api from '../api/axios.js';
 import pcteLogo from '../assets/pcte-logo.png';
 import { mockPreviousTripGallery } from '../data/mockData.js';
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
+
 export const About = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedSpot, setSelectedSpot] = useState(null);
@@ -120,8 +122,13 @@ export const About = () => {
             >
               <div className="relative aspect-[4/3] overflow-hidden bg-slate-900">
                 <img
-                  src={item.image}
+                  src={item.image || FALLBACK_IMAGE}
                   alt={item.title}
+                  onError={(e) => {
+                    if (e.currentTarget.dataset.fallbackApplied) return;
+                    e.currentTarget.dataset.fallbackApplied = 'true';
+                    e.currentTarget.src = FALLBACK_IMAGE;
+                  }}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -167,8 +174,13 @@ export const About = () => {
 
             <div className="max-h-[55vh] overflow-hidden bg-slate-900">
               <img
-                src={selectedSpot.image}
+                src={selectedSpot.image || FALLBACK_IMAGE}
                 alt={selectedSpot.title}
+                onError={(e) => {
+                  if (e.currentTarget.dataset.fallbackApplied) return;
+                  e.currentTarget.dataset.fallbackApplied = 'true';
+                  e.currentTarget.src = FALLBACK_IMAGE;
+                }}
                 className="h-full w-full object-contain mx-auto"
               />
             </div>

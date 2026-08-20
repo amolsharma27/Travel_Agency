@@ -8,6 +8,8 @@ import { FaPassport, FaPlane, FaBus, FaTrain } from 'react-icons/fa';
 import api from '../../api/axios.js';
 import { getStoredBookings, getStoredPassportRequests } from '../../data/mockData.js';
 
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
+
 const statusColor = {
   confirmed: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
   paid: 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300',
@@ -109,8 +111,17 @@ const CustomerBookings = () => {
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="flex gap-4">
-                  {b.image && (
-                    <img src={b.image} alt="" className="h-16 w-20 rounded-xl object-cover shrink-0 bg-slate-900" />
+                  {(b.image || b.images?.[0] || b.package?.images?.[0] || b.hotel?.images?.[0] || b.activity?.image) && (
+                    <img 
+                      src={b.image || b.images?.[0] || b.package?.images?.[0] || b.hotel?.images?.[0] || b.activity?.image} 
+                      alt="" 
+                      onError={(e) => {
+                        if (e.currentTarget.dataset.fallbackApplied) return;
+                        e.currentTarget.dataset.fallbackApplied = 'true';
+                        e.currentTarget.src = FALLBACK_IMAGE;
+                      }}
+                      className="h-16 w-20 rounded-xl object-cover shrink-0 bg-slate-900" 
+                    />
                   )}
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
