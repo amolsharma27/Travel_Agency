@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { FiUser, FiShield, FiBriefcase } from 'react-icons/fi';
+import { FiUser, FiShield, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const DashboardLayout = ({ title, links }) => {
@@ -70,6 +70,16 @@ const DashboardLayout = ({ title, links }) => {
                   <span className="truncate">{link.label}</span>
                 </NavLink>
               ))}
+
+              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+                <NavLink
+                  to="/"
+                  className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#E11D48] hover:bg-red-50 dark:hover:bg-red-950/30 transition-all group"
+                >
+                  <FiArrowLeft size={15} className="shrink-0 transition-transform group-hover:-translate-x-1" />
+                  <span>Back to Website</span>
+                </NavLink>
+              </div>
             </div>
           </aside>
 

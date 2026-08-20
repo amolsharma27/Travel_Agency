@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   FiMenu, FiX, FiMoon, FiSun, FiUser, FiPhone, FiMail, FiSearch,
   FiCompass, FiChevronDown, FiShield, FiCalendar, FiMapPin,
-  FiFileText, FiTruck, FiActivity, FiHome, FiHeart, FiLogOut, FiAward
+  FiFileText, FiTruck, FiActivity, FiHome, FiHeart, FiLogOut, FiAward,
+  FiArrowLeft, FiGrid
 } from 'react-icons/fi';
 import { FaWhatsapp, FaInstagram, FaFacebook, FaSuitcase } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -86,6 +87,116 @@ const Navbar = () => {
       navigate(`/packages?q=${encodeURIComponent(searchQuery.trim())}`);
     }
   };
+
+  const isDashboardRoute = location.pathname.startsWith('/dashboard') || 
+                           location.pathname.startsWith('/agency') || 
+                           location.pathname.startsWith('/admin');
+
+  if (isDashboardRoute) {
+    const portalBadge = location.pathname.startsWith('/agency')
+      ? 'Agency Management Portal'
+      : location.pathname.startsWith('/admin')
+      ? 'Admin Operations Console'
+      : 'Customer Account Portal';
+
+    return (
+      <header className="sticky top-0 z-50 transition-all duration-200 bg-white/95 dark:bg-[#0B1727]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm py-2.5">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8 gap-4">
+          
+          {/* Brand & Portal Identity */}
+          <div className="flex items-center gap-3">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <img
+                src={pcteLogo}
+                alt="PCTE Logo"
+                className="h-9 w-auto object-contain transition-transform group-hover:scale-105"
+              />
+              <div className="flex flex-col">
+                <span className="leading-tight text-[#0F2942] dark:text-white font-black text-base md:text-lg tracking-tight">
+                  PCTE <span className="text-[#E11D48]">TRAVEL AGENCY</span>
+                </span>
+                <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  {portalBadge}
+                </span>
+              </div>
+            </Link>
+
+            <span className="hidden md:inline-block h-6 w-px bg-slate-200 dark:bg-slate-700 mx-1" />
+
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-200">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              {roleBadgeName[user?.role] || 'Portal Active'}
+            </div>
+          </div>
+
+          {/* Action Controls */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="rounded-full p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+            >
+              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+            </button>
+
+            {/* User Account / Profile Menu */}
+            {user && (
+              <div className="relative">
+                <button
+                  onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                  className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:border-[#0F2942] bg-white dark:bg-slate-800 shadow-sm"
+                >
+                  <div className="h-7 w-7 rounded-full bg-[#0F2942] text-white flex items-center justify-center text-xs font-black uppercase shadow-sm">
+                    {user.name ? user.name.charAt(0) : 'U'}
+                  </div>
+                  <div className="hidden sm:flex flex-col text-left">
+                    <span className="leading-tight text-xs font-bold truncate max-w-[100px]">{user.name}</span>
+                    <span className="text-[9px] text-[#E11D48] font-bold uppercase">{roleBadgeName[user.role] || 'Member'}</span>
+                  </div>
+                  <FiChevronDown size={13} className="text-slate-400" />
+                </button>
+
+                {userDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-[#0F2942] border border-slate-200 dark:border-slate-700 shadow-2xl p-2 z-50 space-y-1">
+                    <div className="p-2.5 border-b border-slate-100 dark:border-slate-800">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">{user.name}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
+                      <span className="inline-block mt-1 text-[9px] font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                        {roleBadgeName[user.role] || 'Member'}
+                      </span>
+                    </div>
+
+                    <Link
+                      to="/"
+                      onClick={() => setUserDropdownOpen(false)}
+                      className="flex items-center gap-2 rounded-lg p-2 text-xs font-semibold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    >
+                      <FiHome size={14} className="text-[#E11D48]" /> Main Website / Storefront
+                    </Link>
+
+                    <div className="border-t border-slate-100 dark:border-slate-800 pt-1">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setUserDropdownOpen(false);
+                          navigate('/');
+                        }}
+                        className="flex items-center gap-2 w-full text-left rounded-lg p-2 text-xs font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      >
+                        <FiLogOut size={14} /> Log Out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+          </div>
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 transition-all duration-200">
@@ -366,6 +477,32 @@ const Navbar = () => {
 
           {/* User Controls & Book CTA */}
           <div className="hidden items-center gap-3 lg:flex">
+            {/* Quick Portal Switcher Button for Logged-in Users */}
+            {user && (
+              <Link
+                to={dashboardPathFor(user.role)}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-[#0F2942] hover:bg-[#1E3A5F] text-white px-3 py-1.5 text-xs font-bold shadow-sm transition-all hover:scale-105 border border-slate-700"
+                title={`Open ${roleBadgeName[user.role] || 'Dashboard'}`}
+              >
+                {user.role === 'agency' ? (
+                  <>
+                    <FiGrid size={13} className="text-amber-400" />
+                    <span>Agency Portal</span>
+                  </>
+                ) : user.role === 'admin' ? (
+                  <>
+                    <FiShield size={13} className="text-red-400" />
+                    <span>Admin Console</span>
+                  </>
+                ) : (
+                  <>
+                    <FiUser size={13} className="text-emerald-400" />
+                    <span>My Dashboard</span>
+                  </>
+                )}
+              </Link>
+            )}
+
             {/* Dark mode toggle */}
             <button
               onClick={toggle}

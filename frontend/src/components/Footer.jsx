@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FiPhone, FiMail, FiMapPin, FiShield, FiCheckCircle } from 'react-icons/fi';
 import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 import pcteLogo from '../assets/pcte-logo.png';
@@ -52,8 +52,27 @@ const columns = [
   },
 ];
 
-const Footer = () => (
-  <footer className="bg-[#0B1727] text-slate-300 border-t border-slate-800">
+const Footer = () => {
+  const location = useLocation();
+  const isDashboardRoute = location.pathname.startsWith('/dashboard') || 
+                           location.pathname.startsWith('/agency') || 
+                           location.pathname.startsWith('/admin');
+
+  if (isDashboardRoute) {
+    return (
+      <footer className="bg-[#0B1727] text-slate-400 border-t border-slate-800 py-4 px-4 text-xs">
+        <div className="mx-auto max-w-7xl flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>© {new Date().getFullYear()} PCTE Travel Agency Portal. All rights reserved.</span>
+          <Link to="/" className="text-amber-400 hover:text-amber-300 font-bold transition-colors">
+            Return to Main Website &rarr;
+          </Link>
+        </div>
+      </footer>
+    );
+  }
+
+  return (
+    <footer className="bg-[#0B1727] text-slate-300 border-t border-slate-800">
     <div className="mx-auto max-w-7xl px-5 py-14 md:px-8">
       <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
         
@@ -160,6 +179,7 @@ const Footer = () => (
       </div>
     </div>
   </footer>
-);
+  );
+};
 
 export default Footer;

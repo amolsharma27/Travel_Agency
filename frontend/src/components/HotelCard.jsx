@@ -3,6 +3,7 @@ import { FiHeart, FiMapPin, FiCheck } from 'react-icons/fi';
 import RatingStars from './RatingStars.jsx';
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=60';
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
 
 const HotelCard = ({ hotel, wishlisted, onToggleWishlist }) => {
   const originalPrice = hotel.originalPrice || Math.round(hotel.startingPrice * 1.3);
@@ -15,8 +16,9 @@ const HotelCard = ({ hotel, wishlisted, onToggleWishlist }) => {
             src={hotel.images?.[0] || PLACEHOLDER}
             alt={hotel.name}
             onError={(e) => {
-              e.currentTarget.onerror = null;
-              e.currentTarget.src = PLACEHOLDER;
+              if (e.currentTarget.dataset.fallbackApplied) return;
+              e.currentTarget.dataset.fallbackApplied = 'true';
+              e.currentTarget.src = FALLBACK_IMAGE;
             }}
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
