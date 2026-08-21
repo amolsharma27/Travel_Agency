@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { FiUser, FiShield, FiBriefcase, FiArrowLeft } from 'react-icons/fi';
+import { FiUser, FiShield, FiBriefcase, FiArrowLeft, FiMenu, FiX, FiSettings, FiHelpCircle } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext.jsx';
 
-const DashboardLayout = ({ title, links }) => {
+const DashboardLayout = ({ title, links, bottomLinks }) => {
   const { user } = useAuth();
   const location = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const roleTag = user?.role === 'admin' 
     ? { name: 'Super Admin', color: 'bg-red-50 text-[#E11D48] dark:bg-red-950/40 dark:text-red-300 border-red-200 dark:border-red-900', icon: FiShield }
@@ -15,24 +17,38 @@ const DashboardLayout = ({ title, links }) => {
   const RoleIcon = roleTag.icon;
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-[#0B1727] min-h-screen py-8">
+    <div className="bg-[#F8FAFC] dark:bg-[#0B1727] min-h-screen py-6 md:py-8">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         
         {/* Dashboard Title & User Quick Identity */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${roleTag.color}`}>
-                <RoleIcon size={12} /> {roleTag.name}
-              </span>
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${roleTag.color}`}>
+                  <RoleIcon size={12} /> {roleTag.name}
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
+                  PCTE Travel Operations Hub
+                </span>
+              </div>
+              <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
+                {title}
+              </h1>
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 dark:text-white">
-              {title}
-            </h1>
+
+            {/* Mobile menu toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              className="lg:hidden p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] text-slate-700 dark:text-slate-200"
+              aria-label="Toggle navigation menu"
+            >
+              {mobileMenuOpen ? <FiX size={18} /> : <FiMenu size={18} />}
+            </button>
           </div>
 
           {user && (
-            <div className="flex items-center gap-3 bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl shadow-sm">
+            <div className="flex items-center gap-3 bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 px-4 py-2 rounded-xl shadow-sm self-start sm:self-auto">
               <div className="h-9 w-9 rounded-full bg-[#0F2942] text-white flex items-center justify-center font-bold text-xs uppercase shadow">
                 {user.name ? user.name.charAt(0) : 'U'}
               </div>
@@ -45,19 +61,20 @@ const DashboardLayout = ({ title, links }) => {
         </div>
 
         {/* Dashboard Grid Layout */}
-        <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+        <div className="grid gap-6 lg:gap-8 lg:grid-cols-[250px_1fr]">
           
           {/* Left Navigation Sidebar */}
-          <aside className="lg:sticky lg:top-24 h-fit">
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-3 shadow-sm flex flex-col gap-1 overflow-x-auto">
+          <aside className={`lg:sticky lg:top-24 h-fit ${mobileMenuOpen ? 'block' : 'hidden lg:block'}`}>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-3 shadow-sm flex flex-col gap-1">
               <span className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Menu Navigation
+                Main Menu
               </span>
               {links.map((link) => (
                 <NavLink
                   key={link.to}
                   to={link.to}
                   end={link.end}
+                  onClick={() => setMobileMenuOpen(false)}
                   className={({ isActive }) =>
                     `flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all duration-150 ${
                       isActive
@@ -71,7 +88,34 @@ const DashboardLayout = ({ title, links }) => {
                 </NavLink>
               ))}
 
-              <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-slate-800">
+              {bottomLinks && bottomLinks.length > 0 && (
+                <>
+                  <div className="my-2 border-t border-slate-100 dark:border-slate-800" />
+                  <span className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    Preferences
+                  </span>
+                  {bottomLinks.map((link) => (
+                    <NavLink
+                      key={link.to}
+                      to={link.to}
+                      end={link.end}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={({ isActive }) =>
+                        `flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all duration-150 ${
+                          isActive
+                            ? 'bg-[#0F2942] text-white shadow-sm border border-slate-700'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                        }`
+                      }
+                    >
+                      <link.icon size={15} className="shrink-0" />
+                      <span className="truncate">{link.label}</span>
+                    </NavLink>
+                  ))}
+                </>
+              )}
+
+              <div className="mt-2 pt-2.5 border-t border-slate-100 dark:border-slate-800">
                 <NavLink
                   to="/"
                   className="flex items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-xs font-bold text-[#E11D48] hover:bg-red-50 dark:hover:bg-red-950/30 transition-all group"

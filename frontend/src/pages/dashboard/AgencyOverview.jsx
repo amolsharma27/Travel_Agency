@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   FiBriefcase, FiDollarSign, FiPackage, FiHome, FiCheckCircle,
   FiTrendingUp, FiStar, FiCalendar, FiArrowUpRight, FiPlusCircle,
-  FiAward, FiShield, FiPercent
+  FiAward, FiShield, FiPercent, FiUsers, FiClock, FiCheckSquare,
+  FiBookOpen, FiSliders, FiArrowRight
 } from 'react-icons/fi';
 import api from '../../api/axios.js';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -20,7 +21,7 @@ const agencyMonthlySales = [
 ];
 
 const StatCard = ({ icon: Icon, label, value, subtext, badge }) => (
-  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-2">
+  <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-2 flex flex-col justify-between">
     <div className="flex items-center justify-between">
       <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
       {Icon && (
@@ -50,42 +51,137 @@ const AgencyOverview = () => {
   }, []);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       
-      {/* Agency Partner Status Banner */}
+      {/* 1. AGENCY VERIFIED TOP BANNER */}
       <div className="rounded-2xl bg-[#0F2942] p-6 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4 border border-slate-800">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full bg-amber-400/20 px-3 py-0.5 text-xs font-bold text-amber-300 border border-amber-400/30 flex items-center gap-1">
               <FiShield /> Verified Licensed Tour Operator
             </span>
             <span className="text-xs text-slate-400 font-mono">ID: PCTE-AG-2026-081</span>
           </div>
           <h2 className="font-display text-2xl font-black text-white">
-            {user?.agencyName || 'PCTE Partner Agency Operations'}
+            {user?.agencyName || 'PCTE Travel Agency — Freedom To Evolve'}
           </h2>
           <p className="text-xs text-slate-300">
             Certified partner on the PCTE Travel Agency platform. Payout settlements processed bi-weekly.
           </p>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             to="/agency/packages"
-            className="flex items-center gap-1.5 rounded-lg bg-[#E11D48] hover:bg-[#BE123C] text-white px-4 py-2.5 text-xs font-bold shadow transition-colors"
+            className="flex items-center gap-1.5 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white px-4 py-2.5 text-xs font-bold shadow transition-colors"
           >
             <FiPlusCircle /> Add New Tour
           </Link>
           <Link
             to="/agency/hotels"
-            className="flex items-center gap-1.5 rounded-lg border border-slate-600 hover:bg-slate-800 text-white px-4 py-2.5 text-xs font-bold transition-colors"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-600 hover:bg-slate-800 text-white px-4 py-2.5 text-xs font-bold transition-colors"
           >
             <FiHome /> Manage Stays
           </Link>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
+      {/* 2. ACCOUNT STATUS & QUICK ACTIONS */}
+      <div className="grid gap-6 md:grid-cols-12">
+        {/* Account Status Card (5 Cols) */}
+        <div className="md:col-span-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-3">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+            Account Status &amp; Compliance
+          </span>
+          <div className="space-y-2 text-xs">
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-2">
+                <FiCheckCircle className="text-emerald-600" />
+                <span className="font-bold text-emerald-950 dark:text-emerald-200">Account Active</span>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase">Live</span>
+            </div>
+
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-2">
+                <FiShield className="text-emerald-600" />
+                <span className="font-bold text-emerald-950 dark:text-emerald-200">License Verified</span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300">PB-TO-2024-0089</span>
+            </div>
+
+            <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
+              <div className="flex items-center gap-2">
+                <FiDollarSign className="text-emerald-600" />
+                <span className="font-bold text-emerald-950 dark:text-emerald-200">Payment Account Verified</span>
+              </div>
+              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300">HDFC •••• 9921</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Actions (7 Cols) */}
+        <div className="md:col-span-7 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-3 flex flex-col justify-between">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+            Agency Operator Fast Actions
+          </span>
+          <div className="grid grid-cols-2 gap-2.5">
+            <Link
+              to="/agency/packages"
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#0F2942] dark:hover:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-[#0F1D30] transition text-xs font-bold text-slate-800 dark:text-slate-200"
+            >
+              <div className="p-2 rounded-lg bg-[#0F2942] text-white">
+                <FiPlusCircle size={15} />
+              </div>
+              <div>
+                <p className="font-bold">+ Add New Tour</p>
+                <p className="text-[10px] text-slate-400 font-normal">Publish group departure</p>
+              </div>
+            </Link>
+
+            <Link
+              to="/agency/hotels"
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#0F2942] dark:hover:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-[#0F1D30] transition text-xs font-bold text-slate-800 dark:text-slate-200"
+            >
+              <div className="p-2 rounded-lg bg-emerald-600 text-white">
+                <FiHome size={15} />
+              </div>
+              <div>
+                <p className="font-bold">+ Add New Stay</p>
+                <p className="text-[10px] text-slate-400 font-normal">Chalet &amp; hotel inventory</p>
+              </div>
+            </Link>
+
+            <Link
+              to="/agency/bookings"
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#0F2942] dark:hover:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-[#0F1D30] transition text-xs font-bold text-slate-800 dark:text-slate-200"
+            >
+              <div className="p-2 rounded-lg bg-[#E11D48] text-white">
+                <FiBookOpen size={15} />
+              </div>
+              <div>
+                <p className="font-bold">View Bookings</p>
+                <p className="text-[10px] text-slate-400 font-normal">Passenger guest list</p>
+              </div>
+            </Link>
+
+            <Link
+              to="/agency/availability"
+              className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#0F2942] dark:hover:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-[#0F1D30] transition text-xs font-bold text-slate-800 dark:text-slate-200"
+            >
+              <div className="p-2 rounded-lg bg-amber-600 text-white">
+                <FiSliders size={15} />
+              </div>
+              <div>
+                <p className="font-bold">Manage Availability</p>
+                <p className="text-[10px] text-slate-400 font-normal">Seat allocation &amp; slots</p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. KPI CARDS GRID */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={FiDollarSign}
@@ -117,25 +213,24 @@ const AgencyOverview = () => {
         />
       </div>
 
-      {/* Monthly Sales Performance Chart */}
-      <div className="grid gap-8 lg:grid-cols-12">
+      {/* 4. MONTHLY SALES PERFORMANCE CHART & SETTLEMENT ACCOUNT */}
+      <div className="grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
               <h3 className="font-display text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <FiTrendingUp className="text-emerald-500" /> Monthly Earnings Performance (in Thousands ₹)
               </h3>
-              <p className="text-xs text-slate-500">Gross sales vs Net payout settlements received</p>
+              <p className="text-xs text-slate-500">Gross sales vs Net payout settlements credited</p>
             </div>
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-lg">
               Commission Rate: 8.5%
             </span>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-2">
             <div className="h-56 w-full">
               <svg viewBox="0 0 650 200" className="w-full h-full overflow-visible">
-                {/* Horizontal Grid */}
                 <line x1="30" y1="20" x2="620" y2="20" stroke="#e2e8f0" strokeDasharray="3 3" className="dark:stroke-slate-800" />
                 <line x1="30" y1="90" x2="620" y2="90" stroke="#e2e8f0" strokeDasharray="3 3" className="dark:stroke-slate-800" />
                 <line x1="30" y1="160" x2="620" y2="160" stroke="#cbd5e1" className="dark:stroke-slate-700" />
@@ -150,9 +245,7 @@ const AgencyOverview = () => {
                   const netH = (item.net / 180) * 140;
                   return (
                     <g key={item.month} className="group cursor-pointer">
-                      {/* Gross Bar */}
                       <rect x={x - 14} y={160 - grossH} width="12" height={grossH} rx="3" fill="#0F2942" className="dark:fill-slate-600" />
-                      {/* Net Bar */}
                       <rect x={x} y={160 - netH} width="12" height={netH} rx="3" fill="#E11D48" />
                       
                       <text x={x - 1} y="178" fontSize="11" textAnchor="middle" fill="#64748b" fontWeight="bold">
@@ -167,7 +260,7 @@ const AgencyOverview = () => {
               </svg>
             </div>
 
-            <div className="flex items-center justify-center gap-6 mt-4 text-xs font-bold border-t border-slate-100 dark:border-slate-800 pt-3">
+            <div className="flex items-center justify-center gap-6 mt-3 text-xs font-bold border-t border-slate-100 dark:border-slate-800 pt-3">
               <span className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
                 <span className="h-3 w-3 rounded bg-[#0F2942] dark:bg-slate-600" /> Gross Package Sales
               </span>
@@ -179,27 +272,29 @@ const AgencyOverview = () => {
         </div>
 
         {/* Right (4 Cols): Operator Credentials & Settlement */}
-        <div className="lg:col-span-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-6 shadow-sm space-y-4">
-          <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
-            Payout &amp; Settlement Account
-          </h3>
+        <div className="lg:col-span-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-6 shadow-sm space-y-4 flex flex-col justify-between">
+          <div className="space-y-3">
+            <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
+              Payout &amp; Settlement Account
+            </h3>
 
-          <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-4 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-500">Beneficiary Name:</span>
-              <span className="font-bold text-slate-900 dark:text-white">PCTE Travel Expeditions Pvt Ltd</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">Bank Account:</span>
-              <span className="font-mono font-bold">HDFC •••• 9921</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-500">GSTIN / Tax ID:</span>
-              <span className="font-mono font-bold">03AAECP8821Q1Z4</span>
-            </div>
-            <div className="flex justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
-              <span className="text-slate-500">Next Payout Cycle:</span>
-              <span className="font-bold text-emerald-600">25 August 2026</span>
+            <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-4 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Beneficiary Name:</span>
+                <span className="font-bold text-slate-900 dark:text-white">PCTE Travel Expeditions Pvt Ltd</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Bank Account:</span>
+                <span className="font-mono font-bold">HDFC •••• 9921</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">GSTIN / Tax ID:</span>
+                <span className="font-mono font-bold">03AAECP8821Q1Z4</span>
+              </div>
+              <div className="flex justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
+                <span className="text-slate-500">Next Payout Cycle:</span>
+                <span className="font-bold text-emerald-600">25 August 2026</span>
+              </div>
             </div>
           </div>
 
@@ -208,7 +303,7 @@ const AgencyOverview = () => {
               <FiCheckCircle /> 100% On-Time Settlement Record
             </span>
             <p className="text-[11px] leading-relaxed">
-              All client bookings are escrow-protected and paid directly into your verified bank account after tour departure.
+              All client bookings are escrow-protected and disbursed directly to your verified bank account following tour departures.
             </p>
           </div>
         </div>
