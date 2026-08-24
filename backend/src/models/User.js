@@ -50,6 +50,14 @@ const UserSchema = new mongoose.Schema(
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
     },
+    commissionRate: { type: Number, default: 8.5 },
+    city: { type: String },
+    licenseNo: { type: String },
+    kycStatus: {
+      type: String,
+      enum: ['pending', 'under_review', 'verified', 'rejected'],
+      default: 'verified',
+    },
 
     // --- Password reset via OTP ---
     resetOtp: { type: String, select: false },

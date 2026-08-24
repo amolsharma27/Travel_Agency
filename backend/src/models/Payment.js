@@ -3,9 +3,10 @@ import mongoose from 'mongoose';
 const PaymentSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    bookingType: { type: String, enum: ['package', 'hotel'], required: true },
+    bookingType: { type: String, enum: ['package', 'hotel', 'ticket', 'transportation'], required: true },
     packageBooking: { type: mongoose.Schema.Types.ObjectId, ref: 'PackageBooking' },
     hotelBooking: { type: mongoose.Schema.Types.ObjectId, ref: 'HotelBooking' },
+    ticketBooking: { type: mongoose.Schema.Types.ObjectId, ref: 'TicketBooking' },
 
     amount: { type: Number, required: true },
     currency: { type: String, default: 'INR' },

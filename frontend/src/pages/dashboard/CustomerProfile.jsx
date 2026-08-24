@@ -14,17 +14,17 @@ const CustomerProfile = () => {
 
   // Personal Info Form State
   const [form, setForm] = useState({
-    name: user?.name || 'Amol Sharma',
-    phone: user?.phone || '+91 98145 19578',
-    email: user?.email || 'amolsharma2705@gmail.com',
-    dob: '1998-05-27',
-    gender: 'Male',
-    city: 'Ludhiana',
-    state: 'Punjab',
-    address: 'Near Model Town, Ludhiana, Punjab - 141002',
-    passportNumber: 'Z8923412',
-    passportExpiry: '2032-11-15',
-    aadhaarLast4: '8821'
+    name: user?.name || '',
+    phone: user?.phone || '',
+    email: user?.email || '',
+    dob: user?.dob || '1998-05-27',
+    gender: user?.gender || 'Male',
+    city: user?.city || 'Ludhiana',
+    state: user?.state || 'Punjab',
+    address: user?.address || 'Punjab, India',
+    passportNumber: user?.passportNumber || 'Z8923412',
+    passportExpiry: user?.passportExpiry || '2032-11-15',
+    aadhaarLast4: user?.aadhaarLast4 || '8821'
   });
 
   // Emergency & Co-Travelers

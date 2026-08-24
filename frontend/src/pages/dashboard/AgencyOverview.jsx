@@ -4,21 +4,10 @@ import {
   FiBriefcase, FiDollarSign, FiPackage, FiHome, FiCheckCircle,
   FiTrendingUp, FiStar, FiCalendar, FiArrowUpRight, FiPlusCircle,
   FiAward, FiShield, FiPercent, FiUsers, FiClock, FiCheckSquare,
-  FiBookOpen, FiSliders, FiArrowRight
+  FiBookOpen, FiSliders, FiArrowRight, FiAlertCircle
 } from 'react-icons/fi';
 import api from '../../api/axios.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-
-const agencyMonthlySales = [
-  { month: 'Jan', gross: 42, net: 38.5 },
-  { month: 'Feb', gross: 58, net: 53.0 },
-  { month: 'Mar', gross: 72, net: 65.8 },
-  { month: 'Apr', gross: 89, net: 81.4 },
-  { month: 'May', gross: 110, net: 100.6 },
-  { month: 'Jun', gross: 125, net: 114.3 },
-  { month: 'Jul', gross: 142, net: 130.0 },
-  { month: 'Aug', gross: 160, net: 146.4 },
-];
 
 const StatCard = ({ icon: Icon, label, value, subtext, badge }) => (
   <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-2 flex flex-col justify-between">
@@ -45,10 +34,67 @@ const StatCard = ({ icon: Icon, label, value, subtext, badge }) => (
 const AgencyOverview = () => {
   const { user } = useAuth();
   const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchAgencyData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await api.get('/dashboard/agency');
+      if (res.data?.data) {
+        setData(res.data.data);
+      }
+    } catch (err) {
+      console.error('Failed to load agency dashboard data:', err);
+      setError('Could not load agency analytics. Please check connection.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    api.get('/dashboard/agency').then(({ data }) => setData(data.data)).catch(() => {});
+    fetchAgencyData();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] space-y-3">
+        <div className="w-10 h-10 border-4 border-[#0F2942] border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs text-slate-500 font-medium">Loading agency operations &amp; sales data...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 p-6 text-center space-y-3">
+        <FiAlertCircle className="mx-auto text-red-500 text-2xl" />
+        <p className="text-sm font-bold text-red-700 dark:text-red-300">{error}</p>
+        <button
+          onClick={fetchAgencyData}
+          className="rounded-xl bg-[#0F2942] text-white text-xs font-bold px-4 py-2 hover:bg-[#E11D48] transition"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  const grossSales = data?.revenue?.grossSales ?? 0;
+  const netPayouts = data?.revenue?.netPayouts ?? 0;
+  const commissionRate = data?.revenue?.commissionRate ?? 8.5;
+  const packagesCount = data?.listings?.packages ?? 0;
+  const hotelsCount = data?.listings?.hotels ?? 0;
+  const totalBookings = data?.bookings?.total ?? 0;
+  const pendingBookings = data?.bookings?.pending ?? 0;
+  const confirmedBookings = data?.bookings?.confirmed ?? 0;
+  const totalCustomers = data?.totalCustomers ?? 0;
+  const monthlySales = data?.monthlySales || [];
+
+  // Calculate max gross in chart for SVG scaling
+  const maxGross = Math.max(...monthlySales.map(m => m.gross || 0), 10);
+  const chartScale = maxGross > 0 ? 140 / (maxGross * 1.25) : 1;
 
   return (
     <div className="space-y-6">
@@ -60,13 +106,15 @@ const AgencyOverview = () => {
             <span className="rounded-full bg-amber-400/20 px-3 py-0.5 text-xs font-bold text-amber-300 border border-amber-400/30 flex items-center gap-1">
               <FiShield /> Verified Licensed Tour Operator
             </span>
-            <span className="text-xs text-slate-400 font-mono">ID: PCTE-AG-2026-081</span>
+            <span className="text-xs text-slate-400 font-mono">
+              ID: {user?._id ? `PCTE-AG-${user._id.slice(-6).toUpperCase()}` : 'PCTE-AG-8821'}
+            </span>
           </div>
           <h2 className="font-display text-2xl font-black text-white">
-            {user?.agencyName || 'PCTE Travel Agency — Freedom To Evolve'}
+            {user?.agencyName || user?.name || 'PCTE Travel Agency — Freedom To Evolve'}
           </h2>
           <p className="text-xs text-slate-300">
-            Certified partner on the PCTE Travel Agency platform. Payout settlements processed bi-weekly.
+            Certified partner on the PCTE Travel Agency platform. Real-time passenger bookings &amp; automated settlements.
           </p>
         </div>
 
@@ -97,7 +145,7 @@ const AgencyOverview = () => {
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
               <div className="flex items-center gap-2">
                 <FiCheckCircle className="text-emerald-600" />
-                <span className="font-bold text-emerald-950 dark:text-emerald-200">Account Active</span>
+                <span className="font-bold text-emerald-950 dark:text-emerald-200">Agency Account Active</span>
               </div>
               <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase">Live</span>
             </div>
@@ -107,15 +155,19 @@ const AgencyOverview = () => {
                 <FiShield className="text-emerald-600" />
                 <span className="font-bold text-emerald-950 dark:text-emerald-200">License Verified</span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300">PB-TO-2024-0089</span>
+              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300">
+                {user?.licenseNo || 'PB-TO-2024-0089'}
+              </span>
             </div>
 
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900">
               <div className="flex items-center gap-2">
                 <FiDollarSign className="text-emerald-600" />
-                <span className="font-bold text-emerald-950 dark:text-emerald-200">Payment Account Verified</span>
+                <span className="font-bold text-emerald-950 dark:text-emerald-200">Commission Rate</span>
               </div>
-              <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-300">HDFC •••• 9921</span>
+              <span className="text-[10px] font-mono font-bold text-emerald-700 dark:text-emerald-300">
+                {commissionRate}% Standard
+              </span>
             </div>
           </div>
         </div>
@@ -160,21 +212,23 @@ const AgencyOverview = () => {
                 <FiBookOpen size={15} />
               </div>
               <div>
-                <p className="font-bold">View Bookings</p>
-                <p className="text-[10px] text-slate-400 font-normal">Passenger guest list</p>
+                <p className="font-bold">Passenger Bookings</p>
+                <p className="text-[10px] text-slate-400 font-normal">
+                  {pendingBookings > 0 ? `${pendingBookings} Pending Actions` : `${totalBookings} Total Bookings`}
+                </p>
               </div>
             </Link>
 
             <Link
-              to="/agency/availability"
+              to="/agency/customers"
               className="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-[#0F2942] dark:hover:border-slate-600 bg-slate-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-[#0F1D30] transition text-xs font-bold text-slate-800 dark:text-slate-200"
             >
               <div className="p-2 rounded-lg bg-amber-600 text-white">
-                <FiSliders size={15} />
+                <FiUsers size={15} />
               </div>
               <div>
-                <p className="font-bold">Manage Availability</p>
-                <p className="text-[10px] text-slate-400 font-normal">Seat allocation &amp; slots</p>
+                <p className="font-bold">Customer Directory</p>
+                <p className="text-[10px] text-slate-400 font-normal">{totalCustomers} Registered Clients</p>
               </div>
             </Link>
           </div>
@@ -186,30 +240,30 @@ const AgencyOverview = () => {
         <StatCard
           icon={FiDollarSign}
           label="Total Gross Package Sales"
-          value="₹6,40,000"
-          badge="+18.4%"
-          subtext="Net Payouts: ₹5,85,600"
+          value={`₹${grossSales.toLocaleString('en-IN')}`}
+          badge={totalBookings > 0 ? `${totalBookings} Bookings` : 'No bookings yet'}
+          subtext={`Net Payouts: ₹${netPayouts.toLocaleString('en-IN')}`}
         />
         <StatCard
           icon={FiPackage}
-          label="Active Packages Listed"
-          value="8 Tours"
+          label="Active Packages &amp; Stays"
+          value={`${packagesCount + hotelsCount} Listings`}
           badge="Live"
-          subtext="Himachal, Kashmir, Spiti & Amritsar"
+          subtext={`${packagesCount} Tours · ${hotelsCount} Stays`}
         />
         <StatCard
           icon={FiStar}
           label="Average Guest Rating"
           value="4.92 ★"
           badge="Top Rated"
-          subtext="Based on 280+ traveler reviews"
+          subtext="Verified Traveler Reviews"
         />
         <StatCard
           icon={FiPercent}
-          label="Seat Occupancy Rate"
-          value="94.2%"
+          label="Confirmed Conversions"
+          value={totalBookings > 0 ? `${Math.round((confirmedBookings / totalBookings) * 100)}%` : '100%'}
           badge="High Demand"
-          subtext="Every Friday departures sold out"
+          subtext={`${confirmedBookings} Confirmed Departures`}
         />
       </div>
 
@@ -221,10 +275,10 @@ const AgencyOverview = () => {
               <h3 className="font-display text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <FiTrendingUp className="text-emerald-500" /> Monthly Earnings Performance (in Thousands ₹)
               </h3>
-              <p className="text-xs text-slate-500">Gross sales vs Net payout settlements credited</p>
+              <p className="text-xs text-slate-500">Real database aggregated Gross sales vs Net payout settlements</p>
             </div>
             <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-1 rounded-lg">
-              Commission Rate: 8.5%
+              Commission Rate: {commissionRate}%
             </span>
           </div>
 
@@ -235,14 +289,14 @@ const AgencyOverview = () => {
                 <line x1="30" y1="90" x2="620" y2="90" stroke="#e2e8f0" strokeDasharray="3 3" className="dark:stroke-slate-800" />
                 <line x1="30" y1="160" x2="620" y2="160" stroke="#cbd5e1" className="dark:stroke-slate-700" />
 
-                <text x="5" y="25" fontSize="10" fill="#94a3b8" fontFamily="monospace">₹160k</text>
-                <text x="5" y="95" fontSize="10" fill="#94a3b8" fontFamily="monospace">₹80k</text>
+                <text x="5" y="25" fontSize="10" fill="#94a3b8" fontFamily="monospace">₹{Math.round(maxGross * 1.25)}k</text>
+                <text x="5" y="95" fontSize="10" fill="#94a3b8" fontFamily="monospace">₹{Math.round(maxGross * 0.6)}k</text>
                 <text x="15" y="165" fontSize="10" fill="#94a3b8" fontFamily="monospace">0</text>
 
-                {agencyMonthlySales.map((item, i) => {
+                {monthlySales.map((item, i) => {
                   const x = 60 + i * 72;
-                  const grossH = (item.gross / 180) * 140;
-                  const netH = (item.net / 180) * 140;
+                  const grossH = Math.max((item.gross || 0) * chartScale, 4);
+                  const netH = Math.max((item.net || 0) * chartScale, 3);
                   return (
                     <g key={item.month} className="group cursor-pointer">
                       <rect x={x - 14} y={160 - grossH} width="12" height={grossH} rx="3" fill="#0F2942" className="dark:fill-slate-600" />
@@ -251,9 +305,11 @@ const AgencyOverview = () => {
                       <text x={x - 1} y="178" fontSize="11" textAnchor="middle" fill="#64748b" fontWeight="bold">
                         {item.month}
                       </text>
-                      <text x={x - 1} y={160 - grossH - 5} fontSize="9" textAnchor="middle" fill="#E11D48" fontWeight="bold" fontFamily="monospace">
-                        ₹{item.gross}k
-                      </text>
+                      {item.gross > 0 && (
+                        <text x={x - 1} y={160 - grossH - 5} fontSize="9" textAnchor="middle" fill="#E11D48" fontWeight="bold" fontFamily="monospace">
+                          ₹{item.gross}k
+                        </text>
+                      )}
                     </g>
                   );
                 })}
@@ -281,7 +337,7 @@ const AgencyOverview = () => {
             <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-4 border border-slate-200 dark:border-slate-700 space-y-2.5 text-xs">
               <div className="flex justify-between">
                 <span className="text-slate-500">Beneficiary Name:</span>
-                <span className="font-bold text-slate-900 dark:text-white">PCTE Travel Expeditions Pvt Ltd</span>
+                <span className="font-bold text-slate-900 dark:text-white">{user?.agencyName || user?.name || 'PCTE Operator'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Bank Account:</span>
@@ -292,8 +348,8 @@ const AgencyOverview = () => {
                 <span className="font-mono font-bold">03AAECP8821Q1Z4</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-slate-200 dark:border-slate-700">
-                <span className="text-slate-500">Next Payout Cycle:</span>
-                <span className="font-bold text-emerald-600">25 August 2026</span>
+                <span className="text-slate-500">Settlement Cycle:</span>
+                <span className="font-bold text-emerald-600">Bi-Weekly Automated Payout</span>
               </div>
             </div>
           </div>

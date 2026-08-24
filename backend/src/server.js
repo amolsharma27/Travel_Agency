@@ -20,6 +20,8 @@ import notificationRoutes from './routes/notificationRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
+import ticketBookingRoutes from './routes/ticketBookingRoutes.js';
+import bookingRoutes from './routes/bookingRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -48,6 +50,8 @@ app.use('/api/packages', packageRoutes);
 app.use('/api/hotels', hotelRoutes);
 app.use('/api/package-bookings', packageBookingRoutes);
 app.use('/api/hotel-bookings', hotelBookingRoutes);
+app.use('/api/ticket-bookings', ticketBookingRoutes);
+app.use('/api/bookings', bookingRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/invoices', invoiceRoutes);
 app.use('/api/reviews', reviewRoutes);
