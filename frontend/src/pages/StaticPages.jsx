@@ -253,7 +253,7 @@ export const Contact = () => {
               <FiPhone className="text-amber-400 shrink-0 text-base mt-0.5" />
               <div>
                 <p className="font-bold text-white">Call / Helpline</p>
-                <p className="text-slate-300 font-mono">+91 98145 19578 / +91 99881 10021</p>
+                <p className="text-slate-300 font-mono">+91 98765 43210 / +91 98765 43211</p>
               </div>
             </div>
 
@@ -261,7 +261,7 @@ export const Contact = () => {
               <FiMail className="text-amber-400 shrink-0 text-base mt-0.5" />
               <div>
                 <p className="font-bold text-white">Official Email</p>
-                <p className="text-slate-300">amolsharma2705@gmail.com</p>
+                <p className="text-slate-300">info@pctetravels.com</p>
               </div>
             </div>
 
@@ -275,7 +275,7 @@ export const Contact = () => {
 
             <div className="pt-2 border-t border-slate-800 space-y-2">
               <a
-                href="https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency"
+                href="https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-colors"
@@ -284,20 +284,20 @@ export const Contact = () => {
               </a>
               <div className="flex gap-2">
                 <a
-                  href="https://instagram.com/amol_sharma_27"
+                  href="https://instagram.com/pctetravels"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 py-2 text-xs font-semibold text-slate-300 hover:border-pink-500 hover:text-pink-400 transition-colors"
                 >
-                  <FaInstagram /> @amol_sharma_27
+                  <FaInstagram /> @pctetravels
                 </a>
                 <a
-                  href="https://facebook.com/amol.sharma.27"
+                  href="https://facebook.com/pctetravels"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 py-2 text-xs font-semibold text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
                 >
-                  <FaFacebook /> Amol Sharma
+                  <FaFacebook /> PCTE Travels
                 </a>
               </div>
             </div>
@@ -310,11 +310,11 @@ export const Contact = () => {
           <form onSubmit={submit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
-              <input required placeholder="Amol Sharma" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
+              <input required placeholder="Your Name" value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
-              <input required type="email" placeholder="amolsharma2705@gmail.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
+              <input required type="email" placeholder="yourname@example.com" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Tour Interest *</label>

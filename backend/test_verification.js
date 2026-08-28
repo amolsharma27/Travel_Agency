@@ -23,7 +23,7 @@ async function runVerification() {
 
   // Step 0: Authenticate all 4 personas
   console.log('🔐 Authenticating users...');
-  const customer = await login('amolsharma2705@gmail.com', 'Customer@123');
+  const customer = await login('customer@pctetravels.com', 'Customer@123');
   const agency1 = await login('agency@travelstay.com', 'Agency@123'); // Agency 1 (PCTE)
   const agency2 = await login('agency2@travelstay.com', 'Agency@123'); // Agency 2 (Himalayan Wanderers)
   const admin = await login('admin@travelstay.com', 'Admin@123');
@@ -59,7 +59,7 @@ async function runVerification() {
       roomsBooked: 1,
       adults: 2,
       contactName: customer.user.name,
-      contactPhone: customer.user.phone || '+91 98145 19578',
+      contactPhone: customer.user.phone || '+91 98765 43210',
       contactEmail: customer.user.email,
     }),
   })).json();

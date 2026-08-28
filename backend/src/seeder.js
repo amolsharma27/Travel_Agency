@@ -39,19 +39,19 @@ const run = async () => {
     email: 'admin@travelstay.com',
     password: 'Admin@123',
     role: 'admin',
-    phone: '+91 98145 10001',
+    phone: '+91 98765 10001',
     status: 'active',
   });
 
   const agency1 = await User.create({
-    name: 'Amol Sharma',
+    name: 'PCTE Travel Agency',
     email: 'agency@travelstay.com',
     password: 'Agency@123',
     role: 'agency',
     agencyName: 'PCTE Travel Agency',
     agencyDescription: 'Premium group tours, mountain expeditions, and verified hotel stays across Himachal, Kashmir, and Rajasthan.',
     agencyStatus: 'approved',
-    phone: '+91 98145 19578',
+    phone: '+91 98765 43210',
     city: 'Ludhiana, Punjab',
     licenseNo: 'PB-TO-2024-0089',
     commissionRate: 8.5,
@@ -84,11 +84,11 @@ const run = async () => {
   });
 
   const customer2 = await User.create({
-    name: 'Amol Sharma',
-    email: 'amolsharma2705@gmail.com',
+    name: 'Rohit Sharma',
+    email: 'customer@pctetravels.com',
     password: 'Customer@123',
     role: 'customer',
-    phone: '+91 98145 19578',
+    phone: '+91 98765 43210',
     city: 'Ludhiana, Punjab',
     status: 'active',
   });
@@ -316,7 +316,7 @@ const run = async () => {
   });
 
   console.log('Creating initial realistic bookings...');
-  // 1. Package Booking 1 (Amol Sharma with Agency 1 - Confirmed)
+  // 1. Package Booking 1 (Rohit Sharma with Agency 1 - Confirmed)
   const pb1 = await PackageBooking.create({
     customer: customer2._id,
     package: pkg1._id,
@@ -379,7 +379,7 @@ const run = async () => {
     bookingReference: 'PCTE-AG-8944',
   });
 
-  // 5. Ticket Booking 1 (Amol Sharma - Volvo Bus - Confirmed)
+  // 5. Ticket Booking 1 (Rohit Sharma - Volvo Bus - Confirmed)
   const tb1 = await TicketBooking.create({
     customer: customer2._id,
     agency: agency1._id,
@@ -424,7 +424,7 @@ const run = async () => {
     bookingReference: 'TKT-FLT-9921',
   });
 
-  // 7. Completed Booking (Amol Sharma - Past Tour)
+  // 7. Completed Booking (Rohit Sharma - Past Tour)
   await PackageBooking.create({
     customer: customer2._id,
     package: pkg1._id,
@@ -486,8 +486,8 @@ const run = async () => {
   await ContactMessage.create([
     {
       name: 'Rohan Joshi',
-      email: 'rohan.j@gmail.com',
-      phone: '+91 98111 22334',
+      email: 'rohan.j@example.com',
+      phone: '+91 98765 22334',
       subject: 'Inquiry for 15-passenger corporate group to Spiti',
       message: 'We are planning a corporate retreat to Spiti Valley in October. Please share customized package quote.',
       status: 'open',
@@ -501,7 +501,7 @@ const run = async () => {
   console.log('Agency 1 login:  agency@travelstay.com / Agency@123 (PCTE Travel Agency)');
   console.log('Agency 2 login:  agency2@travelstay.com / Agency@123 (Himalayan Wanderers)');
   console.log('Customer 1 login: customer@travelstay.com / Customer@123 (Priya Sharma)');
-  console.log('Customer 2 login: amolsharma2705@gmail.com / Customer@123 (Amol Sharma)');
+  console.log('Customer 2 login: customer@pctetravels.com / Customer@123 (Rohit Sharma)');
   console.log('=======================================');
   process.exit(0);
 };

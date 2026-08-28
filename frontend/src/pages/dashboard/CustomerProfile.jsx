@@ -31,12 +31,12 @@ const CustomerProfile = () => {
   const [emergencyContact, setEmergencyContact] = useState({
     name: 'Rohit Sharma',
     relationship: 'Brother',
-    phone: '+91 99881 10021'
+    phone: '+91 98765 43211'
   });
 
   const [coTravelers, setCoTravelers] = useState([
     { id: 1, name: 'Ananya Verma', relation: 'Friend / Colleague', phone: '+91 98765 11223', passport: 'P7821902' },
-    { id: 2, name: 'Siddharth Sharma', relation: 'Family Member', phone: '+91 98145 22334', passport: 'N6629103' }
+    { id: 2, name: 'Siddharth Verma', relation: 'Family Member', phone: '+91 98765 22334', passport: 'N6629103' }
   ]);
 
   const [passwords, setPasswords] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
@@ -416,7 +416,7 @@ const CustomerProfile = () => {
           <div className="flex items-center justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
             <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
               <FiShield className="text-emerald-500" />
-              <span>Two-Factor Authentication (OTP on +91 98145 19578) is <b>Active</b></span>
+              <span>Two-Factor Authentication (OTP on verified phone) is <b>Active</b></span>
             </div>
             <button
               type="submit"

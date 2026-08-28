@@ -86,7 +86,7 @@ export const createHotelBooking = asyncHandler(async (req, res) => {
     children,
     guests,
     contactName: contactName || req.user.name,
-    contactPhone: contactPhone || req.user.phone || '+91 98145 19578',
+    contactPhone: contactPhone || req.user.phone || '+91 98765 43210',
     contactEmail: contactEmail || req.user.email,
     pricePerNight: room.basePrice || hotel.startingPrice || 3499,
     subtotal,

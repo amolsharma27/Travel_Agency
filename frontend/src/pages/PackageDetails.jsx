@@ -292,7 +292,7 @@ const PackageDetails = () => {
             </button>
 
             <a
-              href={`https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
+              href={`https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 w-full rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 text-xs font-bold text-white shadow transition-colors"

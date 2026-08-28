@@ -6,7 +6,7 @@ import {
 } from 'react-icons/fi';
 
 const mockAllReviews = [
-  { id: 'rev_01', customer: 'Amol Sharma', rating: 5, target: 'Himachal Group Tour: Jibhi & Tirthan Valley', category: 'Tour Package', date: '15 Jan 2026', comment: 'Exceptional experience! The riverside wooden cottages and snowy trail to Serolsar lake were organized seamlessly. The tour lead was very courteous.', status: 'published', response: null },
+  { id: 'rev_01', customer: 'Aman Sharma', rating: 5, target: 'Himachal Group Tour: Jibhi & Tirthan Valley', category: 'Tour Package', date: '15 Jan 2026', comment: 'Exceptional experience! The riverside wooden cottages and snowy trail to Serolsar lake were organized seamlessly. The tour lead was very courteous.', status: 'published', response: null },
   { id: 'rev_02', customer: 'Priya Verma', rating: 5, target: 'Kashmir Paradise Group Tour', category: 'Tour Package', date: '02 Feb 2026', comment: 'Dal Lake shikara ride at sunset was pure magic. Gulmarg gondola Phase 2 tickets were arranged beforehand so we had zero wait time.', status: 'published', response: 'Thank you Priya! Delighted you had a wonderful Kashmir holiday.' },
   { id: 'rev_03', customer: 'Karanvir Singh', rating: 4.8, target: 'Snow Valley Himalayan Cedar Resort', category: 'Hotel & Stay', date: '10 Feb 2026', comment: 'Pine forest view from the balcony room was breathtaking. Food in the restaurant was authentic and hygienic.', status: 'published', response: null },
   { id: 'rev_04', customer: 'Rohit Verma', rating: 5, target: 'Amritsar Spiritual & Heritage Weekend Tour', category: 'Tour Package', date: '20 Jan 2026', comment: 'Golden Temple midnight palki seva and Wagah Border VIP seats were phenomenal. Thank you PCTE travels!', status: 'published', response: null },

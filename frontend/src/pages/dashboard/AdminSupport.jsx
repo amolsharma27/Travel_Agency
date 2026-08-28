@@ -7,9 +7,9 @@ const mockSupportTickets = [
   {
     _id: 'tkt_01',
     subject: 'Urgent: PSK Appointment Slot Rescheduling for Tatkaal Application',
-    name: 'Amol Sharma',
-    email: 'amolsharma2705@gmail.com',
-    phone: '+91 98145 19578',
+    name: 'Rohit Sharma',
+    email: 'rohit.sharma@example.com',
+    phone: '+91 98765 43210',
     priority: 'high',
     status: 'open',
     message: 'Need to shift PSK Ludhiana appointment slot from Friday 10 AM to next Monday due to a business meeting in Chandigarh. Please advise if documents need re-verification.',

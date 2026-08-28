@@ -4,10 +4,10 @@
 export const mockUsers = {
   customer: {
     _id: 'cust_001',
-    name: 'Amol Sharma',
-    email: 'amolsharma2705@gmail.com',
+    name: 'Rohit Sharma',
+    email: 'customer@pctetravels.com',
     role: 'customer',
-    phone: '+91 98145 19578',
+    phone: '+91 98765 43210',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
     city: 'Ludhiana, Punjab',
     joinedDate: 'March 2023',
@@ -18,20 +18,20 @@ export const mockUsers = {
   agency: {
     _id: 'agency_001',
     name: 'PCTE Travel Agency',
-    email: 'amolsharma2705@gmail.com',
+    email: 'agency@pctetravels.com',
     role: 'agency',
     agencyName: 'PCTE Travel Agency — Freedom To Evolve',
     agencyDescription: 'Premier Punjab & North India Tour Operator specializing in group departures, customized private holidays, adventure sports, transport logistics, and passport assistance.',
     agencyStatus: 'approved',
-    phone: '+91 98145 19578',
+    phone: '+91 98765 43210',
     avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80',
   },
   admin: {
     _id: 'admin_001',
-    name: 'Amol Sharma (Admin)',
-    email: 'amolsharma2705@gmail.com',
+    name: 'PCTE Admin',
+    email: 'admin@pctetravels.com',
     role: 'admin',
-    phone: '+91 99881 10021',
+    phone: '+91 98765 43211',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80',
   }
 };

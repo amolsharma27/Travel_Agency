@@ -12,7 +12,7 @@ const AgencySettings = () => {
   const [form, setForm] = useState({
     agencyName: user?.agencyName || 'PCTE Travel Agency — Freedom To Evolve',
     email: user?.email || 'agency@pctetravels.com',
-    phone: user?.phone || '+91 99881 10021',
+    phone: user?.phone || '+91 98765 43210',
     address: 'PCTE Campus, Near Baddowal, Ferozepur Road, Ludhiana, Punjab - 142021',
     website: 'https://pctetravels.com',
     licenseNumber: 'PB-TO-2024-0089',

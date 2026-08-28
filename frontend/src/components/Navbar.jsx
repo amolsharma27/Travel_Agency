@@ -209,45 +209,45 @@ const Navbar = () => {
           {/* Left: Contact Numbers & Email */}
           <div className="flex items-center gap-3.5 text-slate-300 font-medium text-[11px] md:text-xs">
             <span className="hidden lg:inline text-slate-400 font-bold">PCTE Travel Desk:</span>
-            <a href="tel:9814519578" className="flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
-              <FiPhone className="text-amber-400" /> +91 98145 19578
+            <a href="tel:9876543210" className="flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
+              <FiPhone className="text-amber-400" /> +91 98765 43210
             </a>
             <span className="text-slate-600">/</span>
-            <a href="tel:9988110021" className="hidden sm:flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
-              +91 99881 10021
+            <a href="tel:9876543211" className="hidden sm:flex items-center gap-1 text-slate-200 hover:text-white transition-colors font-mono">
+              +91 98765 43211
             </a>
             <span className="hidden md:inline text-slate-600">|</span>
-            <a href="mailto:amolsharma2705@gmail.com" className="hidden md:flex items-center gap-1 text-slate-200 hover:text-white transition-colors">
-              <FiMail className="text-amber-400" /> amolsharma2705@gmail.com
+            <a href="mailto:info@pctetravels.com" className="hidden md:flex items-center gap-1 text-slate-200 hover:text-white transition-colors">
+              <FiMail className="text-amber-400" /> info@pctetravels.com
             </a>
           </div>
 
           {/* Right: Social Media, Passport & WhatsApp */}
           <div className="flex items-center gap-3 text-[11px] font-medium text-slate-300">
             <a
-              href="https://instagram.com/amol_sharma_27"
+              href="https://instagram.com/pctetravels"
               target="_blank"
               rel="noreferrer"
-              title="Instagram @amol_sharma_27"
+              title="Instagram @pctetravels"
               className="hidden sm:flex items-center gap-1 text-pink-400 hover:text-pink-300 transition-colors"
             >
-              <FaInstagram /> <span className="hidden xl:inline">@amol_sharma_27</span>
+              <FaInstagram /> <span className="hidden xl:inline">@pctetravels</span>
             </a>
             <a
-              href="https://facebook.com/amol.sharma.27"
+              href="https://facebook.com/pctetravels"
               target="_blank"
               rel="noreferrer"
-              title="Facebook Amol Sharma"
+              title="Facebook PCTE Travels"
               className="hidden sm:flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
             >
-              <FaFacebook /> <span className="hidden xl:inline">Amol Sharma</span>
+              <FaFacebook /> <span className="hidden xl:inline">PCTE Travels</span>
             </a>
             <span className="hidden sm:inline text-slate-600">|</span>
             <Link to="/passport-services" className="hidden sm:flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-bold">
               <FiShield className="text-amber-400" /> Passport Help
             </Link>
             <a
-              href="https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20need%20assistance%20with%20travel%20booking"
+              href="https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20need%20assistance%20with%20travel%20booking"
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold"

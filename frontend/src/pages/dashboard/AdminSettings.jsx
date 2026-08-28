@@ -8,8 +8,8 @@ import {
 const AdminSettings = () => {
   const [settings, setSettings] = useState({
     platformName: 'PCTE Travel Agency — Freedom To Evolve',
-    supportEmail: 'amolsharma2705@gmail.com',
-    supportPhone: '+91 98145 19578',
+    supportEmail: 'support@pctetravels.com',
+    supportPhone: '+91 98765 43210',
     defaultCommissionRate: '8.5',
     escrowHoldingDays: '7',
     maintenanceMode: false,

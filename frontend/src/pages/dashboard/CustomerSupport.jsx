@@ -85,7 +85,7 @@ const CustomerSupport = () => {
       {/* Direct Contact Channels */}
       <div className="grid gap-3 sm:grid-cols-3">
         <a
-          href="https://wa.me/919814519578"
+          href="https://wa.me/919876543210"
           target="_blank"
           rel="noreferrer"
           className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 shadow-sm hover:border-emerald-500 transition space-y-1 block"
@@ -94,31 +94,31 @@ const CustomerSupport = () => {
             <span className="text-[10px] font-bold uppercase text-slate-400">Instant WhatsApp</span>
             <FaWhatsapp className="text-emerald-500" size={16} />
           </div>
-          <p className="font-bold text-xs text-slate-900 dark:text-white">+91 98145 19578</p>
+          <p className="font-bold text-xs text-slate-900 dark:text-white">+91 98765 43210</p>
           <span className="text-[10px] text-emerald-600 font-semibold">Available 24/7 for On-Trip Travelers</span>
         </a>
 
         <a
-          href="tel:+919988110021"
+          href="tel:+919876543211"
           className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 shadow-sm hover:border-[#0F2942] transition space-y-1 block"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase text-slate-400">Helpline Desk</span>
             <FiPhone className="text-blue-500" size={16} />
           </div>
-          <p className="font-bold text-xs text-slate-900 dark:text-white">+91 99881 10021</p>
+          <p className="font-bold text-xs text-slate-900 dark:text-white">+91 98765 43211</p>
           <span className="text-[10px] text-slate-400">Mon - Sat (09:00 AM - 08:00 PM)</span>
         </a>
 
         <a
-          href="mailto:amolsharma2705@gmail.com"
+          href="mailto:support@pctetravels.com"
           className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 shadow-sm hover:border-[#E11D48] transition space-y-1 block"
         >
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase text-slate-400">Official Email</span>
             <FiMail className="text-[#E11D48]" size={16} />
           </div>
-          <p className="font-bold text-xs text-slate-900 dark:text-white truncate">amolsharma2705@gmail.com</p>
+          <p className="font-bold text-xs text-slate-900 dark:text-white truncate">support@pctetravels.com</p>
           <span className="text-[10px] text-slate-400">Replies within 2 Hours</span>
         </a>
       </div>

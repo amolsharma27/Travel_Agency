@@ -8,12 +8,12 @@ import {
 const mockAgencyGuestReviews = [
   {
     id: 'ag_rev_1',
-    customer: 'Amol Sharma',
+    customer: 'Rohit Sharma',
     rating: 5,
     tour: 'Himachal Group Tour: Jibhi, Tirthan Valley & Jalori Pass',
     date: '15 Jan 2026',
     comment: 'Exceptional trip! The riverside cottages in Jibhi and the Serolsar lake hike were very well coordinated. Bus was comfortable with timely stops.',
-    response: 'Thank you Amol! We are thrilled you enjoyed the Jibhi winter departure with our team.'
+    response: 'Thank you Rohit! We are thrilled you enjoyed the Jibhi winter departure with our team.'
   },
   {
     id: 'ag_rev_2',

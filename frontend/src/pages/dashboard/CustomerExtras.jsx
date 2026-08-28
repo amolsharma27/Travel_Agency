@@ -242,7 +242,7 @@ export const CustomerPayments = () => {
             <div className="space-y-2.5 text-xs">
               <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                 <span className="text-slate-500">Billed To:</span>
-                <span className="font-bold">Amol Sharma (Ludhiana, Punjab)</span>
+                <span className="font-bold">Rohit Sharma (Ludhiana, Punjab)</span>
               </div>
               <div className="flex justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                 <span className="text-slate-500">Service:</span>

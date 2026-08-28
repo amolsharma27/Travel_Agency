@@ -98,11 +98,11 @@ const Footer = () => {
           <div className="space-y-2 text-xs text-slate-300 pt-2 border-t border-slate-800/80">
             <p className="flex items-center gap-2">
               <FiPhone className="text-amber-400 shrink-0" />
-              <a href="tel:9814519578" className="hover:text-white font-mono">+91 98145 19578</a> / <a href="tel:9988110021" className="hover:text-white font-mono">+91 99881 10021</a>
+              <a href="tel:9876543210" className="hover:text-white font-mono">+91 98765 43210</a> / <a href="tel:9876543211" className="hover:text-white font-mono">+91 98765 43211</a>
             </p>
             <p className="flex items-center gap-2">
               <FiMail className="text-amber-400 shrink-0" />
-              <a href="mailto:amolsharma2705@gmail.com" className="hover:text-white">amolsharma2705@gmail.com</a>
+              <a href="mailto:info@pctetravels.com" className="hover:text-white">info@pctetravels.com</a>
             </p>
             <p className="flex items-start gap-2 text-slate-400">
               <FiMapPin className="text-amber-400 shrink-0 mt-0.5" />
@@ -113,29 +113,29 @@ const Footer = () => {
           {/* Social Icons */}
           <div className="flex gap-3 pt-2">
             <a
-              href="https://wa.me/919814519578?text=Hi%20PCTE%20Travel%20Agency"
+              href="https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency"
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-500 transition-colors"
-              title="WhatsApp +91 98145 19578"
+              title="WhatsApp Support"
             >
               <FaWhatsapp size={15} />
             </a>
             <a
-              href="https://instagram.com/amol_sharma_27"
+              href="https://instagram.com/pctetravels"
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:border-pink-500 hover:text-pink-400 transition-colors"
-              title="Instagram @amol_sharma_27"
+              title="Instagram @pctetravels"
             >
               <FaInstagram size={14} />
             </a>
             <a
-              href="https://facebook.com/amol.sharma.27"
+              href="https://facebook.com/pctetravels"
               target="_blank"
               rel="noopener noreferrer"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-slate-700 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors"
-              title="Facebook Amol Sharma"
+              title="Facebook PCTE Travels"
             >
               <FaFacebook size={14} />
             </a>

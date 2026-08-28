@@ -907,7 +907,7 @@ export const getAdminAgencies = asyncHandler(async (req, res) => {
         name: a.agencyName || a.name,
         owner: a.name,
         email: a.email,
-        phone: a.phone || '+91 99881 10021',
+        phone: a.phone || '+91 98765 43210',
         city: a.city || 'Punjab, India',
         licenseNo: a.licenseNo || `PB-TO-${a._id.toString().slice(-4).toUpperCase()}`,
         commissionRate: a.commissionRate || 8.5,
@@ -981,7 +981,7 @@ export const getAdminListings = asyncHandler(async (req, res) => {
       packages: formattedPackages,
       hotels: formattedHotels,
       passport: [
-        { _id: 'ps_p1', applicantName: 'Amol Sharma', phone: '+91 98145 19578', pskOffice: 'PSK Ludhiana', type: 'Tatkaal Adult Passport Assistance', ref: 'MEA-LDH-9921', govtFee: 3500, agencyFee: 899, status: 'approved', submittedOn: '19 Aug 2026' },
+        { _id: 'ps_p1', applicantName: 'Rohit Sharma', phone: '+91 98765 43210', pskOffice: 'PSK Ludhiana', type: 'Tatkaal Adult Passport Assistance', ref: 'MEA-LDH-9921', govtFee: 3500, agencyFee: 899, status: 'approved', submittedOn: '19 Aug 2026' },
         { _id: 'ps_p2', applicantName: 'Sumanpreet Kaur', phone: '+91 98765 22119', pskOffice: 'PSK Jalandhar', type: 'Fresh 36-Page Normal Passport', ref: 'MEA-JAL-4102', govtFee: 1500, agencyFee: 499, status: 'approved', submittedOn: '18 Aug 2026' },
       ],
       transportation: [
