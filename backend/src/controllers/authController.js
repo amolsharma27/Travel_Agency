@@ -208,3 +208,63 @@ export const changePassword = asyncHandler(async (req, res) => {
   await user.save();
   res.json({ success: true, message: 'Password changed successfully' });
 });
+
+// @desc  Admin: list all users & agencies with verification statuses
+// @route GET /api/auth/users
+// @access Private/Admin
+export const getAllUsersAdmin = asyncHandler(async (req, res) => {
+  const users = await User.find().select('-password').sort('-createdAt');
+  res.json({ success: true, count: users.length, data: users });
+});
+
+// @desc  Admin: approve / verify agency KYC and license
+// @route PUT /api/auth/users/:id/verify
+// @access Private/Admin
+export const verifyUserOrAgency = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  user.agencyStatus = 'approved';
+  user.kycStatus = 'verified';
+  await user.save();
+
+  res.json({ success: true, data: user, message: `Agency ${user.agencyName || user.name} is now verified and approved.` });
+});
+
+// @desc  Admin: remove / delete unverified or spam user
+// @route DELETE /api/auth/users/:id
+// @access Private/Admin
+export const deleteUserAdmin = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  if (user.role === 'admin' && String(user._id) === String(req.user._id)) {
+    res.status(400);
+    throw new Error('Cannot delete your own admin account');
+  }
+
+  await user.deleteOne();
+  res.json({ success: true, message: `User ${user.name} removed successfully.` });
+});
+
+// @desc  Admin: toggle active/blocked status
+// @route PUT /api/auth/users/:id/status
+// @access Private/Admin
+export const toggleUserStatus = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  user.status = req.body.status || (user.status === 'active' ? 'blocked' : 'active');
+  await user.save();
+
+  res.json({ success: true, data: user, message: `Status updated to ${user.status}` });
+});

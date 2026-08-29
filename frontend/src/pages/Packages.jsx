@@ -42,15 +42,15 @@ const Packages = () => {
           Object.entries(filters).filter(([, v]) => v !== '' && v !== 'All')
         );
         const { data } = await api.get('/packages', { params: cleanParams });
-        if (data?.data?.length) {
+        if (data && Array.isArray(data.data)) {
           setPackages(data.data);
-          setTotal(data.total);
+          setTotal(data.total !== undefined ? data.total : data.data.length);
           setPages(data.pages || 1);
           setLoading(false);
           return;
         }
       } catch {
-        // fallback
+        // network fallback
       }
 
       let local = getStoredPackages();

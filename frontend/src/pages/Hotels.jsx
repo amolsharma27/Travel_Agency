@@ -63,15 +63,10 @@ const Hotels = () => {
       );
       if (query.amenities?.length) cleanParams.amenities = query.amenities.join(',');
       const { data } = await api.get('/hotels', { params: cleanParams });
-      if (data?.data && data.data.length > 0) {
+      if (data && Array.isArray(data.data)) {
         setHotels(data.data);
-        setTotal(data.total);
+        setTotal(data.total !== undefined ? data.total : data.data.length);
         setPages(data.pages || 1);
-      } else {
-        const fallback = getStoredHotels();
-        setHotels(fallback);
-        setTotal(fallback.length);
-        setPages(1);
       }
     } catch {
       const fallback = getStoredHotels();

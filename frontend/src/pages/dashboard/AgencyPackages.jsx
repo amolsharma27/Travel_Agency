@@ -119,6 +119,7 @@ const AgencyPackages = () => {
   const [filterTab, setFilterTab] = useState('All'); // 'All' | 'Active' | 'Draft' | 'Expired'
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingPackageId, setEditingPackageId] = useState(null);
   const [selectedTourInspect, setSelectedTourInspect] = useState(null);
   const [form, setForm] = useState(emptyNewTour);
 
@@ -178,6 +179,32 @@ const AgencyPackages = () => {
     });
   };
 
+  const handleEditTour = (tour) => {
+    setEditingPackageId(tour._id);
+    setForm({
+      title: tour.title || '',
+      destination: tour.destination || '',
+      tourType: tour.tourType || tour.category || 'Group Tour',
+      durationDays: tour.durationDays || 3,
+      durationNights: tour.durationNights || 2,
+      availableSeats: tour.availableSeats || tour.totalSeats || 20,
+      price: tour.price || 5000,
+      discount: tour.discountPercent || 0,
+      finalPrice: tour.discountPrice || tour.price || 5000,
+      coverImage: tour.images?.[0] || '',
+      inclusions: tour.inclusions || ['Transportation', 'Hotel', 'Meals', 'Guide'],
+      description: tour.description || '',
+      meetingPoint: tour.meetingPoint || 'Tribune Chowk / ISBT Terminal',
+    });
+    setShowAddModal(true);
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingPackageId(null);
+    setForm(emptyNewTour);
+    setShowAddModal(true);
+  };
+
   const handleSaveTour = async (isPublish) => {
     if (!form.title || !form.destination || !form.price) {
       toast.error('Please fill in title, destination, and pricing');
@@ -202,15 +229,22 @@ const AgencyPackages = () => {
         status: isPublish ? 'approved' : 'pending',
       };
 
-      await api.post('/packages', payload);
-      toast.success(isPublish ? 'Tour package published live!' : 'Tour draft saved successfully');
+      if (editingPackageId) {
+        await api.put(`/packages/${editingPackageId}`, payload);
+        toast.success('Tour package updated successfully in database!');
+      } else {
+        await api.post('/packages', payload);
+        toast.success(isPublish ? 'Tour package published live to catalog!' : 'Tour draft saved successfully');
+      }
+
       setShowAddModal(false);
+      setEditingPackageId(null);
       setForm(emptyNewTour);
       fetchAgencyPackages();
     } catch {
       // Local fallback
       const newTour = {
-        _id: 'pkg_' + Date.now(),
+        _id: editingPackageId || ('pkg_' + Date.now()),
         title: form.title,
         destination: form.destination,
         tourType: form.tourType,
@@ -230,9 +264,15 @@ const AgencyPackages = () => {
         images: [form.coverImage || 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80'],
         inclusions: form.inclusions
       };
-      setPackages(prev => [newTour, ...prev]);
+
+      if (editingPackageId) {
+        setPackages(prev => prev.map(p => p._id === editingPackageId ? newTour : p));
+      } else {
+        setPackages(prev => [newTour, ...prev]);
+      }
       toast.success(isPublish ? 'Tour package published live!' : 'Tour draft saved successfully');
       setShowAddModal(false);
+      setEditingPackageId(null);
       setForm(emptyNewTour);
     }
   };
@@ -272,7 +312,7 @@ const AgencyPackages = () => {
         </div>
 
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={handleOpenAddModal}
           className="flex items-center gap-2 rounded-xl bg-[#0F2942] hover:bg-[#E11D48] text-white px-4 py-2.5 text-xs font-bold transition shadow"
         >
           <FiPlus /> Add New Tour Package
@@ -378,6 +418,13 @@ const AgencyPackages = () => {
                         <FiEye size={13} />
                       </button>
                       <button
+                        onClick={() => handleEditTour(tour)}
+                        className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-500 hover:text-white transition"
+                        title="Edit Tour"
+                      >
+                        <FiEdit size={13} />
+                      </button>
+                      <button
                         onClick={() => handleDelete(tour._id)}
                         className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-400 hover:text-rose-600 transition"
                         title="Delete Tour"
@@ -399,14 +446,16 @@ const AgencyPackages = () => {
         )}
       </div>
 
-      {/* COMPLETE "ADD NEW TOUR" MULTI-STEP MODAL */}
+      {/* COMPLETE "ADD / EDIT TOUR" MULTI-STEP MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm overflow-y-auto">
           <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white dark:bg-[#0F1D30] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white my-8">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
                 <span className="text-[10px] font-bold uppercase text-[#E11D48]">PCTE Agency Tour Builder</span>
-                <h3 className="font-display text-lg font-black">Publish New Tour Departure</h3>
+                <h3 className="font-display text-lg font-black">
+                  {editingPackageId ? 'Edit Tour Package Listing' : 'Publish New Tour Departure'}
+                </h3>
               </div>
               <button
                 onClick={() => setShowAddModal(false)}

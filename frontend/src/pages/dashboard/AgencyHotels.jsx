@@ -72,6 +72,7 @@ const AgencyHotels = () => {
   const [hotels, setHotels] = useState(initialStays);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingHotelId, setEditingHotelId] = useState(null);
   const [search, setSearch] = useState('');
   const [form, setForm] = useState(emptyHotelForm);
   const [selectedManageRooms, setSelectedManageRooms] = useState(null);
@@ -93,7 +94,8 @@ const AgencyHotels = () => {
           roomTypes: h.rooms?.map(r => r.name) || ['Deluxe Pine-View Balcony Room'],
           images: h.images?.length ? h.images : ['https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80'],
           status: h.status === 'approved' ? 'Active' : 'Draft',
-          rating: h.rating || 4.9
+          rating: h.rating || 4.9,
+          description: h.description || '',
         }));
         setHotels(mapped);
       }
@@ -107,6 +109,29 @@ const AgencyHotels = () => {
   useEffect(() => {
     fetchAgencyHotels();
   }, []);
+
+  const handleOpenAddModal = () => {
+    setEditingHotelId(null);
+    setForm(emptyHotelForm);
+    setShowAddModal(true);
+  };
+
+  const handleEditHotel = (h) => {
+    setEditingHotelId(h._id);
+    setForm({
+      name: h.name || '',
+      city: h.city || '',
+      state: h.state || 'Himachal Pradesh',
+      propertyType: h.propertyType || 'Resort',
+      startingPrice: String(h.startingPrice || '3200'),
+      availableRooms: String(h.availableRooms || '10'),
+      totalRooms: String(h.totalRooms || '15'),
+      roomType: h.roomTypes?.[0] || 'Deluxe Balcony Suite',
+      image: h.images?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80',
+      description: h.description || ''
+    });
+    setShowAddModal(true);
+  };
 
   const handleSaveHotel = async (e) => {
     e.preventDefault();
@@ -130,14 +155,21 @@ const AgencyHotels = () => {
         status: 'approved',
       };
 
-      await api.post('/hotels', payload);
-      toast.success('Hospitality stay listing published live!');
+      if (editingHotelId) {
+        await api.put(`/hotels/${editingHotelId}`, payload);
+        toast.success('Hospitality stay listing updated successfully in database!');
+      } else {
+        await api.post('/hotels', payload);
+        toast.success('Hospitality stay listing published live to catalog!');
+      }
+
       setShowAddModal(false);
+      setEditingHotelId(null);
       setForm(emptyHotelForm);
       fetchAgencyHotels();
     } catch {
       const newHtl = {
-        _id: 'htl_' + Date.now(),
+        _id: editingHotelId || ('htl_' + Date.now()),
         name: form.name,
         city: form.city,
         state: form.state,
@@ -148,12 +180,18 @@ const AgencyHotels = () => {
         roomTypes: [form.roomType],
         images: [form.image],
         status: 'Active',
-        rating: 5.0
+        rating: 5.0,
+        description: form.description,
       };
 
-      setHotels(prev => [newHtl, ...prev]);
-      toast.success('Hospitality stay listing published live!');
+      if (editingHotelId) {
+        setHotels(prev => prev.map(item => item._id === editingHotelId ? newHtl : item));
+      } else {
+        setHotels(prev => [newHtl, ...prev]);
+      }
+      toast.success('Hospitality stay listing saved successfully!');
       setShowAddModal(false);
+      setEditingHotelId(null);
       setForm(emptyHotelForm);
     }
   };
@@ -197,15 +235,15 @@ const AgencyHotels = () => {
         </div>
 
         <button
-          onClick={() => setShowAddModal(true)}
+          onClick={handleOpenAddModal}
           className="flex items-center gap-2 rounded-xl bg-[#0F2942] hover:bg-[#E11D48] text-white px-4 py-2.5 text-xs font-bold transition shadow"
         >
-          <FiPlus /> Add New Stay / Resort
+          <FiPlus /> Add New Stay Listing
         </button>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white dark:bg-[#0F1D30] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white dark:bg-[#0F1D30] p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="relative flex-1 max-w-md">
           <FiSearch className="absolute left-3.5 top-3 text-slate-400 text-xs" />
           <input
@@ -273,7 +311,14 @@ const AgencyHotels = () => {
                         onClick={() => setSelectedManageRooms(htl)}
                         className="rounded-lg bg-[#0F2942] hover:bg-[#E11D48] text-white px-2.5 py-1 text-[11px] font-bold transition shadow"
                       >
-                        Manage Rooms
+                        Inventory
+                      </button>
+                      <button
+                        onClick={() => handleEditHotel(htl)}
+                        className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-amber-500 hover:text-white transition"
+                        title="Edit Stay"
+                      >
+                        <FiEdit size={13} />
                       </button>
                       <button
                         onClick={() => handleDelete(htl._id)}
@@ -323,35 +368,35 @@ const AgencyHotels = () => {
 
             <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
               <button
-                onClick={() => setSelectedManageRooms(null)}
-                className="rounded-lg border border-slate-300 dark:border-slate-700 px-3 py-1.5 text-xs font-bold"
-              >
-                Cancel
-              </button>
-              <button
                 onClick={() => {
                   const val = document.getElementById('availRoomsInput')?.value;
-                  handleUpdateRooms(selectedManageRooms._id, val);
+                  if (val) handleUpdateRooms(selectedManageRooms._id, val);
                 }}
-                className="rounded-lg bg-[#0F2942] hover:bg-[#E11D48] text-white px-4 py-1.5 text-xs font-bold shadow transition"
+                className="rounded-lg bg-[#0F2942] hover:bg-[#E11D48] text-white px-4 py-2 text-xs font-bold shadow transition"
               >
-                Save Availability
+                Update Inventory
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* ADD NEW STAY MODAL */}
+      {/* ADD / EDIT HOTEL MODAL */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm overflow-y-auto">
           <form onSubmit={handleSaveHotel} className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-[#0F1D30] p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 text-slate-900 dark:text-white my-8">
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
               <div>
-                <span className="text-[10px] font-bold uppercase text-[#E11D48]">PCTE Hospitality Manager</span>
-                <h3 className="font-display text-lg font-black">Register New Property</h3>
+                <span className="text-[10px] font-bold uppercase text-[#E11D48]">PCTE Hospitality Desk</span>
+                <h3 className="font-display text-lg font-black">
+                  {editingHotelId ? 'Edit Hospitality Stay Listing' : 'Publish New Hospitality Listing'}
+                </h3>
               </div>
-              <button type="button" onClick={() => setShowAddModal(false)} className="rounded-full bg-slate-100 dark:bg-slate-800 p-2 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="rounded-full bg-slate-100 dark:bg-slate-800 p-2 text-xs font-bold"
+              >
                 ✕
               </button>
             </div>

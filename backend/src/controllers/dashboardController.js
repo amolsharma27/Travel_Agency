@@ -801,6 +801,12 @@ export const getAdminAnalytics = asyncHandler(async (req, res) => {
       pendingApprovals,
       recentActivityFeed,
       support: { openTickets, totalTickets },
+      systemHealth: {
+        status: (global.__recentErrors && global.__recentErrors.length > 0) ? 'warning' : 'healthy',
+        uptimeSeconds: Math.round(process.uptime()),
+        memoryUsage: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
+        recentErrors: global.__recentErrors || [],
+      },
     },
   });
 });

@@ -7,19 +7,20 @@ import {
 import api from '../../api/axios.js';
 
 const AdminUsers = () => {
-  const [roleFilter, setRoleFilter] = useState('all'); // 'all' | 'customer' | 'agency'
+  const [roleFilter, setRoleFilter] = useState('all'); // 'all' | 'customer' | 'agency' | 'unverified'
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedUserModal, setSelectedUserModal] = useState(null);
+  const [userToDelete, setUserToDelete] = useState(null);
 
   const loadUsers = async () => {
     setLoading(true);
     setError(null);
     try {
       const res = await api.get('/dashboard/admin/users', {
-        params: { role: roleFilter === 'all' ? undefined : roleFilter }
+        params: { role: roleFilter === 'all' || roleFilter === 'unverified' ? undefined : roleFilter }
       });
       if (Array.isArray(res.data?.data)) {
         setUsers(res.data.data);
@@ -39,11 +40,32 @@ const AdminUsers = () => {
   const setAgencyStatus = async (id, newStatus) => {
     try {
       await api.put(`/dashboard/admin/agencies/${id}/status`, { agencyStatus: newStatus });
-      setUsers(prev => prev.map(u => u._id === id ? { ...u, agencyStatus: newStatus } : u));
+      setUsers(prev => prev.map(u => u._id === id ? { ...u, agencyStatus: newStatus, kycStatus: newStatus === 'approved' ? 'verified' : u.kycStatus } : u));
       toast.success(`Agency partner status set to ${newStatus}`);
     } catch (err) {
       console.error('Failed to update agency status:', err);
       toast.error('Could not update agency status.');
+    }
+  };
+
+  const handleVerifyAgency = async (id) => {
+    try {
+      await api.put(`/auth/users/${id}/verify`);
+      setUsers(prev => prev.map(u => u._id === id ? { ...u, agencyStatus: 'approved', kycStatus: 'verified' } : u));
+      toast.success('Agency KYC and operational credentials verified successfully!');
+    } catch (err) {
+      toast.error('Failed to verify agency.');
+    }
+  };
+
+  const handleDeleteUser = async (u) => {
+    try {
+      await api.delete(`/auth/users/${u._id}`);
+      setUsers(prev => prev.filter(item => item._id !== u._id));
+      toast.success(`User ${u.name} removed from platform.`);
+      setUserToDelete(null);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete user.');
     }
   };
 
@@ -60,7 +82,13 @@ const AdminUsers = () => {
   };
 
   const filteredUsers = users.filter((u) => {
-    const matchRole = roleFilter === 'all' || u.role === roleFilter;
+    const isUnverified = (u.role === 'agency' && (u.agencyStatus === 'pending' || u.kycStatus !== 'verified')) || u.status === 'blocked';
+    const matchRole = roleFilter === 'all'
+      ? true
+      : roleFilter === 'unverified'
+      ? isUnverified
+      : u.role === roleFilter;
+
     const matchQuery = !searchQuery ||
       u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       u.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,7 +99,7 @@ const AdminUsers = () => {
 
   const totalCustomers = users.filter(u => u.role === 'customer').length;
   const totalAgencies = users.filter(u => u.role === 'agency').length;
-  const pendingAgencies = users.filter(u => u.role === 'agency' && u.agencyStatus === 'pending').length;
+  const pendingAgencies = users.filter(u => u.role === 'agency' && (u.agencyStatus === 'pending' || u.kycStatus !== 'verified')).length;
 
   return (
     <div className="space-y-6">
@@ -116,16 +144,17 @@ const AdminUsers = () => {
           />
         </div>
 
-        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold">
+        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs font-bold overflow-x-auto">
           {[
             { id: 'all', label: 'All Accounts' },
+            { id: 'unverified', label: `⚠️ Unverified (${pendingAgencies})` },
             { id: 'customer', label: 'Customers' },
             { id: 'agency', label: 'Agency Operators' }
           ].map((r) => (
             <button
               key={r.id}
               onClick={() => setRoleFilter(r.id)}
-              className={`px-3.5 py-1.5 rounded-lg transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all ${
                 roleFilter === r.id
                   ? 'bg-[#0F2942] text-white shadow-sm'
                   : 'text-slate-600 dark:text-slate-300 hover:text-slate-900'
@@ -171,9 +200,17 @@ const AdminUsers = () => {
                     }`}>
                       {u.role}
                     </span>
-                    {u.status === 'active' && (
+                    {u.role === 'agency' && (u.agencyStatus === 'pending' || u.kycStatus !== 'verified') ? (
+                      <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                        ⚠️ Pending Verification
+                      </span>
+                    ) : u.status === 'active' ? (
                       <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-1.5 py-0.5 rounded flex items-center gap-0.5">
                         <FiCheckCircle size={10} /> Active
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-bold text-red-600 bg-red-50 dark:bg-red-950/40 px-1.5 py-0.5 rounded">
+                        Blocked
                       </span>
                     )}
                   </div>
@@ -187,48 +224,49 @@ const AdminUsers = () => {
               </div>
 
               {/* Metrics & Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-0 pt-2 md:pt-0 border-slate-100 dark:border-slate-800">
-                <div className="text-right text-xs">
-                  <span className="text-[10px] text-slate-400 block font-bold">Total Platform Volume</span>
+              <div className="flex flex-wrap items-center gap-2 w-full md:w-auto justify-between md:justify-end border-t md:border-0 pt-2 md:pt-0 border-slate-100 dark:border-slate-800">
+                <div className="text-right text-xs pr-2">
+                  <span className="text-[10px] text-slate-400 block font-bold">Platform Volume</span>
                   <span className="font-mono font-bold text-slate-900 dark:text-white">₹{(u.totalSpent || 0).toLocaleString('en-IN')}</span>
-                  <span className="text-[10px] text-slate-400 ml-1">({u.tripsBooked || 0} bookings)</span>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => setSelectedUserModal(u)}
-                    className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 transition-colors"
+                    className="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 transition-colors"
                   >
-                    <FiEye /> View Dossier
+                    <FiEye /> View
                   </button>
 
-                  {u.role === 'agency' && u.agencyStatus === 'pending' && (
-                    <>
-                      <button
-                        onClick={() => setAgencyStatus(u._id, 'approved')}
-                        className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-sm"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => setAgencyStatus(u._id, 'rejected')}
-                        className="rounded-lg border border-red-200 text-red-500 px-2.5 py-1.5 text-xs font-bold hover:bg-red-50"
-                      >
-                        Reject
-                      </button>
-                    </>
+                  {u.role === 'agency' && (u.agencyStatus === 'pending' || u.kycStatus !== 'verified') && (
+                    <button
+                      onClick={() => handleVerifyAgency(u._id)}
+                      className="rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-sm"
+                    >
+                      ✓ Verify
+                    </button>
                   )}
 
                   <button
                     onClick={() => toggleUserBlock(u)}
-                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-colors ${
+                    className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition-colors ${
                       u.status === 'blocked'
                         ? 'bg-emerald-600 text-white'
-                        : 'border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-red-500'
+                        : 'border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-amber-600'
                     }`}
                   >
                     {u.status === 'blocked' ? 'Unblock' : 'Block'}
                   </button>
+
+                  {u.role !== 'admin' && (
+                    <button
+                      onClick={() => setUserToDelete(u)}
+                      className="rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 text-red-600 px-2.5 py-1.5 text-xs font-bold hover:bg-red-600 hover:text-white transition-all"
+                      title="Remove User / Agency"
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -236,9 +274,46 @@ const AdminUsers = () => {
 
           {filteredUsers.length === 0 && (
             <div className="py-12 text-center text-xs text-slate-400">
-              No user accounts found matching the search.
+              No user accounts found matching the search / filter.
             </div>
           )}
+        </div>
+      )}
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white dark:bg-[#0F1D30] p-6 shadow-2xl border border-red-300 dark:border-red-900 space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center gap-3 text-red-600">
+              <FiAlertCircle className="text-2xl shrink-0" />
+              <div>
+                <h3 className="font-display text-base font-black">Confirm Account Removal</h3>
+                <p className="text-xs text-slate-500">This action will delete the account from the database.</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-slate-50 dark:bg-slate-800 p-3 text-xs space-y-1">
+              <p><strong>Name:</strong> {userToDelete.name}</p>
+              <p><strong>Email:</strong> {userToDelete.email}</p>
+              <p><strong>Role:</strong> <span className="uppercase font-bold">{userToDelete.role}</span></p>
+              {userToDelete.agencyName && <p><strong>Agency:</strong> {userToDelete.agencyName}</p>}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <button
+                onClick={() => setUserToDelete(null)}
+                className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-bold"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteUser(userToDelete)}
+                className="rounded-lg bg-red-600 hover:bg-red-700 text-white px-4 py-2 text-xs font-bold shadow"
+              >
+                Yes, Remove User
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

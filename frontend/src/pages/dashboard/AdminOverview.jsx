@@ -170,6 +170,29 @@ const AdminOverview = () => {
           </div>
         </div>
 
+        {/* Real-time System Error / Health Alert Banner */}
+        {data?.systemHealth?.recentErrors?.length > 0 && (
+          <div className="rounded-xl border border-rose-300 dark:border-rose-900/60 bg-rose-50 dark:bg-rose-950/40 p-3.5 space-y-2 text-rose-900 dark:text-rose-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-bold text-xs">
+                <FiAlertCircle className="text-rose-600 text-base shrink-0" />
+                <span>System Health Telemetry: Recent API Exception Logged</span>
+              </div>
+              <span className="text-[10px] uppercase font-mono font-bold px-2 py-0.5 rounded bg-rose-200 dark:bg-rose-900 text-rose-800 dark:text-rose-200">
+                Memory: {data.systemHealth.memoryUsage || 'Normal'}
+              </span>
+            </div>
+            <div className="space-y-1">
+              {data.systemHealth.recentErrors.slice(0, 2).map((err, idx) => (
+                <div key={idx} className="flex items-center justify-between text-[11px] bg-white/70 dark:bg-black/30 p-2 rounded-lg font-mono">
+                  <span>[{err.method}] {err.endpoint} ➔ {err.message}</span>
+                  <span className="text-slate-400 text-[10px]">{new Date(err.timestamp).toLocaleTimeString()}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick Actions */}
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2">

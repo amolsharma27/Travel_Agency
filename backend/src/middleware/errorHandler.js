@@ -26,6 +26,19 @@ export const errorHandler = (err, req, res, next) => {
     message = `${field ? field.charAt(0).toUpperCase() + field.slice(1) : 'Field'} already in use`;
   }
 
+  if (statusCode >= 500) {
+    if (!global.__recentErrors) global.__recentErrors = [];
+    global.__recentErrors.unshift({
+      id: 'ERR-' + Date.now(),
+      timestamp: new Date().toISOString(),
+      endpoint: req.originalUrl,
+      method: req.method,
+      statusCode,
+      message,
+    });
+    if (global.__recentErrors.length > 5) global.__recentErrors.pop();
+  }
+
   res.status(statusCode).json({
     success: false,
     message,

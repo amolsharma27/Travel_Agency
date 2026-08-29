@@ -48,8 +48,10 @@ export const createPackage = asyncHandler(async (req, res) => {
   const pkg = await Package.create({
     ...req.body,
     agency: req.user._id,
-    availableSeats: req.body.totalSeats,
-    status: 'pending', // requires admin approval
+    availableSeats: req.body.availableSeats || req.body.totalSeats || 20,
+    totalSeats: req.body.totalSeats || req.body.availableSeats || 20,
+    status: req.body.status || 'approved',
+    isActive: true,
   });
   res.status(201).json({ success: true, data: pkg });
 });
@@ -69,8 +71,7 @@ export const updatePackage = asyncHandler(async (req, res) => {
   }
 
   Object.assign(pkg, req.body);
-  // Any material edit sends it back for re-approval
-  if (req.user.role !== 'admin') pkg.status = 'pending';
+  if (req.body.status) pkg.status = req.body.status;
   await pkg.save();
 
   res.json({ success: true, data: pkg });

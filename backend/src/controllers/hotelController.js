@@ -92,8 +92,24 @@ export const createHotel = asyncHandler(async (req, res) => {
   const hotel = await Hotel.create({
     ...req.body,
     owner: req.user._id,
-    status: 'pending',
+    status: req.body.status || 'approved',
+    isActive: true,
   });
+
+  // Create a default Room for this property if rooms are provided or as default
+  await Room.create({
+    hotel: hotel._id,
+    name: req.body.roomName || 'Deluxe Pine-View Balcony Room',
+    description: 'Spacious well-furnished mountain room with balcony view.',
+    maxAdults: 2,
+    maxChildren: 1,
+    bedType: 'King',
+    basePrice: hotel.startingPrice || 2899,
+    totalRooms: req.body.totalRooms || 10,
+    amenities: ['AC', 'TV', 'Heater', 'Balcony', 'WiFi'],
+    breakfastIncluded: true,
+  });
+
   res.status(201).json({ success: true, data: hotel });
 });
 
@@ -112,7 +128,7 @@ export const updateHotel = asyncHandler(async (req, res) => {
   }
 
   Object.assign(hotel, req.body);
-  if (req.user.role !== 'admin') hotel.status = 'pending';
+  if (req.body.status) hotel.status = req.body.status;
   await hotel.save();
 
   res.json({ success: true, data: hotel });
