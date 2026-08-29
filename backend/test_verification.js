@@ -24,9 +24,9 @@ async function runVerification() {
   // Step 0: Authenticate all 4 personas
   console.log('🔐 Authenticating users...');
   const customer = await login('customer@pctetravels.com', 'Customer@123');
-  const agency1 = await login('agency@travelstay.com', 'Agency@123'); // Agency 1 (PCTE)
+  const agency1 = await login('agency@pctetravels.com', 'Agency@123'); // Agency 1 (PCTE Travel Agency)
   const agency2 = await login('agency2@travelstay.com', 'Agency@123'); // Agency 2 (Himalayan Wanderers)
-  const admin = await login('admin@travelstay.com', 'Admin@123');
+  const admin = await login('admin@pctetravels.com', 'Admin@123');
   console.log('✅ Authentication successful for Customer, Agency 1, Agency 2, and Admin.\n');
 
   // Get initial baseline stats

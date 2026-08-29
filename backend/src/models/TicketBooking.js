@@ -91,7 +91,7 @@ const TicketBookingSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'pending_approval', 'confirmed', 'completed', 'cancelled', 'rejected'],
+      enum: ['pending', 'pending_approval', 'under_review', 'confirmed', 'completed', 'cancelled', 'rejected'],
       default: 'confirmed',
     },
     cancellationReason: {

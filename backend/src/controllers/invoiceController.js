@@ -95,20 +95,83 @@ export const getPackageBookingInvoice = asyncHandler(async (req, res) => {
   }
 
   drawInvoice(res, {
-    title: booking.package.title,
+    title: booking.package?.title || 'Tour Package Booking',
     reference: booking.bookingReference,
-    customerName: booking.travellers?.[0]?.name || 'Guest',
-    contactEmail: booking.contactEmail,
-    contactPhone: booking.contactPhone,
+    customerName: booking.travellers?.[0]?.name || req.user.name || 'Guest',
+    contactEmail: booking.contactEmail || req.user.email,
+    contactPhone: booking.contactPhone || req.user.phone || '+91 98765 43210',
     totalAmount: booking.totalAmount,
     status: booking.status,
     lines: [
-      ['Package', booking.package.title],
-      ['Destination', booking.package.destination],
-      ['Duration', `${booking.package.durationDays}D / ${booking.package.durationNights}N`],
-      ['Travel Date', booking.travelDate.toDateString()],
+      ['Package', booking.package?.title || 'Tour Package'],
+      ['Destination', booking.package?.destination || 'India'],
+      ['Duration', `${booking.package?.durationDays || 3}D / ${booking.package?.durationNights || 2}N`],
+      ['Travel Date', booking.travelDate ? new Date(booking.travelDate).toDateString() : 'Confirmed'],
       ['Seats Booked', booking.seatsBooked],
-      ['Discount', `₹${booking.discountApplied}`],
+      ['Discount Applied', `₹${booking.discountApplied || 0}`],
     ],
   });
+});
+
+// @desc  Download PDF invoice for a ticket / transport / activity / passport booking
+// @route GET /api/invoices/ticket/:id
+// @access Private
+export const getTicketBookingInvoice = asyncHandler(async (req, res) => {
+  const TicketBooking = (await import('../models/TicketBooking.js')).default;
+  const booking = await TicketBooking.findById(req.params.id);
+  if (!booking) {
+    res.status(404);
+    throw new Error('Booking not found');
+  }
+  if (String(booking.customer) !== String(req.user._id) && req.user.role !== 'admin') {
+    res.status(403);
+    throw new Error('Not authorized');
+  }
+
+  drawInvoice(res, {
+    title: booking.itemTitle,
+    reference: booking.bookingReference,
+    customerName: booking.contactName || req.user.name,
+    contactEmail: booking.contactEmail || req.user.email,
+    contactPhone: booking.contactPhone || req.user.phone,
+    totalAmount: booking.totalAmount,
+    status: booking.status,
+    lines: [
+      ['Service Item', booking.itemTitle],
+      ['Category', booking.bookingType ? booking.bookingType.toUpperCase() : 'TRANSPORTATION'],
+      ['Destination', booking.destination],
+      ['Option / Class', booking.selectedOption || 'Standard'],
+      ['Travel Date', booking.travelDate ? new Date(booking.travelDate).toDateString() : 'N/A'],
+      ['Passengers / Units', booking.travellersCount || 1],
+    ],
+  });
+});
+
+// @desc  Download generic invoice by booking id or reference
+// @route GET /api/invoices/any/:id
+// @access Private
+export const getUnifiedBookingInvoice = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const TicketBooking = (await import('../models/TicketBooking.js')).default;
+
+  const pkg = await PackageBooking.findById(id).populate('package');
+  if (pkg) {
+    req.params.id = pkg._id;
+    return getPackageBookingInvoice(req, res);
+  }
+
+  const htl = await HotelBooking.findById(id).populate('hotel').populate('room');
+  if (htl) {
+    req.params.id = htl._id;
+    return getHotelBookingInvoice(req, res);
+  }
+
+  const tkt = await TicketBooking.findById(id);
+  if (tkt) {
+    req.params.id = tkt._id;
+    return getTicketBookingInvoice(req, res);
+  }
+
+  res.status(404);
+  throw new Error('Invoice not found');
 });

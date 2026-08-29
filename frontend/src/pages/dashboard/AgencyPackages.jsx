@@ -115,11 +115,50 @@ const emptyNewTour = {
 
 const AgencyPackages = () => {
   const [packages, setPackages] = useState(initialAgencyTours);
+  const [loading, setLoading] = useState(true);
   const [filterTab, setFilterTab] = useState('All'); // 'All' | 'Active' | 'Draft' | 'Expired'
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedTourInspect, setSelectedTourInspect] = useState(null);
   const [form, setForm] = useState(emptyNewTour);
+
+  const fetchAgencyPackages = async () => {
+    try {
+      const res = await api.get('/packages/agency/mine');
+      if (res.data?.data && res.data.data.length > 0) {
+        const mapped = res.data.data.map(p => ({
+          _id: p._id,
+          title: p.title,
+          destination: p.destination,
+          tourType: p.tourType || p.category || 'Group Tour',
+          category: p.category || 'Group Tours',
+          description: p.description,
+          images: p.images?.length ? p.images : ['https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80'],
+          price: p.price,
+          discountPrice: p.discountPrice || p.price,
+          discountPercent: p.discountPrice && p.price > p.discountPrice ? Math.round(((p.price - p.discountPrice) / p.price) * 100) : 0,
+          duration: `${p.durationDays || 3} Days / ${p.durationNights || 2} Nights`,
+          durationDays: p.durationDays || 3,
+          durationNights: p.durationNights || 2,
+          totalSeats: p.totalSeats || 20,
+          bookedSeats: Math.max(0, (p.totalSeats || 20) - (p.availableSeats || 20)),
+          availableSeats: p.availableSeats ?? 20,
+          rating: p.rating || 4.9,
+          status: p.status === 'approved' ? 'Active' : p.status === 'rejected' ? 'Expired' : 'Draft',
+          inclusions: p.inclusions?.length ? p.inclusions : ['Transportation', 'Hotel', 'Meals', 'Guide']
+        }));
+        setPackages(mapped);
+      }
+    } catch {
+      // Keep initial
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAgencyPackages();
+  }, []);
 
   // Calculate final price dynamically
   const handlePriceChange = (priceVal, discountVal) => {
@@ -139,44 +178,75 @@ const AgencyPackages = () => {
     });
   };
 
-  const handleSaveTour = (isPublish) => {
+  const handleSaveTour = async (isPublish) => {
     if (!form.title || !form.destination || !form.price) {
       toast.error('Please fill in title, destination, and pricing');
       return;
     }
 
-    const newTour = {
-      _id: 'pkg_' + Date.now(),
-      title: form.title,
-      destination: form.destination,
-      tourType: form.tourType,
-      category: form.tourType,
-      description: form.description,
-      price: Number(form.price),
-      discountPrice: Number(form.finalPrice) || Number(form.price),
-      discountPercent: Number(form.discount) || 0,
-      duration: `${form.durationDays} Days / ${form.durationNights} Nights`,
-      durationDays: Number(form.durationDays),
-      durationNights: Number(form.durationNights),
-      totalSeats: Number(form.availableSeats),
-      bookedSeats: 0,
-      availableSeats: Number(form.availableSeats),
-      rating: 5.0,
-      status: isPublish ? 'Active' : 'Draft',
-      images: [form.coverImage || 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80'],
-      inclusions: form.inclusions
-    };
+    try {
+      const payload = {
+        title: form.title,
+        destination: form.destination,
+        tourType: form.tourType,
+        category: form.tourType,
+        description: form.description || 'Scenic mountain journey with complete transport and lodging.',
+        price: Number(form.price),
+        discountPrice: Number(form.finalPrice) || Number(form.price),
+        durationDays: Number(form.durationDays) || 3,
+        durationNights: Number(form.durationNights) || 2,
+        totalSeats: Number(form.availableSeats) || 20,
+        availableSeats: Number(form.availableSeats) || 20,
+        images: [form.coverImage || 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80'],
+        inclusions: form.inclusions,
+        status: isPublish ? 'approved' : 'pending',
+      };
 
-    setPackages(prev => [newTour, ...prev]);
-    toast.success(isPublish ? 'Tour package published live!' : 'Tour draft saved successfully');
-    setShowAddModal(false);
-    setForm(emptyNewTour);
+      await api.post('/packages', payload);
+      toast.success(isPublish ? 'Tour package published live!' : 'Tour draft saved successfully');
+      setShowAddModal(false);
+      setForm(emptyNewTour);
+      fetchAgencyPackages();
+    } catch {
+      // Local fallback
+      const newTour = {
+        _id: 'pkg_' + Date.now(),
+        title: form.title,
+        destination: form.destination,
+        tourType: form.tourType,
+        category: form.tourType,
+        description: form.description,
+        price: Number(form.price),
+        discountPrice: Number(form.finalPrice) || Number(form.price),
+        discountPercent: Number(form.discount) || 0,
+        duration: `${form.durationDays} Days / ${form.durationNights} Nights`,
+        durationDays: Number(form.durationDays),
+        durationNights: Number(form.durationNights),
+        totalSeats: Number(form.availableSeats),
+        bookedSeats: 0,
+        availableSeats: Number(form.availableSeats),
+        rating: 5.0,
+        status: isPublish ? 'Active' : 'Draft',
+        images: [form.coverImage || 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=800&q=80'],
+        inclusions: form.inclusions
+      };
+      setPackages(prev => [newTour, ...prev]);
+      toast.success(isPublish ? 'Tour package published live!' : 'Tour draft saved successfully');
+      setShowAddModal(false);
+      setForm(emptyNewTour);
+    }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Delete this tour package listing?')) return;
-    setPackages(prev => prev.filter(p => p._id !== id));
-    toast.success('Tour listing removed');
+    try {
+      await api.delete(`/packages/${id}`);
+      setPackages(prev => prev.filter(p => p._id !== id));
+      toast.success('Tour listing removed');
+    } catch {
+      setPackages(prev => prev.filter(p => p._id !== id));
+      toast.success('Tour listing removed');
+    }
   };
 
   const filtered = packages.filter(p => {

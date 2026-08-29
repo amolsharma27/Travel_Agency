@@ -28,8 +28,8 @@ export const toggleWishlist = asyncHandler(async (req, res) => {
 // @access Private/Customer
 export const getMyWishlist = asyncHandler(async (req, res) => {
   const items = await Wishlist.find({ user: req.user._id })
-    .populate('package', 'title images destination price rating')
-    .populate('hotel', 'name images city startingPrice rating')
+    .populate('package')
+    .populate('hotel')
     .sort('-createdAt');
   res.json({ success: true, count: items.length, data: items });
 });

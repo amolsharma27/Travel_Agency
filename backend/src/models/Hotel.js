@@ -9,8 +9,7 @@ const HotelSchema = new mongoose.Schema(
     description: { type: String, required: true },
     propertyType: {
       type: String,
-      enum: ['Hotel', 'Resort', 'Villa', 'Apartment', 'Homestay', 'Hostel'],
-      default: 'Hotel',
+      default: 'Resort',
     },
     starRating: { type: Number, min: 1, max: 5, default: 3 },
 

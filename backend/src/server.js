@@ -22,6 +22,8 @@ import supportRoutes from './routes/supportRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import ticketBookingRoutes from './routes/ticketBookingRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
+import passportRoutes from './routes/passportRoutes.js';
+import serviceRoutes from './routes/serviceRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -41,7 +43,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.status(200).json({ success: true, message: 'Travel & Hotel Platform API is running' });
+  res.status(200).json({ success: true, message: 'PCTE Travel Agency Platform API is running' });
 });
 
 // Mount routes
@@ -60,6 +62,10 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/passport', passportRoutes);
+app.use('/api/passport-requests', passportRoutes);
+app.use('/api/passport-services', passportRoutes);
+app.use('/api', serviceRoutes);
 
 // 404 + error handling (must be last)
 app.use(notFound);

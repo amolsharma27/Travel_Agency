@@ -26,6 +26,16 @@ export const getContactMessages = asyncHandler(async (req, res) => {
   res.json({ success: true, count: messages.length, data: messages });
 });
 
+// @desc  Customer: list own support messages
+// @route GET /api/support/my
+// @access Private
+export const getMySupportMessages = asyncHandler(async (req, res) => {
+  const messages = await ContactMessage.find({
+    $or: [{ user: req.user._id }, { email: req.user.email }]
+  }).sort('-createdAt');
+  res.json({ success: true, count: messages.length, data: messages });
+});
+
 // @desc  Admin: respond to / update status of a support message
 // @route PUT /api/support/:id
 // @access Private/Admin
@@ -40,5 +50,20 @@ export const respondToContactMessage = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Message not found');
   }
+
+  if (message.user) {
+    try {
+      const Notification = (await import('../models/Notification.js')).default;
+      await Notification.create({
+        user: message.user,
+        title: 'Support Request Update',
+        message: `Your inquiry "${message.subject}" has been updated: ${adminReply || status}`,
+        type: 'system',
+      });
+    } catch (e) {
+      console.error('Failed to create notification:', e);
+    }
+  }
+
   res.json({ success: true, data: message });
 });

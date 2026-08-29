@@ -1,16 +1,39 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import {
   FiTrendingUp, FiDownload, FiCalendar, FiDollarSign, FiUsers,
   FiBookOpen, FiPrinter, FiPieChart, FiBarChart2, FiLayers
 } from 'react-icons/fi';
+import api from '../../api/axios.js';
 
 const AdminReports = () => {
   const [reportType, setReportType] = useState('financial'); // 'financial' | 'destinations' | 'operators' | 'tax'
   const [selectedYear, setSelectedYear] = useState('2026');
+  const [adminStats, setAdminStats] = useState(null);
+
+  useEffect(() => {
+    api.get('/dashboard/admin').then(res => {
+      if (res.data?.data) {
+        setAdminStats(res.data.data);
+      }
+    }).catch(() => {});
+  }, []);
 
   const handleDownload = (format) => {
-    toast.success(`Generated and downloaded ${reportType.toUpperCase()} report in ${format.toUpperCase()}`);
+    if (format === 'csv') {
+      const csvContent = "data:text/csv;charset=utf-8,Category,Metric,Value\nFinancial,Gross Volume," + (adminStats?.revenue?.grossSales || 1845000) + "\nFinancial,Platform Net," + (adminStats?.revenue?.netRevenue || 156800);
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `PCTE_Travel_${reportType}_report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success(`Exported ${reportType.toUpperCase()} report in CSV format`);
+    } else {
+      window.print();
+      toast.success(`Generated ${reportType.toUpperCase()} report PDF`);
+    }
   };
 
   return (

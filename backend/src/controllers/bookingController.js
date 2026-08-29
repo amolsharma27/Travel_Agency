@@ -15,14 +15,21 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
     packageId,
     hotelId,
     roomId,
-    travelDate,
+    activityId,
+    activityDate,
+    slotTime,
+    travelDate = activityDate,
     returnDate,
-    travellersCount = 1,
+    travellersCount,
+    guestsCount,
+    seatsBooked,
     contactPhone,
     contactEmail,
     contactName,
+    primaryGuest,
     totalAmount,
     itemTitle,
+    serviceTitle,
     destination,
     fromCity,
     toCity,
@@ -33,6 +40,12 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
     image,
     agencyId,
   } = req.body;
+
+  const effectiveTravellers = Number(travellersCount || guestsCount || seatsBooked) || 1;
+  const effectiveName = contactName || primaryGuest?.name || req.user.name;
+  const effectivePhone = contactPhone || primaryGuest?.phone || req.user.phone || '+91 98765 43210';
+  const effectiveEmail = contactEmail || primaryGuest?.email || req.user.email;
+  const effectiveOption = selectedOption || slotTime || 'Standard';
 
   // 1. If it's a package booking
   if (bookingType === 'package' || packageId) {
@@ -46,12 +59,21 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
       package: pkg._id,
       agency: pkg.agency,
       travelDate: travelDate ? new Date(travelDate) : new Date(),
-      seatsBooked: Number(travellersCount) || 1,
-      contactPhone: contactPhone || req.user.phone || '+91 98765 43210',
-      contactEmail: contactEmail || req.user.email,
-      totalAmount: totalAmount || (pkg.discountPrice || pkg.price) * (Number(travellersCount) || 1),
+      seatsBooked: effectiveTravellers,
+      contactPhone: effectivePhone,
+      contactEmail: effectiveEmail,
+      totalAmount: totalAmount || (pkg.discountPrice || pkg.price) * effectiveTravellers,
       status: 'confirmed',
     });
+
+    const Notification = (await import('../models/Notification.js')).default;
+    await Notification.create({
+      user: req.user._id,
+      title: 'Tour Booking Confirmed!',
+      message: `Your booking for "${pkg.title}" is confirmed. Ref: ${booking.bookingReference}`,
+      type: 'booking',
+    });
+
     return res.status(201).json({ success: true, data: booking });
   }
 
@@ -64,24 +86,41 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
     }
     const checkInDate = travelDate ? new Date(travelDate) : new Date();
     const checkOutDate = returnDate ? new Date(returnDate) : new Date(Date.now() + 86400000 * 2);
+    const RoomModel = (await import('../models/Room.js')).default;
+    let effectiveRoomId = roomId;
+    if (!effectiveRoomId) {
+      const defaultRoom = await RoomModel.findOne({ hotel: hotel._id });
+      effectiveRoomId = defaultRoom?._id;
+    }
+
     const booking = await HotelBooking.create({
       customer: req.user._id,
       hotel: hotel._id,
-      room: roomId || (await import('../models/Room.js')).default.findOne({ hotel: hotel._id }).then(r => r?._id),
+      room: effectiveRoomId,
       owner: hotel.owner,
       checkIn: checkInDate,
       checkOut: checkOutDate,
-      nights: 2,
-      roomsBooked: 1,
-      adults: Number(travellersCount) || 2,
-      contactName: contactName || req.user.name,
-      contactPhone: contactPhone || req.user.phone || '+91 98765 43210',
-      contactEmail: contactEmail || req.user.email,
+      nights: Math.max(1, Math.round((checkOutDate - checkInDate) / 86400000)),
+      roomsBooked: Number(req.body.roomsBooked) || 1,
+      adults: effectiveTravellers,
+      children: Number(req.body.children) || 0,
+      contactName: effectiveName,
+      contactPhone: effectivePhone,
+      contactEmail: effectiveEmail,
       pricePerNight: hotel.startingPrice || 3999,
-      subtotal: totalAmount || 7998,
-      totalAmount: totalAmount || 7998,
+      subtotal: totalAmount || (hotel.startingPrice || 3999) * 2,
+      totalAmount: totalAmount || (hotel.startingPrice || 3999) * 2,
       status: 'confirmed',
     });
+
+    const Notification = (await import('../models/Notification.js')).default;
+    await Notification.create({
+      user: req.user._id,
+      title: 'Stay Reservation Confirmed!',
+      message: `Your stay at "${hotel.name}" is confirmed. Ref: ${booking.bookingReference}`,
+      type: 'booking',
+    });
+
     return res.status(201).json({ success: true, data: booking });
   }
 
@@ -92,28 +131,41 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
     if (defaultAgency) assignedAgency = defaultAgency._id;
   }
 
+  const effectiveTitle = itemTitle || serviceTitle || `Booking: ${fromCity || ''} ${toCity ? 'to ' + toCity : destination || 'India'}`;
+  const effectiveDest = destination || toCity || fromCity || 'India';
+
   const booking = await TicketBooking.create({
     customer: req.user._id,
     agency: assignedAgency,
     bookingType: bookingType || 'transportation',
-    itemTitle: itemTitle || `Booking: ${fromCity || ''} ${toCity ? 'to ' + toCity : destination || 'India'}`,
-    destination: destination || toCity || 'India',
+    itemTitle: effectiveTitle,
+    destination: effectiveDest,
     fromCity: fromCity || '',
     toCity: toCity || '',
     travelDate: travelDate ? new Date(travelDate) : new Date(),
     returnDate: returnDate ? new Date(returnDate) : undefined,
-    selectedOption: selectedOption || 'Standard',
-    travellersCount: Number(travellersCount) || 1,
-    contactName: contactName || req.user.name,
-    contactPhone: contactPhone || req.user.phone || '+91 98765 43210',
-    contactEmail: contactEmail || req.user.email,
+    selectedOption: effectiveOption,
+    travellersCount: effectiveTravellers,
+    contactName: effectiveName,
+    contactPhone: effectivePhone,
+    contactEmail: effectiveEmail,
     totalAmount: Number(totalAmount) || 2999,
     status: 'confirmed',
     paymentStatus: 'paid',
     specialNotes,
     pickupLocation,
     dropLocation,
-    image: image || 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80',
+    image: image || (bookingType === 'activity'
+      ? 'https://images.unsplash.com/photo-1533587851505-d119e13fa0d7?auto=format&fit=crop&w=600&q=80'
+      : 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80'),
+  });
+
+  const Notification = (await import('../models/Notification.js')).default;
+  await Notification.create({
+    user: req.user._id,
+    title: `${bookingType.charAt(0).toUpperCase() + bookingType.slice(1)} Booking Confirmed!`,
+    message: `Your reservation for "${effectiveTitle}" is confirmed. Ref: ${booking.bookingReference}`,
+    type: 'booking',
   });
 
   return res.status(201).json({ success: true, data: booking });

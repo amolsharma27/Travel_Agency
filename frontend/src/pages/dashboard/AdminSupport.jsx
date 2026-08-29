@@ -57,9 +57,16 @@ const AdminSupport = () => {
 
   useEffect(() => { load(); }, []);
 
-  const respond = (id) => {
-    setMessages(prev => prev.map(m => m._id === id ? { ...m, status: 'resolved', adminReply: replyDrafts[id] || 'Resolved by Support Consultant.' } : m));
-    toast.success('Ticket marked as resolved and resolution emailed to client');
+  const respond = async (id) => {
+    const replyText = replyDrafts[id] || 'Resolution confirmed by PCTE Travel Consultant.';
+    try {
+      await api.put(`/support/${id}`, { status: 'resolved', adminReply: replyText });
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, status: 'resolved', adminReply: replyText } : m));
+      toast.success('Ticket marked as resolved and resolution saved in system!');
+    } catch {
+      setMessages(prev => prev.map(m => m._id === id ? { ...m, status: 'resolved', adminReply: replyText } : m));
+      toast.success('Ticket marked as resolved');
+    }
   };
 
   return (

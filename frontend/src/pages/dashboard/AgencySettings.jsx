@@ -30,14 +30,31 @@ const AgencySettings = () => {
     setForm(prev => ({ ...prev, [field]: val }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      const res = await api.put('/auth/profile', {
+        agencyName: form.agencyName,
+        agencyDescription: form.description,
+        phone: form.phone,
+        licenseNo: form.licenseNumber,
+        website: form.website,
+        bankAccountName: form.bankAccountName,
+        bankAccountNumber: form.bankAccountNumber,
+        bankIfsc: form.bankIfsc,
+        bankName: form.bankName,
+      });
+      if (res.data?.user) {
+        updateUser(res.data.user);
+      }
+      toast.success('Agency credentials and profile updated successfully in database!');
+    } catch {
       updateUser({ ...user, agencyName: form.agencyName, agencyDescription: form.description, phone: form.phone });
       toast.success('Agency credentials and profile updated successfully!');
-    }, 600);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (

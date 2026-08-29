@@ -40,6 +40,27 @@ const UserSchema = new mongoose.Schema(
       default: 'active',
     },
 
+    // --- Customer-specific profile fields ---
+    dob: { type: String },
+    gender: { type: String, enum: ['Male', 'Female', 'Other'], default: 'Male' },
+    city: { type: String },
+    state: { type: String },
+    address: { type: String },
+    passportNumber: { type: String },
+    passportExpiry: { type: String },
+    aadhaarLast4: { type: String },
+    emergencyContact: {
+      name: { type: String },
+      relationship: { type: String },
+      phone: { type: String }
+    },
+    coTravelers: [{
+      name: { type: String },
+      relation: { type: String },
+      phone: { type: String },
+      passport: { type: String }
+    }],
+
     // --- Agency-specific fields (only relevant when role === 'agency') ---
     agencyName: { type: String, trim: true },
     agencyDescription: { type: String },
@@ -51,8 +72,12 @@ const UserSchema = new mongoose.Schema(
       default: 'pending',
     },
     commissionRate: { type: Number, default: 8.5 },
-    city: { type: String },
     licenseNo: { type: String },
+    website: { type: String },
+    bankAccountName: { type: String },
+    bankAccountNumber: { type: String },
+    bankIfsc: { type: String },
+    bankName: { type: String },
     kycStatus: {
       type: String,
       enum: ['pending', 'under_review', 'verified', 'rejected'],

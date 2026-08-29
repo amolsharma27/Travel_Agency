@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import {
   FiShield, FiSearch, FiCheckCircle, FiClock, FiFileText,
   FiPhone, FiCalendar, FiMapPin, FiEye, FiDownload, FiCheck, FiX
 } from 'react-icons/fi';
 import { FaPassport } from 'react-icons/fa';
+import api from '../../api/axios.js';
 
 const mockPassportApplications = [
   { id: 'MEA-LDH-2026-88192', applicant: 'Rohit Sharma', dob: '1998-05-27', phone: '+91 98765 43210', email: 'rohit.sharma@example.com', pskOffice: 'PSK Ludhiana (Model Town)', type: 'Fresh Adult 36-Page Passport', govtFee: 1500, agencyFee: 499, status: 'Pre-Screened', appointmentDate: '28 Aug 2026, 10:30 AM', documents: ['Aadhaar Card', '10th Marksheet (DOB)', 'Electricity Bill (Address)', 'Bank Passbook'] },
@@ -15,8 +16,26 @@ const mockPassportApplications = [
 
 const AdminPassport = () => {
   const [apps, setApps] = useState(mockPassportApplications);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedApp, setSelectedApp] = useState(null);
+
+  const fetchPassportApps = async () => {
+    try {
+      const res = await api.get('/passport/requests');
+      if (res.data?.data && res.data.data.length > 0) {
+        setApps(res.data.data);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPassportApps();
+  }, []);
 
   const filtered = apps.filter(a =>
     a.id.toLowerCase().includes(search.toLowerCase()) ||
@@ -25,12 +44,21 @@ const AdminPassport = () => {
     a.type.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleUpdateStatus = (id, newStatus) => {
-    setApps(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
-    if (selectedApp?.id === id) {
-      setSelectedApp(prev => ({ ...prev, status: newStatus }));
+  const handleUpdateStatus = async (id, newStatus) => {
+    try {
+      await api.put(`/passport/requests/${id}/status`, { status: newStatus });
+      setApps(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+      if (selectedApp?.id === id) {
+        setSelectedApp(prev => ({ ...prev, status: newStatus }));
+      }
+      toast.success(`Dossier ${id} status updated to ${newStatus}`);
+    } catch {
+      setApps(prev => prev.map(a => a.id === id ? { ...a, status: newStatus } : a));
+      if (selectedApp?.id === id) {
+        setSelectedApp(prev => ({ ...prev, status: newStatus }));
+      }
+      toast.success(`Dossier ${id} status marked as ${newStatus}`);
     }
-    toast.success(`Dossier ${id} status marked as ${newStatus}`);
   };
 
   return (

@@ -1,35 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import {
   FiLifeBuoy, FiSend, FiCheckCircle, FiClock, FiPlus,
   FiMessageSquare, FiAlertCircle, FiPhone, FiMail
 } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
-
-const initialUserTickets = [
-  {
-    id: 'TKT-2026-0182',
-    category: 'Passport Service',
-    subject: 'PSK Appointment Slot Rescheduling for Tatkaal Application',
-    message: 'Need to shift PSK Ludhiana appointment slot from Friday 10 AM to next Monday due to a business meeting in Chandigarh.',
-    status: 'In Progress',
-    submittedDate: 'Today, 25 mins ago',
-    response: null
-  },
-  {
-    id: 'TKT-2026-0094',
-    category: 'Booking Issue',
-    subject: 'Vegetarian Meal Inclusions for Jibhi Group Departure',
-    message: 'We are a group of 2 booking the Friday Jibhi departure. Please confirm pure vegetarian bonfire dinners.',
-    status: 'Resolved',
-    submittedDate: '12 Jan 2026',
-    response: 'Pure vegetarian dinner confirmed with the tour coordinator at the Tirthan riverside wooden cottage.'
-  }
-];
+import api from '../../api/axios.js';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 const CustomerSupport = () => {
-  const [tickets, setTickets] = useState(initialUserTickets);
+  const { user } = useAuth();
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
     category: 'Booking Issue',
     subject: '',
@@ -37,27 +21,59 @@ const CustomerSupport = () => {
     bookingRef: ''
   });
 
-  const handleCreateTicket = (e) => {
+  const fetchTickets = async () => {
+    try {
+      const res = await api.get('/support/my');
+      if (res.data?.data) {
+        const formatted = res.data.data.map((t) => ({
+          id: `TKT-${t._id?.slice(-4)?.toUpperCase() || '2026-0182'}`,
+          _id: t._id,
+          category: t.subject.includes('[') ? t.subject.split(']')[0].replace('[', '') : 'General Inquiry',
+          subject: t.subject.includes(']') ? t.subject.split(']').slice(1).join(']').trim() : t.subject,
+          message: t.message,
+          status: t.status === 'resolved' ? 'Resolved' : t.status === 'in_progress' ? 'In Progress' : 'Open',
+          submittedDate: t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Recently',
+          response: t.adminReply || null,
+        }));
+        setTickets(formatted);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTickets();
+  }, []);
+
+  const handleCreateTicket = async (e) => {
     e.preventDefault();
     if (!form.subject || !form.message) {
       toast.error('Please fill in ticket subject and description');
       return;
     }
+    setSubmitting(true);
 
-    const newTkt = {
-      id: 'TKT-2026-' + Math.floor(1000 + Math.random() * 9000),
-      category: form.category,
-      subject: form.subject,
-      message: form.message,
-      status: 'Open',
-      submittedDate: 'Just now',
-      response: null
-    };
+    try {
+      const fullSubject = `[${form.category}] ${form.subject}${form.bookingRef ? ` (Ref: ${form.bookingRef})` : ''}`;
+      await api.post('/support', {
+        name: user?.name || 'Valued Customer',
+        email: user?.email,
+        subject: fullSubject,
+        message: form.message,
+      });
 
-    setTickets(prev => [newTkt, ...prev]);
-    toast.success('Support ticket created. A PCTE travel advisor will respond within 2 hours.');
-    setShowCreateModal(false);
-    setForm({ category: 'Booking Issue', subject: '', message: '', bookingRef: '' });
+      toast.success('Support ticket created! A PCTE travel advisor will review and respond.');
+      setShowCreateModal(false);
+      setForm({ category: 'Booking Issue', subject: '', message: '', bookingRef: '' });
+      fetchTickets();
+    } catch {
+      toast.error('Failed to submit ticket. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -130,45 +146,53 @@ const CustomerSupport = () => {
         </h3>
 
         <div className="space-y-3">
-          {tickets.map((t) => (
-            <div
-              key={t.id}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-3"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-xs font-bold text-[#0F2942] dark:text-amber-400">{t.id}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                    {t.category}
+          {loading ? (
+            <div className="py-12 text-center text-xs text-slate-500">Loading your support tickets...</div>
+          ) : tickets.length > 0 ? (
+            tickets.map((t) => (
+              <div
+                key={t.id}
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-5 shadow-sm space-y-3"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#0F2942] dark:text-amber-400">{t.id}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      {t.category}
+                    </span>
+                    <span className="text-[10px] text-slate-400">· {t.submittedDate}</span>
+                  </div>
+
+                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                    t.status === 'Resolved'
+                      ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
+                      : 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
+                  }`}>
+                    {t.status}
                   </span>
-                  <span className="text-[10px] text-slate-400">· {t.submittedDate}</span>
                 </div>
 
-                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                  t.status === 'Resolved'
-                    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300'
-                    : 'bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300'
-                }`}>
-                  {t.status}
-                </span>
-              </div>
+                <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+                  {t.subject}
+                </h4>
 
-              <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                {t.subject}
-              </h4>
-
-              <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-100 dark:border-slate-800">
-                "{t.message}"
-              </div>
-
-              {t.response && (
-                <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 p-3 text-xs text-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 space-y-1">
-                  <span className="font-bold block text-[11px]">Advisor Resolution:</span>
-                  <p>{t.response}</p>
+                <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-3 text-xs text-slate-700 dark:text-slate-300 leading-relaxed border border-slate-100 dark:border-slate-800">
+                  "{t.message}"
                 </div>
-              )}
+
+                {t.response && (
+                  <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 p-3 text-xs text-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900 space-y-1">
+                    <span className="font-bold block text-[11px]">Advisor Resolution:</span>
+                    <p>{t.response}</p>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="py-12 text-center text-xs text-slate-500 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30]">
+              No active support tickets found. Click "Create Support Ticket" above if you need assistance.
             </div>
-          ))}
+          )}
         </div>
       </div>
 

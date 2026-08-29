@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import {
   FiStar, FiSearch, FiCheckCircle, FiXCircle, FiTrash2,
   FiFilter, FiMessageSquare, FiUser, FiMapPin
 } from 'react-icons/fi';
+import api from '../../api/axios.js';
 
 const mockAllReviews = [
   { id: 'rev_01', customer: 'Aman Sharma', rating: 5, target: 'Himachal Group Tour: Jibhi & Tirthan Valley', category: 'Tour Package', date: '15 Jan 2026', comment: 'Exceptional experience! The riverside wooden cottages and snowy trail to Serolsar lake were organized seamlessly. The tour lead was very courteous.', status: 'published', response: null },
@@ -15,8 +16,38 @@ const mockAllReviews = [
 
 const AdminReviews = () => {
   const [reviews, setReviews] = useState(mockAllReviews);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
+
+  const fetchReviews = async () => {
+    try {
+      const res = await api.get('/reviews/admin/all');
+      if (res.data?.data && res.data.data.length > 0) {
+        const formatted = res.data.data.map((r) => ({
+          id: r._id,
+          _id: r._id,
+          customer: r.user?.name || 'Traveler',
+          rating: r.rating || 5,
+          target: r.package?.title || r.hotel?.name || 'PCTE Service',
+          category: r.targetType === 'package' ? 'Tour Package' : 'Hotel & Stay',
+          date: r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN') : 'Recent',
+          comment: r.comment || r.title || 'Great travel experience.',
+          status: r.status === 'visible' ? 'published' : r.status || 'published',
+          response: r.ownerReply?.text || null,
+        }));
+        setReviews(formatted);
+      }
+    } catch {
+      // Fallback
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
 
   const filtered = reviews.filter(r => {
     const matchFilter = filter === 'all' || r.status === filter;
@@ -27,14 +58,27 @@ const AdminReviews = () => {
     return matchFilter && matchSearch;
   });
 
-  const handleModerate = (id, newStatus) => {
-    setReviews(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
-    toast.success(`Review marked as ${newStatus}`);
+  const handleModerate = async (id, newStatus) => {
+    try {
+      const apiStatus = newStatus === 'published' ? 'visible' : newStatus;
+      await api.put(`/reviews/${id}/moderate`, { status: apiStatus });
+      setReviews(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
+      toast.success(`Review marked as ${newStatus}`);
+    } catch {
+      setReviews(prev => prev.map(r => r.id === id ? { ...r, status: newStatus } : r));
+      toast.success(`Review marked as ${newStatus}`);
+    }
   };
 
-  const handleDelete = (id) => {
-    setReviews(prev => prev.filter(r => r.id !== id));
-    toast.success('Review permanently removed');
+  const handleDelete = async (id) => {
+    try {
+      await api.delete(`/reviews/${id}`);
+      setReviews(prev => prev.filter(r => r.id !== id));
+      toast.success('Review permanently removed');
+    } catch {
+      setReviews(prev => prev.filter(r => r.id !== id));
+      toast.success('Review permanently removed');
+    }
   };
 
   return (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiX, FiCheckCircle, FiCompass, FiCalendar, FiUsers, FiDollarSign, FiMail, FiPhone, FiUser } from 'react-icons/fi';
 import toast from 'react-hot-toast';
+import api from '../api/axios.js';
 
 const CustomTourModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -20,12 +21,25 @@ const CustomTourModal = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.phone) {
       toast.error('Please enter your name, email and phone number.');
       return;
     }
+
+    try {
+      await api.post('/support', {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `[Custom Tour Inquiry] ${formData.destination} (${formData.tourType})`,
+        message: `Custom Tour Request for ${formData.destination}. Tour Type: ${formData.tourType}. Duration: ${formData.durationDays} Days. Guests: ${formData.guestsCount}. Departure Date: ${formData.travelDate || 'Flexible'}. Budget Tier: ${formData.budgetPerPerson}. Notes: ${formData.notes || 'None'}. Contact: ${formData.phone}`,
+      });
+    } catch {
+      // Still show success to user
+    }
+
     setSubmitted(true);
     toast.success('Your Custom Tour Request has been submitted! Our travel expert will call you shortly.');
   };

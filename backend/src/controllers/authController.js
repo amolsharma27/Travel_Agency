@@ -149,20 +149,43 @@ export const resetPassword = asyncHandler(async (req, res) => {
   res.json({ success: true, message: 'Password reset successful. Please log in with your new password.' });
 });
 
-// @desc  Update own profile (name, phone, avatar)
+// @desc  Update own profile (customer & agency details)
 // @route PUT /api/auth/profile
 // @access Private
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { name, phone, avatar, agencyName, agencyDescription, agencyLogo } = req.body;
+  const {
+    name, phone, avatar,
+    dob, gender, city, state, address,
+    passportNumber, passportExpiry, aadhaarLast4,
+    emergencyContact, coTravelers,
+    agencyName, agencyDescription, agencyLogo, licenseNumber, licenseNo,
+    website, bankAccountName, bankAccountNumber, bankIfsc, bankName
+  } = req.body;
 
   if (name) req.user.name = name;
   if (phone) req.user.phone = phone;
   if (avatar) req.user.avatar = avatar;
+  if (dob) req.user.dob = dob;
+  if (gender) req.user.gender = gender;
+  if (city) req.user.city = city;
+  if (state) req.user.state = state;
+  if (address) req.user.address = address;
+  if (passportNumber) req.user.passportNumber = passportNumber;
+  if (passportExpiry) req.user.passportExpiry = passportExpiry;
+  if (aadhaarLast4) req.user.aadhaarLast4 = aadhaarLast4;
+  if (emergencyContact) req.user.emergencyContact = emergencyContact;
+  if (coTravelers) req.user.coTravelers = coTravelers;
 
   if (req.user.role === 'agency') {
     if (agencyName) req.user.agencyName = agencyName;
     if (agencyDescription) req.user.agencyDescription = agencyDescription;
     if (agencyLogo) req.user.agencyLogo = agencyLogo;
+    if (licenseNo || licenseNumber) req.user.licenseNo = licenseNo || licenseNumber;
+    if (website) req.user.website = website;
+    if (bankAccountName) req.user.bankAccountName = bankAccountName;
+    if (bankAccountNumber) req.user.bankAccountNumber = bankAccountNumber;
+    if (bankIfsc) req.user.bankIfsc = bankIfsc;
+    if (bankName) req.user.bankName = bankName;
   }
 
   await req.user.save();

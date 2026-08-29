@@ -78,3 +78,29 @@ export const moderateReview = asyncHandler(async (req, res) => {
   await recalcRating(review.targetType, review.package || review.hotel);
   res.json({ success: true, data: review });
 });
+
+// @desc  Admin: get all reviews across packages and hotels
+// @route GET /api/reviews/admin/all
+// @access Private/Admin
+export const getAllReviewsAdmin = asyncHandler(async (req, res) => {
+  const reviews = await Review.find()
+    .populate('user', 'name email avatar')
+    .populate('package', 'title destination')
+    .populate('hotel', 'name city')
+    .sort('-createdAt');
+  res.json({ success: true, count: reviews.length, data: reviews });
+});
+
+// @desc  Admin/User: delete a review
+// @route DELETE /api/reviews/:id
+// @access Private
+export const deleteReview = asyncHandler(async (req, res) => {
+  const review = await Review.findById(req.params.id);
+  if (!review) {
+    res.status(404);
+    throw new Error('Review not found');
+  }
+  await review.deleteOne();
+  await recalcRating(review.targetType, review.package || review.hotel);
+  res.json({ success: true, message: 'Review removed' });
+});

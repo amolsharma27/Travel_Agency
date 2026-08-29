@@ -30,14 +30,14 @@ const PackageSchema = new mongoose.Schema(
     availableSeats: { type: Number, required: true },
     startDates: [{ type: Date }],
     meetingPoint: { type: String },
-    travelMode: { type: String, enum: ['Bus', 'Train', 'Flight', 'Cab', 'Cruise', 'Mixed'], default: 'Bus' },
+    travelMode: { type: String, default: 'Bus' },
+    tourType: { type: String, default: 'Group Tour' },
     itinerary: [itineraryDaySchema],
     inclusions: { type: [String], default: [] },
     exclusions: { type: [String], default: [] },
     facilities: { type: [String], default: [] },
     category: {
       type: String,
-      enum: ['Adventure', 'Historical', 'Beach', 'Nature', 'Cultural', 'Honeymoon', 'Family', 'Pilgrimage'],
       default: 'Adventure',
     },
     gpsLocation: {
