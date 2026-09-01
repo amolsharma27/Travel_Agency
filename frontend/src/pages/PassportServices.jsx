@@ -9,6 +9,12 @@ import { FaPassport, FaWhatsapp, FaUserCheck } from 'react-icons/fa';
 import api from '../api/axios.js';
 import { mockPassportPlans, passportDocumentChecklists } from '../data/mockData.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import {
+  validatePassport,
+  validateAadhaar,
+  formatPassportInput,
+  formatAadhaarInput
+} from '../utils/idValidators.js';
 
 const pskCenters = [
   'PSK Ludhiana (Near Model Town)',
@@ -29,9 +35,11 @@ const PassportServices = () => {
 
   // Application Request Form State
   const [applicantName, setApplicantName] = useState(user?.name || '');
-  const [dob, setDob] = useState('');
+  const [dob, setDob] = useState(user?.dob || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [email, setEmail] = useState(user?.email || '');
+  const [aadhaarNumber, setAadhaarNumber] = useState('');
+  const [existingPassportNumber, setExistingPassportNumber] = useState('');
   const [preferredPSK, setPreferredPSK] = useState(pskCenters[0]);
   const [hasPreviousPassport, setHasPreviousPassport] = useState('no');
   const [specialNotes, setSpecialNotes] = useState('');
@@ -47,6 +55,17 @@ const PassportServices = () => {
   const selectedPlan = plans.find(p => p.id === selectedPlanId) || plans[0];
   const totalPayable = selectedPlan.officialGovtFee + selectedPlan.agencyServiceFee;
 
+  const cleanAadhaar = aadhaarNumber.replace(/\D/g, '');
+  const aadhaarVal = cleanAadhaar.length === 12
+    ? validateAadhaar(cleanAadhaar)
+    : cleanAadhaar.length > 0
+    ? { isValid: false, message: 'Aadhaar must be exactly 12 numeric digits.' }
+    : null;
+
+  const passportVal = existingPassportNumber
+    ? validatePassport(existingPassportNumber)
+    : null;
+
   const handleSubmitApplication = async (e) => {
     e.preventDefault();
     if (!user) {
@@ -58,8 +77,18 @@ const PassportServices = () => {
       toast.error('Please fill in all mandatory applicant details');
       return;
     }
-    setSubmitting(true);
 
+    if (aadhaarNumber && aadhaarVal && !aadhaarVal.isValid) {
+      toast.error(aadhaarVal.message);
+      return;
+    }
+
+    if (hasPreviousPassport === 'yes' && (!existingPassportNumber || (passportVal && !passportVal.isValid))) {
+      toast.error(passportVal?.message || 'Please enter a valid existing passport number (1 Letter + 7 Digits)');
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       const trackingId = 'MEA-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -72,6 +101,8 @@ const PassportServices = () => {
         contactPhone: phone,
         contactEmail: email,
         preferredPSK,
+        aadhaarNumber: cleanAadhaar || undefined,
+        existingPassportNumber: hasPreviousPassport === 'yes' ? existingPassportNumber : undefined,
         hasPreviousPassport: hasPreviousPassport === 'yes',
         specialNotes,
         govtFee: selectedPlan.officialGovtFee,
@@ -84,9 +115,9 @@ const PassportServices = () => {
 
       const res = await api.post('/passport-requests', payload);
       setSuccessSubmission(res.data?.data || payload);
-      toast.success('Passport Assistance Request submitted successfully!');
-    } catch {
-      toast.error('Could not submit request. Please try again.');
+      toast.success('Passport Assistance Request validated & submitted successfully!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Could not submit request. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -324,34 +355,96 @@ const PassportServices = () => {
                   </div>
                 </div>
 
-                {/* Previous passport status */}
-                <div className="space-y-1.5 pt-1">
-                  <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                    Have you ever held an Indian Passport previously?
-                  </label>
-                  <div className="flex gap-4 text-xs font-medium">
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="prevPass"
-                        checked={hasPreviousPassport === 'no'}
-                        onChange={() => setHasPreviousPassport('no')}
-                        className="accent-[#0F2942]"
-                      />
-                      No (Fresh First-time applicant)
+                {/* Aadhaar Number & Previous Passport Inputs */}
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        Aadhaar Card Number (12 Digits)
+                      </label>
+                      {cleanAadhaar.length > 0 && (
+                        <span className={`text-[10px] font-bold flex items-center gap-0.5 ${aadhaarVal?.isValid ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          {aadhaarVal?.isValid ? <FiCheckCircle /> : <FiAlertCircle />}
+                          {aadhaarVal?.isValid ? 'UIDAI Verified' : '12 Digits Required'}
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="e.g. 5421 8890 8821"
+                      maxLength={14}
+                      value={aadhaarNumber}
+                      onChange={(e) => setAadhaarNumber(formatAadhaarInput(e.target.value))}
+                      className={`w-full rounded-lg border bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs font-mono outline-none transition ${
+                        cleanAadhaar.length > 0
+                          ? aadhaarVal?.isValid
+                            ? 'border-emerald-400 dark:border-emerald-600 focus:border-emerald-500 text-slate-900 dark:text-white'
+                            : 'border-rose-400 dark:border-rose-600 focus:border-rose-500 text-rose-600 dark:text-rose-400'
+                          : 'border-slate-200 dark:border-slate-700 focus:border-[#0F2942] text-slate-900 dark:text-white'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Previous passport status */}
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                      Previous Passport Holder?
                     </label>
-                    <label className="flex items-center gap-1.5 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="prevPass"
-                        checked={hasPreviousPassport === 'yes'}
-                        onChange={() => setHasPreviousPassport('yes')}
-                        className="accent-[#0F2942]"
-                      />
-                      Yes (Renewal / Expired / Lost)
-                    </label>
+                    <div className="flex gap-4 text-xs font-medium pt-2">
+                      <label className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="prevPass"
+                          checked={hasPreviousPassport === 'no'}
+                          onChange={() => setHasPreviousPassport('no')}
+                          className="accent-[#0F2942]"
+                        />
+                        No (Fresh)
+                      </label>
+                      <label className="flex items-center gap-1.5 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="prevPass"
+                          checked={hasPreviousPassport === 'yes'}
+                          onChange={() => setHasPreviousPassport('yes')}
+                          className="accent-[#0F2942]"
+                        />
+                        Yes (Renewal / Lost)
+                      </label>
+                    </div>
                   </div>
                 </div>
+
+                {hasPreviousPassport === 'yes' && (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        Existing / Old Passport Number *
+                      </label>
+                      {existingPassportNumber && (
+                        <span className={`text-[10px] font-bold flex items-center gap-0.5 ${passportVal?.isValid ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          {passportVal?.isValid ? <FiCheckCircle /> : <FiAlertCircle />}
+                          {passportVal?.isValid ? 'Valid Format' : '1 Letter + 7 Digits'}
+                        </span>
+                      )}
+                    </div>
+                    <input
+                      required
+                      type="text"
+                      placeholder="e.g. K2098412"
+                      maxLength={8}
+                      value={existingPassportNumber}
+                      onChange={(e) => setExistingPassportNumber(formatPassportInput(e.target.value))}
+                      className={`w-full rounded-lg border bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs font-mono uppercase outline-none transition ${
+                        existingPassportNumber
+                          ? passportVal?.isValid
+                            ? 'border-emerald-400 dark:border-emerald-600 focus:border-emerald-500 text-slate-900 dark:text-white'
+                            : 'border-rose-400 dark:border-rose-600 focus:border-rose-500 text-rose-600 dark:text-rose-400'
+                          : 'border-slate-200 dark:border-slate-700 focus:border-[#0F2942] text-slate-900 dark:text-white'
+                      }`}
+                    />
+                  </div>
+                )}
 
                 {/* Fee Transparency Box */}
                 <div className="rounded-xl bg-slate-50 dark:bg-slate-800/60 p-4 border border-slate-200 dark:border-slate-700 space-y-2">

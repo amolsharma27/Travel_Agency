@@ -5,14 +5,16 @@ import {
   getMyPassportRequests,
   getAllPassportRequests,
   updatePassportStatus,
+  verifyDocumentEndpoint,
 } from '../controllers/passportController.js';
 import { protect, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Plans
+// Plans & Verification
 router.get('/plans', getPassportPlans);
 router.get('/services', getPassportPlans);
+router.post('/verify-document', verifyDocumentEndpoint);
 
 // Requests
 router.post('/requests', protect, createPassportRequest);

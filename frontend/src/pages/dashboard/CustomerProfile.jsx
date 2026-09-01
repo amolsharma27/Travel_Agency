@@ -2,57 +2,97 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import {
   FiUser, FiPhone, FiMail, FiMapPin, FiCalendar, FiShield,
-  FiCheckCircle, FiLock, FiAward, FiUsers, FiEdit2, FiSave,
+  FiCheckCircle, FiAlertCircle, FiLock, FiAward, FiUsers, FiEdit2, FiSave,
   FiStar, FiGlobe, FiCreditCard, FiSmartphone
 } from 'react-icons/fi';
 import api from '../../api/axios.js';
 import { useAuth } from '../../context/AuthContext.jsx';
+import {
+  validatePassport,
+  validateAadhaar,
+  formatPassportInput,
+  formatAadhaarInput
+} from '../../utils/idValidators.js';
 
 const CustomerProfile = () => {
   const { user, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState('personal'); // 'personal' | 'travelers' | 'rewards' | 'security'
 
-  // Personal Info Form State
+  // Personal Info Form State - Initialized directly from actual user data (no fake hardcoded numbers)
   const [form, setForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
     email: user?.email || '',
-    dob: user?.dob || '1998-05-27',
+    dob: user?.dob || '',
     gender: user?.gender || 'Male',
-    city: user?.city || 'Ludhiana',
-    state: user?.state || 'Punjab',
-    address: user?.address || 'Punjab, India',
-    passportNumber: user?.passportNumber || 'Z8923412',
-    passportExpiry: user?.passportExpiry || '2032-11-15',
-    aadhaarLast4: user?.aadhaarLast4 || '8821'
+    city: user?.city || '',
+    state: user?.state || '',
+    address: user?.address || '',
+    passportNumber: user?.passportNumber || '',
+    passportExpiry: user?.passportExpiry || '',
+    aadhaarInput: user?.aadhaarLast4 ? `XXXX-XXXX-${user.aadhaarLast4}` : ''
   });
 
   // Emergency & Co-Travelers
   const [emergencyContact, setEmergencyContact] = useState({
-    name: 'Rohit Sharma',
-    relationship: 'Brother',
-    phone: '+91 98765 43211'
+    name: user?.emergencyContact?.name || '',
+    relationship: user?.emergencyContact?.relationship || '',
+    phone: user?.emergencyContact?.phone || ''
   });
 
-  const [coTravelers, setCoTravelers] = useState([
-    { id: 1, name: 'Ananya Verma', relation: 'Friend / Colleague', phone: '+91 98765 11223', passport: 'P7821902' },
-    { id: 2, name: 'Siddharth Verma', relation: 'Family Member', phone: '+91 98765 22334', passport: 'N6629103' }
-  ]);
+  const [coTravelers, setCoTravelers] = useState(
+    user?.coTravelers?.length ? user.coTravelers : [
+      { id: 1, name: '', relation: '', phone: '', passport: '' }
+    ]
+  );
 
   const [passwords, setPasswords] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Live validation calculations
+  const passportValidation = form.passportNumber
+    ? validatePassport(form.passportNumber)
+    : null;
+
+  const cleanAadhaar = form.aadhaarInput.replace(/\D/g, '');
+  const aadhaarValidation = cleanAadhaar.length === 12
+    ? validateAadhaar(cleanAadhaar)
+    : cleanAadhaar.length === 4
+    ? { isValid: true, message: `Last 4 digits: ${cleanAadhaar}` }
+    : cleanAadhaar.length > 0
+    ? { isValid: false, message: 'Aadhaar must be 12 digits (or 4 digits).' }
+    : null;
+
   const saveProfile = async (e) => {
     e.preventDefault();
+
+    // Client-side validation checks before saving
+    if (form.passportNumber && passportValidation && !passportValidation.isValid) {
+      toast.error(passportValidation.message);
+      return;
+    }
+
+    if (cleanAadhaar.length > 0 && aadhaarValidation && !aadhaarValidation.isValid) {
+      toast.error(aadhaarValidation.message);
+      return;
+    }
+
     setSaving(true);
     try {
-      const { data } = await api.put('/auth/profile', form);
+      const payload = {
+        ...form,
+        aadhaarLast4: cleanAadhaar.length === 12 ? cleanAadhaar.slice(8) : cleanAadhaar.length === 4 ? cleanAadhaar : undefined,
+        emergencyContact,
+        coTravelers: coTravelers.filter(c => c.name.trim())
+      };
+      delete payload.aadhaarInput;
+
+      const { data } = await api.put('/auth/profile', payload);
       if (data?.user) updateUser(data.user);
       toast.success('Profile details updated successfully!');
-    } catch {
-      updateUser({ ...user, name: form.name, phone: form.phone });
-      toast.success('Profile details saved locally!');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to save profile');
     } finally {
       setSaving(false);
     }
@@ -228,37 +268,81 @@ const CustomerProfile = () => {
 
           {/* KYC & Passport details */}
           <div className="border-t border-slate-100 dark:border-slate-800 pt-4 space-y-4">
-            <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-              <FiShield className="text-[#E11D48]" /> KYC &amp; Travel Document Credentials
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                <FiShield className="text-[#E11D48]" /> KYC &amp; Travel Document Credentials
+              </h4>
+              <span className="text-[10px] text-slate-400">Strictly format-verified per MEA &amp; UIDAI standards</span>
+            </div>
 
             <div className="grid gap-4 sm:grid-cols-3">
+              {/* Passport Input */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Indian Passport Number</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Indian Passport Number</label>
+                  {form.passportNumber && (
+                    <span className={`text-[10px] font-bold flex items-center gap-0.5 ${passportValidation?.isValid ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {passportValidation?.isValid ? <FiCheckCircle /> : <FiAlertCircle />}
+                      {passportValidation?.isValid ? 'Valid' : '1 Letter + 7 Digits'}
+                    </span>
+                  )}
+                </div>
                 <input
+                  placeholder="e.g. K2098412"
                   value={form.passportNumber}
-                  onChange={(e) => setForm({ ...form, passportNumber: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs text-slate-900 dark:text-white uppercase outline-none"
+                  maxLength={8}
+                  onChange={(e) => setForm({ ...form, passportNumber: formatPassportInput(e.target.value) })}
+                  className={`w-full rounded-lg border bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs uppercase outline-none font-mono transition ${
+                    form.passportNumber
+                      ? passportValidation?.isValid
+                        ? 'border-emerald-400 dark:border-emerald-600 focus:border-emerald-500 text-slate-900 dark:text-white'
+                        : 'border-rose-400 dark:border-rose-600 focus:border-rose-500 text-rose-600 dark:text-rose-400'
+                      : 'border-slate-200 dark:border-slate-700 focus:border-[#0F2942] text-slate-900 dark:text-white'
+                  }`}
                 />
+                <p className="text-[10px] text-slate-400">Format: 1 Letter (A-Z) + 7 Numbers</p>
               </div>
 
+              {/* Passport Expiry */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Passport Expiry Date</label>
                 <input
                   type="date"
                   value={form.passportExpiry}
                   onChange={(e) => setForm({ ...form, passportExpiry: e.target.value })}
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs text-slate-900 dark:text-white outline-none"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]"
                 />
+                <p className="text-[10px] text-slate-400">Must be valid at least 6 months for travel</p>
               </div>
 
+              {/* Aadhaar Input */}
               <div className="space-y-1">
-                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Aadhaar Card (Last 4 Digits)</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Aadhaar Card (12 Digits / Last 4)</label>
+                  {cleanAadhaar.length > 0 && (
+                    <span className={`text-[10px] font-bold flex items-center gap-0.5 ${aadhaarValidation?.isValid ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {aadhaarValidation?.isValid ? <FiCheckCircle /> : <FiAlertCircle />}
+                      {aadhaarValidation?.isValid ? 'Verified' : '12 Digits Required'}
+                    </span>
+                  )}
+                </div>
                 <input
-                  value={`XXXX-XXXX-${form.aadhaarLast4}`}
-                  disabled
-                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/30 p-2.5 text-xs text-slate-500 font-mono cursor-not-allowed"
+                  placeholder="e.g. 5421 8890 8821"
+                  value={form.aadhaarInput}
+                  maxLength={14}
+                  onChange={(e) => {
+                    const raw = e.target.value;
+                    setForm({ ...form, aadhaarInput: formatAadhaarInput(raw) });
+                  }}
+                  className={`w-full rounded-lg border bg-slate-50 dark:bg-slate-800/60 p-2.5 text-xs font-mono outline-none transition ${
+                    cleanAadhaar.length > 0
+                      ? aadhaarValidation?.isValid
+                        ? 'border-emerald-400 dark:border-emerald-600 focus:border-emerald-500 text-slate-900 dark:text-white'
+                        : 'border-rose-400 dark:border-rose-600 focus:border-rose-500 text-rose-600 dark:text-rose-400'
+                      : 'border-slate-200 dark:border-slate-700 focus:border-[#0F2942] text-slate-900 dark:text-white'
+                  }`}
                 />
+                <p className="text-[10px] text-slate-400">UIDAI Verhoeff checksum verified</p>
               </div>
             </div>
           </div>

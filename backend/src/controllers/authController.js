@@ -3,6 +3,7 @@ import User from '../models/User.js';
 import generateToken from '../utils/generateToken.js';
 import sendEmail from '../utils/sendEmail.js';
 import { generateOtp, otpExpiryDate, otpEmailTemplate } from '../utils/otp.js';
+import { validatePassport, validateAadhaar } from '../utils/idValidators.js';
 
 // @desc  Register a new customer or travel agency
 // @route POST /api/auth/register
@@ -170,9 +171,40 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (city) req.user.city = city;
   if (state) req.user.state = state;
   if (address) req.user.address = address;
-  if (passportNumber) req.user.passportNumber = passportNumber;
-  if (passportExpiry) req.user.passportExpiry = passportExpiry;
-  if (aadhaarLast4) req.user.aadhaarLast4 = aadhaarLast4;
+  if (passportNumber !== undefined) {
+    if (passportNumber && passportNumber.trim()) {
+      const pCheck = validatePassport(passportNumber);
+      if (!pCheck.isValid) {
+        res.status(400);
+        throw new Error(pCheck.message);
+      }
+      req.user.passportNumber = pCheck.cleanNumber;
+    } else {
+      req.user.passportNumber = '';
+    }
+  }
+
+  if (passportExpiry !== undefined) req.user.passportExpiry = passportExpiry;
+
+  if (aadhaarLast4 !== undefined) {
+    const cleanAadhaar = (aadhaarLast4 || '').replace(/\D/g, '');
+    if (cleanAadhaar.length === 12) {
+      const aCheck = validateAadhaar(cleanAadhaar);
+      if (!aCheck.isValid) {
+        res.status(400);
+        throw new Error(aCheck.message);
+      }
+      req.user.aadhaarLast4 = aCheck.last4;
+    } else if (cleanAadhaar.length === 4) {
+      req.user.aadhaarLast4 = cleanAadhaar;
+    } else if (cleanAadhaar.length === 0) {
+      req.user.aadhaarLast4 = '';
+    } else {
+      res.status(400);
+      throw new Error('Please enter either the last 4 digits or the full 12-digit Aadhaar number.');
+    }
+  }
+
   if (emergencyContact) req.user.emergencyContact = emergencyContact;
   if (coTravelers) req.user.coTravelers = coTravelers;
 

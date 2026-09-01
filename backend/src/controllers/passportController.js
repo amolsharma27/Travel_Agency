@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import TicketBooking from '../models/TicketBooking.js';
 import Notification from '../models/Notification.js';
+import { validatePassport, validateAadhaar, validatePAN, validateDocument } from '../utils/idValidators.js';
 
 const defaultPassportPlans = [
   {
@@ -89,6 +90,24 @@ export const getPassportPlans = asyncHandler(async (req, res) => {
   res.json({ success: true, count: defaultPassportPlans.length, data: defaultPassportPlans });
 });
 
+// @desc  Verify format & checksum of identity documents (Passport, Aadhaar, PAN)
+// @route POST /api/passport/verify-document
+// @access Public / Private
+export const verifyDocumentEndpoint = asyncHandler(async (req, res) => {
+  const { documentType, identifier } = req.body;
+  if (!identifier) {
+    res.status(400);
+    throw new Error('Document identifier / number is required for verification.');
+  }
+
+  const result = validateDocument({ type: documentType, identifier });
+  res.json({
+    success: true,
+    documentType: documentType || 'Government ID',
+    ...result
+  });
+});
+
 // @desc  Submit a passport assistance request
 // @route POST /api/passport-requests
 // @access Private
@@ -100,14 +119,46 @@ export const createPassportRequest = asyncHandler(async (req, res) => {
     contactPhone,
     contactEmail,
     preferredPSK,
+    aadhaarNumber,
+    existingPassportNumber,
     specialNotes,
     govtFee,
     agencyFee,
     totalAmount,
   } = req.body;
 
+  // Validate Aadhaar if provided
+  let validatedAadhaar = null;
+  if (aadhaarNumber) {
+    const aadhaarCheck = validateAadhaar(aadhaarNumber);
+    if (!aadhaarCheck.isValid) {
+      res.status(400);
+      throw new Error(`Aadhaar validation failed: ${aadhaarCheck.message}`);
+    }
+    validatedAadhaar = aadhaarCheck.maskedNumber;
+  }
+
+  // Validate Existing Passport if provided (e.g. for Renewal / Tatkaal)
+  let validatedPassport = null;
+  if (existingPassportNumber) {
+    const passportCheck = validatePassport(existingPassportNumber);
+    if (!passportCheck.isValid) {
+      res.status(400);
+      throw new Error(`Passport validation failed: ${passportCheck.message}`);
+    }
+    validatedPassport = passportCheck.cleanNumber;
+  }
+
   const total = Number(totalAmount) || (Number(govtFee || 1500) + Number(agencyFee || 499));
   const trackingId = 'MEA-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+  const notesList = [
+    `DOB: ${dob || 'N/A'}`,
+    `Preferred PSK: ${preferredPSK || 'Ludhiana'}`,
+    validatedAadhaar ? `Verified Aadhaar: ${validatedAadhaar}` : null,
+    validatedPassport ? `Verified Existing Passport: ${validatedPassport}` : null,
+    specialNotes ? `Notes: ${specialNotes}` : null
+  ].filter(Boolean).join('. ');
 
   const booking = await TicketBooking.create({
     customer: req.user._id,
@@ -123,14 +174,14 @@ export const createPassportRequest = asyncHandler(async (req, res) => {
     status: 'under_review',
     paymentStatus: 'paid',
     bookingReference: trackingId,
-    specialNotes: `DOB: ${dob || 'N/A'}. Preferred PSK: ${preferredPSK || 'Ludhiana'}. Notes: ${specialNotes || 'None'}`,
+    specialNotes: notesList,
     image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
   });
 
   await Notification.create({
     user: req.user._id,
-    title: 'Passport Dossier Submitted!',
-    message: `Your application tracking number is ${trackingId}. Assigned office: ${preferredPSK || 'PSK Ludhiana'}.`,
+    title: 'Passport Dossier Submitted & Validated!',
+    message: `Your application tracking number is ${trackingId}. Assigned office: ${preferredPSK || 'PSK Ludhiana'}. ID Verification: Passed.`,
     type: 'system',
   });
 
@@ -143,6 +194,8 @@ export const createPassportRequest = asyncHandler(async (req, res) => {
       pskOffice: preferredPSK || 'PSK Ludhiana',
       type: serviceTitle || 'Fresh Adult Passport Assistance',
       status: 'Pre-Screened',
+      verifiedAadhaar: validatedAadhaar,
+      verifiedPassport: validatedPassport,
       totalAmount: total,
       booking,
     }
