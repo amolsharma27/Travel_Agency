@@ -158,16 +158,24 @@ const Packages = () => {
                 Mussoorie – Kempty Water Fall
               </h2>
 
+              {/* Date Badge */}
+              <div>
+                <span className="inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-950 font-black px-4 py-1 text-xs shadow-lg border border-amber-300">
+                  <FiCalendar className="text-slate-950 text-sm" />
+                  Trip Dates: 11 Sep to 13 September
+                </span>
+              </div>
+
               {/* Subtitle */}
               <p className="text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed font-medium drop-shadow max-w-2xl">
-                Queen of the Hills · Scenic Himalayan Group Getaway with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
+                Queen of the Hills · Scenic Himalayan Group Getaway departing on <b>11th September</b> with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
               </p>
 
               {/* 4 Feature Highlights */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl text-center">
-                <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 border border-white/15">
-                  <span className="block text-[9px] uppercase font-bold text-amber-300">Duration</span>
-                  <span className="text-xs font-black text-white">1 Night / 2 Days</span>
+                <div className="rounded-xl bg-black/65 backdrop-blur-md p-2.5 border border-amber-400/50">
+                  <span className="block text-[9px] uppercase font-bold text-amber-300">Trip Dates</span>
+                  <span className="text-xs font-black text-amber-300">11 – 13 Sep</span>
                 </div>
                 <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 border border-emerald-500/40">
                   <span className="block text-[9px] uppercase font-bold text-emerald-400">Tour Package Fare</span>

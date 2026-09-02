@@ -120,6 +120,17 @@ const UpcomingTourHero = () => {
           Mussoorie – Kempty Water Fall
         </motion.h1>
 
+        {/* Date & Departure Badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+          className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-950 font-black px-4 py-1 text-xs sm:text-sm shadow-xl border border-amber-300"
+        >
+          <FiCalendar className="text-slate-950 text-sm animate-pulse" />
+          <span>Trip Dates: 11 Sep to 13 September</span>
+        </motion.div>
+
         {/* Subtitle / Description */}
         <motion.p
           initial={{ opacity: 0, y: 15 }}
@@ -127,7 +138,7 @@ const UpcomingTourHero = () => {
           transition={{ duration: 0.6, delay: 0.35 }}
           className="mx-auto mt-2 sm:mt-3 max-w-xl text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed font-medium drop-shadow"
         >
-          Queen of the Hills · Scenic Himalayan Group Getaway with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
+          Queen of the Hills · Scenic Himalayan Group Getaway departing on <b>11th September</b> with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
         </motion.p>
 
         {/* Tour Highlights Badges Grid */}
@@ -138,12 +149,12 @@ const UpcomingTourHero = () => {
           className="mt-4 sm:mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full max-w-2xl"
         >
           {/* Duration Card */}
-          <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 sm:p-3 border border-white/15 text-center shadow-lg">
+          <div className="rounded-xl bg-black/65 backdrop-blur-md p-2.5 sm:p-3 border border-amber-400/50 text-center shadow-lg">
             <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-300 mb-0.5">
-              Duration
+              Trip Dates
             </span>
-            <span className="font-display font-black text-xs sm:text-sm text-white">
-              1 Night / 2 Days
+            <span className="font-display font-black text-xs sm:text-sm text-amber-300">
+              11 Sep – 13 Sep
             </span>
           </div>
 

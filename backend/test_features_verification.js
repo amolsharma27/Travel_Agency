@@ -21,7 +21,7 @@ async function runFeatureTests() {
 
   // Authenticate personas
   console.log('🔐 Authenticating Customer, Agency, and Admin...');
-  const customer = await login('customer@pctetravels.com', 'Customer@123');
+  const customer = await login('amolsharma2705@gmail.com', 'Customer@123');
   const agency = await login('agency@pctetravels.com', 'Agency@123');
   const admin = await login('admin@pctetravels.com', 'Admin@123');
   console.log('✅ Personas authenticated.\n');
@@ -36,7 +36,7 @@ async function runFeatureTests() {
       applicantName: 'Rohit Sharma',
       dob: '1998-05-27',
       contactPhone: '+91 98765 43210',
-      contactEmail: 'customer@pctetravels.com',
+      contactEmail: 'amolsharma2705@gmail.com',
       preferredPSK: 'PSK Ludhiana (Model Town)',
       govtFee: 3500,
       agencyFee: 899,

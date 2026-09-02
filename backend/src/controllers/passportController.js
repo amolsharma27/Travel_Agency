@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import TicketBooking from '../models/TicketBooking.js';
 import Notification from '../models/Notification.js';
 import { validatePassport, validateAadhaar, validatePAN, validateDocument } from '../utils/idValidators.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 const defaultPassportPlans = [
   {
@@ -183,6 +184,24 @@ export const createPassportRequest = asyncHandler(async (req, res) => {
     title: 'Passport Dossier Submitted & Validated!',
     message: `Your application tracking number is ${trackingId}. Assigned office: ${preferredPSK || 'PSK Ludhiana'}. ID Verification: Passed.`,
     type: 'system',
+  });
+
+  // Send booking email notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: trackingId,
+    bookingType: 'Passport Seva Dossier',
+    itemTitle: serviceTitle || 'Passport Seva Assistance Dossier',
+    destination: preferredPSK || 'PSK Ludhiana',
+    customerName: applicantName || req.user.name,
+    customerEmail: contactEmail || req.user.email,
+    customerPhone: contactPhone || req.user.phone,
+    travelDate: new Date(),
+    travellersCount: 1,
+    selectedOption: `PSK: ${preferredPSK || 'Ludhiana'}`,
+    totalAmount: total,
+    paymentStatus: 'Paid',
+    status: 'Pre-Screened',
+    specialNotes: notesList,
   });
 
   res.status(201).json({

@@ -66,7 +66,7 @@ const Login = () => {
         <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
-            onClick={() => handleLoginWithCreds('customer@pctetravels.com', 'Customer@123')}
+            onClick={() => handleLoginWithCreds('amolsharma2705@gmail.com', 'Customer@123')}
             className="flex flex-col items-center justify-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] p-2.5 text-xs font-bold text-slate-800 dark:text-white shadow-sm transition hover:border-[#0F2942] hover:bg-[#0F2942] hover:text-white"
           >
             <FiUserCheck className="text-base text-[#E11D48]" />
@@ -107,7 +107,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] pl-3 pr-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]"
-              placeholder="customer@pctetravels.com"
+              placeholder="amolsharma2705@gmail.com"
             />
           </div>
         </div>

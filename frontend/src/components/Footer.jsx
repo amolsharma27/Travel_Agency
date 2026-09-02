@@ -164,9 +164,18 @@ const Footer = () => {
         {/* Copyright Bar */}
         <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-slate-800 pt-6 text-xs text-slate-400 md:flex-row">
           <span>© {new Date().getFullYear()} PCTE Travel Agency. All rights reserved.</span>
-          <span className="flex items-center gap-2 text-slate-300">
-            <FiCheckCircle className="text-emerald-400" /> Verified Partners · Direct WhatsApp Enquiry · Dedicated Travel Support
-          </span>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-2 text-slate-300">
+              <FiCheckCircle className="text-emerald-400" /> Verified Partners · Direct WhatsApp Enquiry
+            </span>
+            <Link
+              to="/admin/login"
+              className="text-[11px] text-slate-500 hover:text-amber-400 transition-colors flex items-center gap-1"
+            >
+              <FiShield size={11} />
+              <span>Admin Access</span>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

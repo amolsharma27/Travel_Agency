@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiBookOpen, FiCalendar, FiClock, FiCheckCircle, FiRefreshCw } from 'react-icons/fi';
+import {
+  FiSearch, FiFilter, FiUser, FiPhone, FiMail, FiBookOpen,
+  FiCalendar, FiClock, FiCheckCircle, FiRefreshCw, FiTrash2,
+  FiDownload, FiPrinter, FiAlertCircle
+} from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import api from '../api/axios.js';
@@ -9,6 +13,7 @@ const AdminEnquiries = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('All');
+  const [filterStatus, setFilterStatus] = useState('All');
 
   const fetchEnquiries = async () => {
     setLoading(true);
@@ -17,7 +22,6 @@ const AdminEnquiries = () => {
       if (data && Array.isArray(data.data) && data.data.length > 0) {
         setEnquiries(data.data);
       } else {
-        // Fallback to localStorage enquiries
         const local = JSON.parse(localStorage.getItem('pcte_student_enquiries') || '[]');
         setEnquiries(local);
       }
@@ -43,18 +47,56 @@ const AdminEnquiries = () => {
       const local = JSON.parse(localStorage.getItem('pcte_student_enquiries') || '[]');
       const updated = local.map((e) => (e._id === id ? { ...e, status: newStatus } : e));
       localStorage.setItem('pcte_student_enquiries', JSON.stringify(updated));
-      toast.success(`Status updated to ${newStatus}`);
+      toast.success(`Status updated to "${newStatus}"`);
     } catch {
       setEnquiries((prev) =>
         prev.map((e) => (e._id === id ? { ...e, status: newStatus } : e))
       );
-      toast.success(`Status updated to ${newStatus}`);
+      toast.success(`Status updated to "${newStatus}"`);
     }
   };
 
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`Delete registration for student "${name}"?`)) return;
+
+    try {
+      await api.delete(`/enquiries/${id}`);
+    } catch {
+      // Local fallback
+    }
+
+    setEnquiries((prev) => prev.filter((e) => e._id !== id));
+    const local = JSON.parse(localStorage.getItem('pcte_student_enquiries') || '[]');
+    const updated = local.filter((e) => e._id !== id);
+    localStorage.setItem('pcte_student_enquiries', JSON.stringify(updated));
+    toast.success(`Registration for ${name} removed.`);
+  };
+
+  const handleExportCSV = () => {
+    if (enquiries.length === 0) {
+      toast.error('No registrations to export.');
+      return;
+    }
+
+    const headers = 'Student Name,Roll Number,Course,Phone,Email,Tour Package,Request Type,Date,Time,Status,Notes\n';
+    const rows = enquiries
+      .map((e) =>
+        `"${e.studentName}","${e.rollNumber}","${e.course}","${e.phone}","${e.email}","${e.packageTitle}","${e.requestType || 'Booking Request'}","${e.requestDate || ''}","${e.requestTime || ''}","${e.status || 'New'}","${(e.notes || '').replace(/"/g, '""')}"`
+      )
+      .join('\n');
+
+    const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `PCTE_Student_Registrations_${Date.now()}.csv`;
+    link.click();
+    toast.success('Registrations exported to CSV!');
+  };
+
   const filteredEnquiries = enquiries.filter((e) => {
-    const matchesType =
-      filterType === 'All' || e.requestType === filterType;
+    const matchesType = filterType === 'All' || e.requestType === filterType;
+    const matchesStatus = filterStatus === 'All' || (e.status || 'New') === filterStatus;
     const query = searchTerm.toLowerCase().trim();
     const matchesSearch =
       !query ||
@@ -64,161 +106,182 @@ const AdminEnquiries = () => {
       e.packageTitle?.toLowerCase().includes(query) ||
       e.email?.toLowerCase().includes(query) ||
       e.phone?.includes(query);
-    return matchesType && matchesSearch;
+    return matchesType && matchesStatus && matchesSearch;
   });
 
   const totalCount = enquiries.length;
-  const bookingCount = enquiries.filter((e) => e.requestType === 'Booking Request').length;
-  const onRequestCount = enquiries.filter((e) => e.requestType === 'On Request').length;
+  const newCount = enquiries.filter((e) => (e.status || 'New') === 'New').length;
+  const confirmedCount = enquiries.filter((e) => e.status === 'Confirmed').length;
 
   return (
-    <div className="bg-[#F8FAFC] dark:bg-[#0B1727] min-h-screen py-10">
-      <div className="mx-auto max-w-7xl px-4 md:px-8">
-        
-        {/* Page Header */}
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <span className="font-mono text-xs uppercase tracking-wider text-[#E11D48] font-bold">
-              PCTE Travels Operations Portal
+    <div className="space-y-6">
+      
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="rounded bg-[#E11D48] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-white">
+              Student Interest Desk
             </span>
-            <h1 className="font-display text-2xl md:text-3xl font-black text-slate-900 dark:text-white mt-1">
-              Student Enquiries &amp; Interest Tracker
-            </h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Track real-time student registrations, package interest, and Upcoming Tour booking requests.
-            </p>
+            <span className="text-xs text-slate-400 font-bold">
+              {totalCount} Total Registrations
+            </span>
           </div>
+          <h1 className="font-display text-2xl font-black text-slate-900 dark:text-white">
+            Student Tour Registrations &amp; Requests
+          </h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            View all students who signed up for tours, contact them via WhatsApp/Call, and manage seat confirmations.
+          </p>
+        </div>
 
+        <div className="flex items-center gap-2.5">
           <button
             onClick={fetchEnquiries}
-            className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-700 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#0F2942] transition-colors shadow-sm"
+            title="Refresh List"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
           >
-            <FiRefreshCw className={loading ? 'animate-spin' : ''} />
-            <span>Refresh</span>
+            <FiRefreshCw className={loading ? 'animate-spin' : ''} size={16} />
+          </button>
+
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] px-4 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm"
+          >
+            <FiDownload size={14} className="text-[#E11D48]" />
+            <span>Export CSV</span>
           </button>
         </div>
+      </div>
 
-        {/* Analytics Metric Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-          <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-            <span className="text-xs font-bold uppercase text-slate-400">Total Enquiries</span>
-            <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">
-              {totalCount}
-            </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Registered student interest entries</span>
+      {/* Summary KPI Badges */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 flex items-center justify-between shadow-sm">
+          <div>
+            <span className="text-[10px] font-bold uppercase text-slate-400">Total Registered</span>
+            <div className="text-2xl font-black text-slate-900 dark:text-white font-mono">{totalCount}</div>
           </div>
-
-          <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-red-500/20 p-5 shadow-sm">
-            <span className="text-xs font-bold uppercase text-[#E11D48]">Booking Requests</span>
-            <div className="text-2xl font-black text-[#E11D48] mt-1">
-              {bookingCount}
-            </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">Upcoming Tour (Mussoorie) bookings</span>
-          </div>
-
-          <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-            <span className="text-xs font-bold uppercase text-amber-500">On Request Inquiries</span>
-            <div className="text-2xl font-black text-amber-500 mt-1">
-              {onRequestCount}
-            </div>
-            <span className="text-[11px] text-slate-500 mt-1 block">General package enquiries</span>
+          <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center">
+            <FiUser size={18} />
           </div>
         </div>
 
-        {/* Filter & Search Toolbar */}
-        <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-4 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
-          <div className="relative flex-1 min-w-[260px]">
-            <FiSearch className="absolute left-3.5 top-3 text-slate-400 text-xs" />
-            <input
-              type="text"
-              placeholder="Search by student name, roll number, course, package..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-[#0F2942]"
-            />
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 flex items-center justify-between shadow-sm">
+          <div>
+            <span className="text-[10px] font-bold uppercase text-slate-400">Pending / New Requests</span>
+            <div className="text-2xl font-black text-amber-500 font-mono">{newCount}</div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-slate-400 uppercase">Type:</span>
-            {['All', 'On Request', 'Booking Request'].map((type) => (
-              <button
-                key={type}
-                onClick={() => setFilterType(type)}
-                className={`rounded-xl px-3.5 py-1.5 text-xs font-bold transition-all ${
-                  filterType === type
-                    ? 'bg-[#0F2942] text-white shadow-sm'
-                    : 'border border-slate-200 dark:border-slate-700 bg-white dark:bg-[#0F1D30] text-slate-700 dark:text-slate-300 hover:border-[#0F2942]'
-                }`}
-              >
-                {type}
-              </button>
-            ))}
+          <div className="h-10 w-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 flex items-center justify-center">
+            <FiClock size={18} />
           </div>
         </div>
 
-        {/* Enquiries Table */}
-        <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-          {loading ? (
-            <div className="p-12 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-[#0F2942] border-r-transparent" />
-              <p className="mt-3 text-xs text-slate-500">Loading student enquiries…</p>
-            </div>
-          ) : filteredEnquiries.length === 0 ? (
-            <div className="p-12 text-center">
-              <p className="text-sm font-bold text-slate-600 dark:text-slate-300">
-                No student enquiries found.
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                When students click "On Request" or "Book Now", their details will appear here.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs border-collapse">
-                <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                    <th className="p-4">Student Details</th>
-                    <th className="p-4">Roll No &amp; Course</th>
-                    <th className="p-4">Contact Channels</th>
-                    <th className="p-4">Interested Tour</th>
-                    <th className="p-4">Request Type</th>
-                    <th className="p-4">Date &amp; Time</th>
-                    <th className="p-4">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-                  {filteredEnquiries.map((enq) => (
-                    <tr
-                      key={enq._id}
-                      className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors"
-                    >
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] p-4 flex items-center justify-between shadow-sm">
+          <div>
+            <span className="text-[10px] font-bold uppercase text-slate-400">Confirmed Allocations</span>
+            <div className="text-2xl font-black text-emerald-500 font-mono">{confirmedCount}</div>
+          </div>
+          <div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center">
+            <FiCheckCircle size={18} />
+          </div>
+        </div>
+      </div>
+
+      {/* Filter & Search Toolbar */}
+      <div className="flex flex-col md:flex-row gap-3 items-center justify-between bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-3.5 rounded-2xl shadow-sm">
+        
+        {/* Search */}
+        <div className="relative w-full md:w-80">
+          <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by student name, roll no, course..."
+            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 pl-10 pr-4 py-2 text-xs text-slate-900 dark:text-white outline-none focus:border-[#E11D48]"
+          />
+        </div>
+
+        {/* Status Filter Buttons */}
+        <div className="flex flex-wrap gap-1.5 w-full md:w-auto">
+          {['All', 'New', 'Contacted', 'Confirmed', 'Closed'].map((st) => (
+            <button
+              key={st}
+              onClick={() => setFilterStatus(st)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-bold transition ${
+                filterStatus === st
+                  ? 'bg-[#0F2942] text-white dark:bg-white dark:text-[#0F2942]'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200'
+              }`}
+            >
+              {st}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Registrations Table */}
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] overflow-hidden shadow-sm">
+        {loading ? (
+          <div className="py-20 text-center">
+            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-[#E11D48] border-t-transparent" />
+            <p className="mt-3 text-xs text-slate-400 font-bold uppercase">Loading Registrations...</p>
+          </div>
+        ) : filteredEnquiries.length === 0 ? (
+          <div className="py-16 text-center">
+            <FiAlertCircle className="mx-auto text-4xl text-amber-500 mb-2" />
+            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">No Student Registrations Found</h3>
+            <p className="text-xs text-slate-400 mt-1">Try resetting your search query or filters.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-50 dark:bg-slate-900/60 text-[10px] font-black uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                <tr>
+                  <th className="p-4">Student Details</th>
+                  <th className="p-4">Roll No &amp; Course</th>
+                  <th className="p-4">Direct Contact</th>
+                  <th className="p-4">Tour Package</th>
+                  <th className="p-4">Registered On</th>
+                  <th className="p-4">Status Action</th>
+                  <th className="p-4 text-center">Delete</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-medium">
+                {filteredEnquiries.map((enq) => {
+                  const status = enq.status || 'New';
+                  const waNumber = enq.phone ? enq.phone.replace(/[^0-9]/g, '') : '';
+                  const waUrl = `https://wa.me/91${waNumber}?text=${encodeURIComponent(
+                    `Hello ${enq.studentName}, regarding your tour registration for ${enq.packageTitle} at PCTE Travels.`
+                  )}`;
+
+                  return (
+                    <tr key={enq._id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
                       {/* Student Name */}
                       <td className="p-4">
-                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                          <FiUser className="text-[#E11D48] shrink-0" />
-                          <span>{enq.studentName}</span>
+                        <div className="font-bold text-slate-900 dark:text-white text-xs">
+                          {enq.studentName}
                         </div>
                         {enq.notes && (
-                          <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 italic line-clamp-1">
-                            "{enq.notes}"
-                          </p>
+                          <div className="text-[10px] text-slate-400 italic mt-0.5 line-clamp-1 max-w-[180px]">
+                            &quot;{enq.notes}&quot;
+                          </div>
                         )}
                       </td>
 
-                      {/* Roll No & Course */}
+                      {/* Roll & Course */}
                       <td className="p-4">
                         <span className="font-mono font-bold text-slate-900 dark:text-white block">
                           {enq.rollNumber}
                         </span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block mt-0.5">
+                        <span className="text-[10px] text-slate-500 truncate max-w-[140px] block">
                           {enq.course}
                         </span>
                       </td>
 
-                      {/* Contact Channels */}
+                      {/* Contact */}
                       <td className="p-4 space-y-1">
                         <div className="flex items-center gap-1.5">
-                          <FiPhone className="text-amber-500 text-xs shrink-0" />
                           <a
                             href={`tel:${enq.phone}`}
                             className="font-mono font-bold text-slate-800 dark:text-slate-200 hover:text-[#E11D48]"
@@ -226,61 +289,48 @@ const AdminEnquiries = () => {
                             {enq.phone}
                           </a>
                           <a
-                            href={`https://wa.me/91${enq.phone.replace(/[^0-9]/g, '')}`}
+                            href={waUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-emerald-500 hover:text-emerald-400 ml-1"
-                            title="Message on WhatsApp"
+                            className="rounded bg-emerald-500/10 p-1 text-emerald-500 hover:bg-emerald-500 hover:text-white transition"
+                            title="Chat on WhatsApp"
                           >
                             <FaWhatsapp size={13} />
                           </a>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <FiMail className="text-slate-400 text-xs shrink-0" />
-                          <a
-                            href={`mailto:${enq.email}`}
-                            className="text-slate-600 dark:text-slate-400 hover:text-[#E11D48] truncate max-w-[160px] block"
-                          >
-                            {enq.email}
-                          </a>
+                        <div className="text-[10px] text-slate-400 truncate max-w-[150px]">
+                          {enq.email}
                         </div>
                       </td>
 
-                      {/* Interested Tour */}
+                      {/* Tour Package */}
                       <td className="p-4">
-                        <span className="font-bold text-slate-900 dark:text-white block">
+                        <span className="font-bold text-slate-900 dark:text-white block text-xs">
                           {enq.packageTitle}
                         </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block mt-0.5">
-                          {enq.destination} {enq.tourDuration ? `• ${enq.tourDuration}` : ''}
+                        <span className="text-[10px] text-slate-400 block">
+                          {enq.destination} {enq.tourPrice ? `• ${enq.tourPrice}` : ''}
                         </span>
                       </td>
 
-                      {/* Request Type */}
-                      <td className="p-4">
-                        <span
-                          className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                            enq.requestType === 'Booking Request'
-                              ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
-                              : 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-                          }`}
-                        >
-                          {enq.requestType || 'On Request'}
-                        </span>
-                      </td>
-
-                      {/* Date & Time */}
-                      <td className="p-4 text-slate-500 dark:text-slate-400 text-[11px]">
-                        <div>{enq.requestDate || new Date(enq.createdAt).toLocaleDateString()}</div>
+                      {/* Date */}
+                      <td className="p-4 text-[11px] text-slate-500 dark:text-slate-400">
+                        <div>{enq.requestDate || 'Recent'}</div>
                         <div className="text-[10px] text-slate-400">{enq.requestTime || ''}</div>
                       </td>
 
-                      {/* Status Dropdown */}
+                      {/* Status */}
                       <td className="p-4">
                         <select
-                          value={enq.status || 'New'}
+                          value={status}
                           onChange={(e) => handleStatusChange(enq._id, e.target.value)}
-                          className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1 text-xs font-bold text-slate-800 dark:text-white outline-none"
+                          className={`rounded-lg border text-[11px] font-bold px-2.5 py-1.5 outline-none ${
+                            status === 'Confirmed'
+                              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300'
+                              : status === 'Contacted'
+                              ? 'bg-blue-50 border-blue-300 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300'
+                              : 'bg-amber-50 border-amber-300 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                          }`}
                         >
                           <option value="New">New</option>
                           <option value="Contacted">Contacted</option>
@@ -288,15 +338,26 @@ const AdminEnquiries = () => {
                           <option value="Closed">Closed</option>
                         </select>
                       </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
 
+                      {/* Delete */}
+                      <td className="p-4 text-center">
+                        <button
+                          onClick={() => handleDelete(enq._id, enq.studentName)}
+                          title="Delete Registration"
+                          className="rounded-lg p-1.5 text-slate-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/40 transition"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
+
     </div>
   );
 };

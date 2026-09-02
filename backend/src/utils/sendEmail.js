@@ -1,40 +1,48 @@
 import nodemailer from 'nodemailer';
 
-const emailConfigured = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
-
-let transporter = null;
-if (emailConfigured) {
-  transporter = nodemailer.createTransport({
-    service: process.env.EMAIL_SERVICE || 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-}
-
 /**
  * Sends an email. If SMTP credentials aren't configured (dev/local), the
  * message is logged to the console instead of failing the request, so the
  * rest of the flow (OTP, booking confirmation, etc.) can still be tested.
  */
 const sendEmail = async ({ to, subject, html, text }) => {
-  if (!emailConfigured) {
-    console.log('--- EMAIL (dev mode, not actually sent) ---');
-    console.log(`To: ${to}\nSubject: ${subject}\n${text || html}`);
-    console.log('--------------------------------------------');
+  const user = process.env.EMAIL_USER;
+  const pass = process.env.EMAIL_PASS;
+  const isConfigured = Boolean(user && pass);
+
+  if (!isConfigured) {
+    console.log('\n📧 [EMAIL NOT SENT TO INBOX - SMTP NOT CONFIGURED]');
+    console.log('💡 To receive real emails in your inbox, add your Gmail App Password to backend/.env (EMAIL_PASS=xxxx xxxx xxxx xxxx)');
+    console.log(`➡️  To: ${to}`);
+    console.log(`📌 Subject: ${subject}`);
+    console.log('--------------------------------------------------\n');
     return { simulated: true };
   }
 
-  const info = await transporter.sendMail({
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-    to,
-    subject,
-    html,
-    text,
-  });
+  try {
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE || 'gmail',
+      auth: {
+        user,
+        pass,
+      },
+    });
 
-  return info;
+    const info = await transporter.sendMail({
+      from: process.env.EMAIL_FROM || user,
+      to,
+      subject,
+      html,
+      text,
+    });
+
+    console.log(`✅ [EMAIL DISPATCHED SUCCESSFULLY TO ${to}] MessageId: ${info.messageId}`);
+    return info;
+  } catch (err) {
+    console.error(`❌ [EMAIL SENDING ERROR TO ${to}]:`, err.message);
+    return { error: err.message };
+  }
 };
 
 export default sendEmail;
+

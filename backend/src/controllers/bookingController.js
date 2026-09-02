@@ -5,6 +5,7 @@ import TicketBooking from '../models/TicketBooking.js';
 import Package from '../models/Package.js';
 import Hotel from '../models/Hotel.js';
 import User from '../models/User.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 // @desc  Unified booking creation (hotel, package, transportation, activity, passport)
 // @route POST /api/bookings
@@ -74,6 +75,22 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
       type: 'booking',
     });
 
+    // Send email notification to amolsharma2705@gmail.com and customer
+    notifyBooking({
+      bookingReference: booking.bookingReference,
+      bookingType: 'Tour Package',
+      itemTitle: pkg.title,
+      destination: pkg.destination || 'India',
+      customerName: effectiveName,
+      customerEmail: effectiveEmail,
+      customerPhone: effectivePhone,
+      travelDate: booking.travelDate,
+      travellersCount: effectiveTravellers,
+      totalAmount: booking.totalAmount,
+      paymentStatus: 'Paid',
+      status: 'Confirmed',
+    });
+
     return res.status(201).json({ success: true, data: booking });
   }
 
@@ -121,6 +138,24 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
       type: 'booking',
     });
 
+    // Send email notification to amolsharma2705@gmail.com and customer
+    notifyBooking({
+      bookingReference: booking.bookingReference,
+      bookingType: 'Hotel / Stay',
+      itemTitle: hotel.name,
+      destination: hotel.city || hotel.location || 'India',
+      customerName: effectiveName,
+      customerEmail: effectiveEmail,
+      customerPhone: effectivePhone,
+      travelDate: checkInDate,
+      returnDate: checkOutDate,
+      travellersCount: effectiveTravellers,
+      selectedOption: `${booking.roomsBooked} Room(s) (${booking.nights} Night(s))`,
+      totalAmount: booking.totalAmount,
+      paymentStatus: 'Paid',
+      status: 'Confirmed',
+    });
+
     return res.status(201).json({ success: true, data: booking });
   }
 
@@ -166,6 +201,25 @@ export const createUnifiedBooking = asyncHandler(async (req, res) => {
     title: `${bookingType.charAt(0).toUpperCase() + bookingType.slice(1)} Booking Confirmed!`,
     message: `Your reservation for "${effectiveTitle}" is confirmed. Ref: ${booking.bookingReference}`,
     type: 'booking',
+  });
+
+  // Send email notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: booking.bookingReference,
+    bookingType: bookingType || 'Transportation / Service',
+    itemTitle: effectiveTitle,
+    destination: effectiveDest,
+    customerName: effectiveName,
+    customerEmail: effectiveEmail,
+    customerPhone: effectivePhone,
+    travelDate: booking.travelDate,
+    returnDate: booking.returnDate,
+    travellersCount: effectiveTravellers,
+    selectedOption: effectiveOption,
+    totalAmount: booking.totalAmount,
+    paymentStatus: 'Paid',
+    status: 'Confirmed',
+    specialNotes,
   });
 
   return res.status(201).json({ success: true, data: booking });

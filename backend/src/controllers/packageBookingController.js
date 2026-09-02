@@ -4,6 +4,7 @@ import Package from '../models/Package.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import sendEmail from '../utils/sendEmail.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 // @desc  Book a tour package
 // @route POST /api/package-bookings
@@ -46,7 +47,7 @@ export const createPackageBooking = asyncHandler(async (req, res) => {
     travellers,
     seatsBooked,
     contactPhone,
-    contactEmail,
+    contactEmail: contactEmail || req.user.email,
     totalAmount,
     couponCode,
     discountApplied,
@@ -56,6 +57,22 @@ export const createPackageBooking = asyncHandler(async (req, res) => {
   // Tentatively hold seats; payment confirmation finalizes, cancellation releases
   pkg.availableSeats -= seatsBooked;
   await pkg.save();
+
+  // Send booking email notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: booking.bookingReference,
+    bookingType: 'Tour Package',
+    itemTitle: pkg.title,
+    destination: pkg.destination || 'India',
+    customerName: req.user.name,
+    customerEmail: contactEmail || req.user.email,
+    customerPhone: contactPhone || req.user.phone,
+    travelDate: booking.travelDate,
+    travellersCount: seatsBooked,
+    totalAmount: booking.totalAmount,
+    paymentStatus: 'Pending Payment',
+    status: 'Pending Payment',
+  });
 
   res.status(201).json({ success: true, data: booking });
 });

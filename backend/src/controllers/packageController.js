@@ -41,24 +41,35 @@ export const getPackageByIdOrSlug = asyncHandler(async (req, res) => {
   res.json({ success: true, data: pkg });
 });
 
-// @desc  Create a package (agency only)
+// @desc  Admin: get all packages (all statuses)
+// @route GET /api/packages/admin/all
+// @access Private/Admin
+export const getAllAdminPackages = asyncHandler(async (req, res) => {
+  const packages = await Package.find().sort('-createdAt');
+  res.json({ success: true, count: packages.length, data: packages });
+});
+
+// @desc  Create a package (admin or agency)
 // @route POST /api/packages
-// @access Private/Agency
+// @access Private/Admin/Agency
 export const createPackage = asyncHandler(async (req, res) => {
+  const totalSeats = Number(req.body.totalSeats) || 30;
+  const availableSeats = Number(req.body.availableSeats) !== undefined ? Number(req.body.availableSeats) : totalSeats;
+
   const pkg = await Package.create({
     ...req.body,
     agency: req.user._id,
-    availableSeats: req.body.availableSeats || req.body.totalSeats || 20,
-    totalSeats: req.body.totalSeats || req.body.availableSeats || 20,
-    status: req.body.status || 'approved',
+    totalSeats,
+    availableSeats,
+    status: 'approved',
     isActive: true,
   });
   res.status(201).json({ success: true, data: pkg });
 });
 
-// @desc  Update a package (owning agency only)
+// @desc  Update a package (admin or owning agency)
 // @route PUT /api/packages/:id
-// @access Private/Agency
+// @access Private/Admin/Agency
 export const updatePackage = asyncHandler(async (req, res) => {
   const pkg = await Package.findById(req.params.id);
   if (!pkg) {
@@ -70,16 +81,27 @@ export const updatePackage = asyncHandler(async (req, res) => {
     throw new Error('Not authorized to edit this package');
   }
 
-  Object.assign(pkg, req.body);
-  if (req.body.status) pkg.status = req.body.status;
-  await pkg.save();
+  if (req.body.totalSeats !== undefined) pkg.totalSeats = Number(req.body.totalSeats);
+  if (req.body.availableSeats !== undefined) pkg.availableSeats = Number(req.body.availableSeats);
+  if (req.body.title !== undefined) pkg.title = req.body.title;
+  if (req.body.destination !== undefined) pkg.destination = req.body.destination;
+  if (req.body.price !== undefined) pkg.price = Number(req.body.price);
+  if (req.body.discountPrice !== undefined) pkg.discountPrice = Number(req.body.discountPrice);
+  if (req.body.durationDays !== undefined) pkg.durationDays = Number(req.body.durationDays);
+  if (req.body.durationNights !== undefined) pkg.durationNights = Number(req.body.durationNights);
+  if (req.body.category !== undefined) pkg.category = req.body.category;
+  if (req.body.description !== undefined) pkg.description = req.body.description;
+  if (req.body.images !== undefined) pkg.images = req.body.images;
+  if (req.body.isActive !== undefined) pkg.isActive = req.body.isActive;
+  if (req.body.status !== undefined) pkg.status = req.body.status;
 
+  await pkg.save();
   res.json({ success: true, data: pkg });
 });
 
-// @desc  Delete a package
+// @desc  Delete a package (admin or owning agency)
 // @route DELETE /api/packages/:id
-// @access Private/Agency
+// @access Private/Admin/Agency
 export const deletePackage = asyncHandler(async (req, res) => {
   const pkg = await Package.findById(req.params.id);
   if (!pkg) {
@@ -91,7 +113,7 @@ export const deletePackage = asyncHandler(async (req, res) => {
     throw new Error('Not authorized to delete this package');
   }
   await pkg.deleteOne();
-  res.json({ success: true, message: 'Package deleted' });
+  res.json({ success: true, message: 'Package deleted successfully' });
 });
 
 // @desc  Agency: list own packages (any status)

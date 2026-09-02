@@ -4,10 +4,10 @@
 export const mockUsers = {
   customer: {
     _id: 'cust_001',
-    name: 'Rohit Sharma',
-    email: 'customer@pctetravels.com',
+    name: 'Amol Sharma',
+    email: 'amolsharma2705@gmail.com',
     role: 'customer',
-    phone: '+91 98765 43210',
+    phone: '+91 99881 10021',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
     city: 'Ludhiana, Punjab',
     joinedDate: 'March 2023',
@@ -61,9 +61,10 @@ export const mockPackages = [
     discountPrice: 3800,
     durationDays: 2,
     durationNights: 1,
+    travelDates: '11 Sep – 13 September 2026',
     totalSeats: 30,
     availableSeats: 12,
-    startDates: [new Date(Date.now() + 3 * 86400000).toISOString(), new Date(Date.now() + 10 * 86400000).toISOString()],
+    startDates: ['2026-09-11T05:00:00.000Z', '2026-09-13T20:00:00.000Z'],
     meetingPoint: 'PCTE Campus Ludhiana / Tribune Chowk Chandigarh',
     travelMode: 'AC Deluxe Coach / Pushback Traveller',
     itinerary: [
@@ -1260,7 +1261,7 @@ export const mockCustomerBookings = [
     status: 'confirmed',
     paymentStatus: 'paid',
     paymentId: 'pay_in_991238',
-    primaryGuest: { name: 'Priya Sharma', email: 'priya.sharma@example.com', phone: '+91 98765 43210' }
+    primaryGuest: { name: 'Amol Sharma', email: 'amolsharma2705@gmail.com', phone: '+91 99881 10021' }
   },
   {
     _id: 'bk_102',
@@ -1278,7 +1279,7 @@ export const mockCustomerBookings = [
     status: 'confirmed',
     paymentStatus: 'paid',
     paymentId: 'pay_in_884219',
-    primaryGuest: { name: 'Priya Sharma', email: 'priya.sharma@example.com', phone: '+91 98765 43210' }
+    primaryGuest: { name: 'Amol Sharma', email: 'amolsharma2705@gmail.com', phone: '+91 99881 10021' }
   },
   {
     _id: 'bk_103',
@@ -1295,7 +1296,7 @@ export const mockCustomerBookings = [
     status: 'confirmed',
     paymentStatus: 'paid',
     paymentId: 'pay_in_772190',
-    primaryGuest: { name: 'Priya Sharma', email: 'priya.sharma@example.com', phone: '+91 98765 43210' }
+    primaryGuest: { name: 'Amol Sharma', email: 'amolsharma2705@gmail.com', phone: '+91 99881 10021' }
   },
   {
     _id: 'bk_104',
@@ -1305,7 +1306,7 @@ export const mockCustomerBookings = [
     destination: 'PSK Ludhiana / Chandigarh',
     image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&w=600&q=80',
     bookingDate: new Date(Date.now() - 1 * 86400000).toISOString(),
-    applicantName: 'Priya Sharma',
+    applicantName: 'Amol Sharma',
     dob: '1998-05-14',
     preferredPSK: 'PSK Ludhiana (Near Model Town)',
     totalAmount: 1999, // 1500 govt + 499 agency
@@ -1315,7 +1316,7 @@ export const mockCustomerBookings = [
     applicationTrackingId: 'MEA-LDH-2026-88192',
     paymentStatus: 'paid',
     paymentId: 'pay_in_664192',
-    primaryGuest: { name: 'Priya Sharma', email: 'priya.sharma@example.com', phone: '+91 98765 43210' }
+    primaryGuest: { name: 'Amol Sharma', email: 'amolsharma2705@gmail.com', phone: '+91 99881 10021' }
   }
 ];
 
@@ -1338,12 +1339,12 @@ export const domesticDestinations = [
 // -------------------------------------------------------------
 // LOCAL PERSISTENCE HELPERS
 // -------------------------------------------------------------
-const STORAGE_KEY_PACKAGES = 'travelagency_packages_v9';
-const STORAGE_KEY_HOTELS = 'travelagency_hotels_v9';
-const STORAGE_KEY_ACTIVITIES = 'travelagency_activities_v9';
-const STORAGE_KEY_BOOKINGS = 'travelagency_bookings_v9';
-const STORAGE_KEY_PASSPORT = 'travelagency_passport_v9';
-const STORAGE_KEY_WISHLIST = 'travelagency_wishlist_v9';
+const STORAGE_KEY_PACKAGES = 'travelagency_packages_v10';
+const STORAGE_KEY_HOTELS = 'travelagency_hotels_v10';
+const STORAGE_KEY_ACTIVITIES = 'travelagency_activities_v10';
+const STORAGE_KEY_BOOKINGS = 'travelagency_bookings_v10';
+const STORAGE_KEY_PASSPORT = 'travelagency_passport_v10';
+const STORAGE_KEY_WISHLIST = 'travelagency_wishlist_v10';
 
 
 
@@ -1438,16 +1439,16 @@ export const mockCustomerPastTrips = [
 ];
 
 export const getStoredMemories = () => {
-  const stored = localStorage.getItem('travelagency_memories_v6');
+  const stored = localStorage.getItem('travelagency_memories_v10');
   if (stored) { try { return JSON.parse(stored); } catch (e) {} }
-  localStorage.setItem('travelagency_memories_v6', JSON.stringify(mockCustomerPastTrips));
+  localStorage.setItem('travelagency_memories_v10', JSON.stringify(mockCustomerPastTrips));
   return mockCustomerPastTrips;
 };
 
 export const saveMemory = (newMemory) => {
   const memories = getStoredMemories();
   const updated = [newMemory, ...memories];
-  localStorage.setItem('travelagency_memories_v6', JSON.stringify(updated));
+  localStorage.setItem('travelagency_memories_v10', JSON.stringify(updated));
   return updated;
 };
 

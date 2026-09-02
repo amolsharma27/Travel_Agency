@@ -108,14 +108,14 @@ const run = async () => {
 
   // 3. Customers
   const customer1 = await User.create({
-    name: 'Rohit Sharma',
-    email: 'customer@pctetravels.com',
+    name: 'Amol Sharma',
+    email: 'amolsharma2705@gmail.com',
     password: 'Customer@123',
     role: 'customer',
-    phone: '+91 98765 43210',
+    phone: '+91 99881 10021',
     city: 'Ludhiana',
     state: 'Punjab',
-    address: 'Sarabha Nagar, Ludhiana, Punjab',
+    address: 'PCTE Campus / Ludhiana, Punjab',
     passportNumber: 'Z8923412',
     passportExpiry: '2032-11-15',
     aadhaarLast4: '8821',
@@ -722,9 +722,9 @@ const run = async () => {
   await ContactMessage.create([
     {
       user: customer1._id,
-      name: 'Rohit Sharma',
-      email: 'customer@pctetravels.com',
-      phone: '+91 98765 43210',
+      name: 'Amol Sharma',
+      email: 'amolsharma2705@gmail.com',
+      phone: '+91 99881 10021',
       subject: 'PSK Appointment Slot Rescheduling for Tatkaal Application',
       message: 'Need to shift PSK Ludhiana appointment slot from Friday 10 AM to next Monday due to a business meeting in Chandigarh.',
       status: 'in_progress',
@@ -787,7 +787,7 @@ const run = async () => {
   console.log('✅ PCTE TRAVEL AGENCY DATABASE SEEDING COMPLETED SUCCESSFULLY');
   console.log('===================================================================');
   console.log('⚡ 1-Click Demo Login Credentials:');
-  console.log('  Customer: customer@pctetravels.com / Customer@123');
+  console.log('  Customer: amolsharma2705@gmail.com / Customer@123 (Amol Sharma)');
   console.log('  Agency:   agency@pctetravels.com   / Agency@123 (PCTE Travel Agency)');
   console.log('  Admin:    admin@pctetravels.com    / Admin@123');
   console.log('-------------------------------------------------------------------');

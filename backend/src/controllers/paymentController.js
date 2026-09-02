@@ -6,6 +6,7 @@ import HotelBooking from '../models/HotelBooking.js';
 import PackageBooking from '../models/PackageBooking.js';
 import Notification from '../models/Notification.js';
 import sendEmail from '../utils/sendEmail.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 const getBookingAndModel = async (bookingType, bookingId) => {
   if (bookingType === 'hotel') {
@@ -148,10 +149,20 @@ export const verifyPayment = asyncHandler(async (req, res) => {
     type: 'booking',
   });
 
-  await sendEmail({
-    to: req.user.email,
-    subject: 'Payment successful - Booking confirmation pending',
-    text: `Your payment of ₹${payment.amount} was successful. Booking reference: ${booking.bookingReference}. It is now awaiting confirmation.`,
+  // Send rich booking notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: booking.bookingReference,
+    bookingType: payment.bookingType === 'hotel' ? 'Hotel / Stay' : 'Tour Package',
+    itemTitle: itemName || 'Travel Booking',
+    customerName: req.user.name,
+    customerEmail: req.user.email,
+    customerPhone: req.user.phone,
+    travelDate: booking.travelDate || booking.checkIn,
+    returnDate: booking.checkOut,
+    travellersCount: booking.seatsBooked || (booking.adults + (booking.children || 0)) || 1,
+    totalAmount: payment.amount,
+    paymentStatus: 'Paid (Razorpay/Verified)',
+    status: 'Payment Received / Confirmed',
   });
 
   res.json({ success: true, data: { payment, booking } });

@@ -30,37 +30,27 @@ const StudentRegistrationModal = ({
   requestType = 'On Request',
   onSuccess
 }) => {
-  const [formData, setFormData] = useState({
+  const emptyFormState = {
     studentName: '',
     rollNumber: '',
     email: '',
     phone: '',
     course: '',
     notes: '',
-  });
+  };
+
+  const [formData, setFormData] = useState(emptyFormState);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Load existing student registration from localStorage if available
+  // Always reset form cleanly whenever modal opens
   useEffect(() => {
     if (isOpen) {
       setSubmitted(false);
       try {
-        const saved = localStorage.getItem('pcte_registered_student');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          setFormData((prev) => ({
-            ...prev,
-            studentName: parsed.studentName || '',
-            rollNumber: parsed.rollNumber || '',
-            email: parsed.email || '',
-            phone: parsed.phone || '',
-            course: parsed.course || '',
-          }));
-        }
-      } catch (err) {
-        console.error('Error reading saved student:', err);
-      }
+        localStorage.removeItem('pcte_registered_student');
+      } catch {}
+      setFormData(emptyFormState);
     }
   }, [isOpen]);
 
@@ -127,32 +117,20 @@ const StudentRegistrationModal = ({
     };
 
     try {
-      // 1. Save student profile to localStorage for instant reuse
-      localStorage.setItem(
-        'pcte_registered_student',
-        JSON.stringify({
-          studentName: payload.studentName,
-          rollNumber: payload.rollNumber,
-          email: payload.email,
-          phone: payload.phone,
-          course: payload.course,
-        })
-      );
+      // 1. Post to backend API (saves in MongoDB + sends notification email to amolsharma2705@gmail.com)
+      try {
+        await api.post('/enquiries', payload);
+      } catch (apiErr) {
+        console.warn('Backend API notification attempt:', apiErr.message);
+      }
 
       // 2. Save enquiry to localStorage store for offline fallback / admin view
       const existingEnquiries = JSON.parse(localStorage.getItem('pcte_student_enquiries') || '[]');
       existingEnquiries.unshift({ ...payload, _id: `enq_${Date.now()}`, status: 'New', createdAt: new Date().toISOString() });
       localStorage.setItem('pcte_student_enquiries', JSON.stringify(existingEnquiries));
 
-      // 3. Post to backend API (saves in MongoDB + sends notification email to pcte_travels@pcte.edu.in)
-      try {
-        await api.post('/enquiries', payload);
-      } catch (apiErr) {
-        console.warn('API call fallback to local storage:', apiErr.message);
-      }
-
       setSubmitted(true);
-      toast.success('Enquiry submitted successfully!');
+      toast.success('Registration submitted! Email notification sent.');
       if (onSuccess) onSuccess(payload);
     } catch (err) {
       toast.error('Submission failed. Please try again or WhatsApp us.');
@@ -237,9 +215,14 @@ const StudentRegistrationModal = ({
               {/* Selected Tour Summary Strip */}
               <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 p-3.5 flex items-center justify-between gap-3">
                 <div className="overflow-hidden">
-                  <span className="inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300 mb-1">
-                    Selected Tour
-                  </span>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="inline-block text-[9px] font-bold uppercase px-2 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300">
+                      Selected Tour
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-[9px] font-black uppercase px-2 py-0.5 rounded bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                      <FiCalendar size={10} /> 11 Sep to 13 Sep
+                    </span>
+                  </div>
                   <h4 className="font-display font-black text-xs sm:text-sm text-slate-900 dark:text-white truncate">
                     {packageTitle}
                   </h4>
@@ -247,7 +230,7 @@ const StudentRegistrationModal = ({
                     <FiMapPin className="text-[#E11D48] text-xs shrink-0" />
                     <span className="truncate">{destination}</span>
                     <span>•</span>
-                    <span className="shrink-0">{duration}</span>
+                    <span className="shrink-0 font-bold text-amber-600 dark:text-amber-400">11 Sep – 13 Sep</span>
                   </p>
                 </div>
                 <div className="text-right shrink-0">

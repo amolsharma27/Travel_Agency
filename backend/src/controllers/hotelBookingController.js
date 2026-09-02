@@ -6,6 +6,7 @@ import RoomAvailability from '../models/RoomAvailability.js';
 import Coupon from '../models/Coupon.js';
 import Notification from '../models/Notification.js';
 import sendEmail from '../utils/sendEmail.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 const normalizeDate = (d) => {
   const date = new Date(d);
@@ -110,6 +111,24 @@ export const createHotelBooking = asyncHandler(async (req, res) => {
       )
     )
   );
+
+  // Send booking email notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: booking.bookingReference,
+    bookingType: 'Hotel / Resort Stay',
+    itemTitle: `${hotel.name} (${room.name || 'Room'})`,
+    destination: hotel.city || hotel.location || 'India',
+    customerName: booking.contactName,
+    customerEmail: booking.contactEmail,
+    customerPhone: booking.contactPhone,
+    travelDate: booking.checkIn,
+    returnDate: booking.checkOut,
+    travellersCount: booking.adults + (booking.children || 0),
+    selectedOption: `${booking.roomsBooked} Room(s) (${booking.nights} Night(s))`,
+    totalAmount: booking.totalAmount,
+    paymentStatus: 'Paid',
+    status: 'Confirmed',
+  });
 
   res.status(201).json({ success: true, data: booking });
 });

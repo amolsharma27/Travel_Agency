@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar.jsx';
 import Footer from './components/Footer.jsx';
 
+// Public Pages
 import Home from './pages/Home.jsx';
 import Hotels from './pages/Hotels.jsx';
 import HotelDetails from './pages/HotelDetails.jsx';
@@ -16,16 +17,24 @@ import PackageBookingForm from './pages/PackageBookingForm.jsx';
 import Transportation from './pages/Transportation.jsx';
 import Activities from './pages/Activities.jsx';
 import ActivityDetails from './pages/ActivityDetails.jsx';
-import NearbyGetaways from './pages/NearbyGetaways.jsx';
 import PassportServices from './pages/PassportServices.jsx';
 
 import BookingConfirmation from './pages/BookingConfirmation.jsx';
-import AdminEnquiries from './pages/AdminEnquiries.jsx';
 import { About, Contact, FAQ, Privacy, Terms, NotFound } from './pages/StaticPages.jsx';
+
+// Dedicated Admin Portal System
+import AdminRoute from './components/AdminRoute.jsx';
+import AdminLayout from './layouts/AdminLayout.jsx';
+import AdminLogin from './pages/AdminLogin.jsx';
+
+// Admin Sub-Modules
+import AdminOverview from './pages/dashboard/AdminOverview.jsx';
+import AdminEnquiries from './pages/AdminEnquiries.jsx';
+import AdminPackages from './pages/dashboard/AdminPackages.jsx';
 
 function App() {
   const location = useLocation();
-  const isHomePage = location.pathname === '/';
+  const isAdminPath = location.pathname.startsWith('/admin');
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F8FAFC] text-slate-900 dark:bg-[#0B1727] dark:text-slate-100 font-sans">
@@ -36,41 +45,39 @@ function App() {
         }}
       />
 
-      {/* GLOBAL TOP NAVBAR */}
-      <Navbar />
+      {/* PUBLIC TOP NAVBAR (Only rendered on public website, hidden in Admin Portal) */}
+      {!isAdminPath && <Navbar />}
 
       {/* MAIN ROUTING AREA */}
       <main className="flex-1">
         <Routes>
-          {/* Main Home (Includes Full-Screen Upcoming Tour Landing Section + Sticky Navbar) */}
+          {/* ======================================================== */}
+          {/* 1. PUBLIC WEBSITE ROUTES                                 */}
+          {/* ======================================================== */}
           <Route path="/" element={<Home />} />
 
-          {/* 1. Tours & Packages */}
+          {/* Tours & Packages */}
           <Route path="/packages" element={<Packages />} />
           <Route path="/packages/:idOrSlug" element={<PackageDetails />} />
           <Route path="/packages/:id/book" element={<PackageBookingForm />} />
 
-          {/* 2. Stays & Hotels */}
+          {/* Stays & Hotels */}
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/hotels/:idOrSlug" element={<HotelDetails />} />
           <Route path="/hotels/:hotelId/book/:roomId" element={<HotelBookingForm />} />
 
-          {/* 3. Transportation */}
+          {/* Transportation */}
           <Route path="/transportation" element={<Transportation />} />
 
-          {/* 4. Activities & Adventure */}
+          {/* Activities & Adventure */}
           <Route path="/activities" element={<Activities />} />
           <Route path="/activities/:id" element={<ActivityDetails />} />
 
-          {/* 5. Nearby Getaways (Integrated inside Tours) */}
+          {/* Nearby Getaways Shortcut */}
           <Route path="/nearby-getaways" element={<Navigate to="/packages?category=Nearby+Getaways" replace />} />
 
-          {/* 6. Passport Services */}
+          {/* Passport Services */}
           <Route path="/passport-services" element={<PassportServices />} />
-
-          {/* 7. Student Enquiries Portal (Staff / Operations) */}
-          <Route path="/admin/enquiries" element={<AdminEnquiries />} />
-          <Route path="/enquiries" element={<AdminEnquiries />} />
 
           {/* Booking Confirmation */}
           <Route path="/booking-confirmation" element={<BookingConfirmation />} />
@@ -82,21 +89,44 @@ function App() {
           <Route path="/privacy-policy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
 
-          {/* Graceful Redirects for Auth/Old Dashboard Pages */}
-          <Route path="/login" element={<Navigate to="/" replace />} />
+          {/* Public Enquiries shortcut redirects to Admin Enquiries */}
+          <Route path="/enquiries" element={<Navigate to="/admin/enquiries" replace />} />
+
+          {/* ======================================================== */}
+          {/* 2. DEDICATED ADMIN PORTAL (ISOLATED & SECURE)            */}
+          {/* ======================================================== */}
+          {/* Admin Login Gateway */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Protected Admin Command Studio */}
+          <Route
+            path="/admin"
+            element={
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            }
+          >
+            <Route index element={<Navigate to="/admin/overview" replace />} />
+            <Route path="overview" element={<AdminOverview />} />
+            <Route path="enquiries" element={<AdminEnquiries />} />
+            <Route path="packages" element={<AdminPackages />} />
+            <Route path="*" element={<Navigate to="/admin/overview" replace />} />
+          </Route>
+
+          {/* Graceful Fallbacks for Old Dashboard Paths */}
+          <Route path="/login" element={<Navigate to="/admin/login" replace />} />
           <Route path="/register" element={<Navigate to="/" replace />} />
-          <Route path="/forgot-password" element={<Navigate to="/" replace />} />
           <Route path="/dashboard/*" element={<Navigate to="/" replace />} />
           <Route path="/agency/*" element={<Navigate to="/" replace />} />
-          <Route path="/admin" element={<Navigate to="/admin/enquiries" replace />} />
 
           {/* 404 Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
-      {/* PUBLIC FOOTER */}
-      <Footer />
+      {/* PUBLIC FOOTER (Only rendered on public website, hidden in Admin Portal) */}
+      {!isAdminPath && <Footer />}
     </div>
   );
 }

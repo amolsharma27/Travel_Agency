@@ -69,7 +69,7 @@ const Register = () => {
         </div>
         <div>
           <label className="mb-1.5 block text-xs font-bold uppercase text-slate-700 dark:text-indigo-200">Email Address</label>
-          <input type="email" required value={form.email} onChange={update('email')} className="w-full rounded-lg border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-4 py-2.5 text-sm outline-none focus:border-[#9B1C1C]" placeholder="you@pctetravels.com" />
+          <input type="email" required value={form.email} onChange={update('email')} className="w-full rounded-lg border border-slate-300 dark:border-indigo-800 bg-white dark:bg-[#110D44] px-4 py-2.5 text-sm outline-none focus:border-[#9B1C1C]" placeholder="amolsharma2705@gmail.com" />
         </div>
         <div>
           <label className="mb-1.5 block text-xs font-bold uppercase text-slate-700 dark:text-indigo-200">Phone Number</label>

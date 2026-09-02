@@ -129,15 +129,23 @@ const UpcomingTourModal = () => {
                   Mussoorie – Kempty Water Fall
                 </h2>
 
+                {/* Prominent Dates Tag */}
+                <div>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-950 font-black px-4 py-1 text-xs shadow-lg border border-amber-300">
+                    <FiCalendar className="text-slate-950 text-sm" />
+                    Trip Dates: 11 Sep to 13 September
+                  </span>
+                </div>
+
                 <p className="text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed max-w-xl drop-shadow">
-                  Join fellow students and travelers on an unforgettable scenic getaway to Queen of the Hills. Experience the famous cascading Kempty Falls, Mall Road Mussoorie, mountain resort stay, bonfire night, and breathtaking Himalayan views.
+                  Join fellow students and travelers on an unforgettable scenic getaway to Queen of the Hills departing on <b>11th September</b>. Experience the famous cascading Kempty Falls, Mall Road Mussoorie, mountain resort stay, bonfire night, and breathtaking Himalayan views.
                 </p>
 
                 {/* Key Package Highlights Pills */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
-                  <div className="rounded-xl bg-black/40 backdrop-blur-md p-2.5 border border-white/10 text-center">
-                    <span className="block text-[10px] text-amber-300 font-bold uppercase tracking-wider">Duration</span>
-                    <span className="font-display font-bold text-xs sm:text-sm text-white">1 Night / 2 Days</span>
+                  <div className="rounded-xl bg-black/60 backdrop-blur-md p-2.5 border border-amber-400/50 text-center">
+                    <span className="block text-[10px] text-amber-300 font-bold uppercase tracking-wider">Trip Dates</span>
+                    <span className="font-display font-black text-xs sm:text-sm text-amber-300">11 – 13 Sep</span>
                   </div>
 
                   <div className="rounded-xl bg-black/40 backdrop-blur-md p-2.5 border border-white/10 text-center">

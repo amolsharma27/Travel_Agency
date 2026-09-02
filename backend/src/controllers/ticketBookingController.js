@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import TicketBooking from '../models/TicketBooking.js';
 import User from '../models/User.js';
 import Notification from '../models/Notification.js';
+import notifyBooking from '../utils/bookingEmailNotifier.js';
 
 // @desc  Create a ticket/transportation/service booking
 // @route POST /api/ticket-bookings
@@ -78,6 +79,25 @@ export const createTicketBooking = asyncHandler(async (req, res) => {
       type: 'booking',
     });
   }
+
+  // Send email notification to amolsharma2705@gmail.com and customer
+  notifyBooking({
+    bookingReference: booking.bookingReference,
+    bookingType: booking.bookingType || 'Transportation Ticket',
+    itemTitle: booking.itemTitle,
+    destination: booking.destination,
+    customerName: booking.contactName,
+    customerEmail: booking.contactEmail,
+    customerPhone: booking.contactPhone,
+    travelDate: booking.travelDate,
+    returnDate: booking.returnDate,
+    travellersCount: booking.travellersCount,
+    selectedOption: booking.selectedOption,
+    totalAmount: booking.totalAmount,
+    paymentStatus: 'Paid',
+    status: 'Confirmed',
+    specialNotes: booking.specialNotes,
+  });
 
   res.status(201).json({ success: true, data: booking });
 });

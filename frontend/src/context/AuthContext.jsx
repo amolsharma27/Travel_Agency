@@ -5,8 +5,19 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        if (u && u.email === 'customer@pctetravels.com') {
+          u.email = 'amolsharma2705@gmail.com';
+          u.name = 'Amol Sharma';
+          localStorage.setItem('user', JSON.stringify(u));
+        }
+        return u;
+      }
+    } catch {}
+    return null;
   });
   const [loading, setLoading] = useState(true);
 
