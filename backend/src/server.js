@@ -24,6 +24,7 @@ import ticketBookingRoutes from './routes/ticketBookingRoutes.js';
 import bookingRoutes from './routes/bookingRoutes.js';
 import passportRoutes from './routes/passportRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
+import enquiryRoutes from './routes/enquiryRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -65,6 +66,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/passport', passportRoutes);
 app.use('/api/passport-requests', passportRoutes);
 app.use('/api/passport-services', passportRoutes);
+app.use('/api/enquiries', enquiryRoutes);
 app.use('/api', serviceRoutes);
 
 // 404 + error handling (must be last)

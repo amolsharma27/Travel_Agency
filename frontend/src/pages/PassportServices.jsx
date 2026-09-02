@@ -68,11 +68,6 @@ const PassportServices = () => {
 
   const handleSubmitApplication = async (e) => {
     e.preventDefault();
-    if (!user) {
-      toast.error('Please sign in or register to submit your passport assistance request');
-      navigate('/login?redirect=/passport-services');
-      return;
-    }
     if (!applicantName || !dob || !phone || !email) {
       toast.error('Please fill in all mandatory applicant details');
       return;

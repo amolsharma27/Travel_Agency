@@ -1,29 +1,32 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import {
-  FiMapPin, FiCalendar, FiCheck, FiX, FiCheckCircle, FiShield,
-  FiArrowLeft, FiClock, FiUsers
+  FiMapPin, FiCalendar, FiClock, FiCheckCircle, FiPhone,
+  FiMail, FiSend, FiArrowLeft, FiCheck, FiX
 } from 'react-icons/fi';
-import { FaWhatsapp, FaSuitcase, FaHotel, FaCar } from 'react-icons/fa';
+import { FaCar, FaWhatsapp, FaSuitcase, FaHotel } from 'react-icons/fa';
 import api from '../api/axios.js';
-import { useAuth } from '../context/AuthContext.jsx';
 import RatingStars from '../components/RatingStars.jsx';
 import CustomTourModal from '../components/CustomTourModal.jsx';
+import StudentRegistrationModal from '../components/StudentRegistrationModal.jsx';
 import { getStoredPackages } from '../data/mockData.js';
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=70';
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
 
+const PHONE_NUMBER = '9988110021';
+const DISPLAY_PHONE = '+91 99881 10021';
+const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
+
 const PackageDetails = () => {
   const { idOrSlug } = useParams();
-  const { user } = useAuth();
   const navigate = useNavigate();
 
   const [pkg, setPkg] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activePhoto, setActivePhoto] = useState(0);
   const [showCustomModal, setShowCustomModal] = useState(false);
+  const [showStudentModal, setShowStudentModal] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -47,15 +50,6 @@ const PackageDetails = () => {
     };
     load();
   }, [idOrSlug]);
-
-  const handleBook = () => {
-    if (!user) {
-      toast.error('Please log in to book this tour package');
-      navigate('/login');
-      return;
-    }
-    navigate(`/packages/${pkg._id}/book`);
-  };
 
   if (loading) {
     return (
@@ -87,9 +81,10 @@ const PackageDetails = () => {
     ? pkg.images 
     : [PLACEHOLDER, PLACEHOLDER, PLACEHOLDER, PLACEHOLDER];
 
-  const discountPercent = pkg.discountPrice 
-    ? Math.round(((pkg.price - pkg.discountPrice) / pkg.price) * 100) 
-    : 0;
+  const whatsappMessage = encodeURIComponent(
+    `Hello PCTE Travels, I am interested in the ${pkg.title} tour. Please provide me with more details.`
+  );
+  const whatsappUrl = `https://wa.me/91${PHONE_NUMBER}?text=${whatsappMessage}`;
 
   return (
     <div className="bg-[#F8FAFC] dark:bg-[#0B1727] min-h-screen py-8">
@@ -105,7 +100,7 @@ const PackageDetails = () => {
 
         {/* Gallery Preview Viewer */}
         <div className="space-y-3">
-          <div className="relative h-[340px] md:h-[440px] w-full overflow-hidden rounded-2xl shadow-md bg-slate-900">
+          <div className="relative h-[340px] md:h-[440px] w-full overflow-hidden rounded-3xl shadow-md bg-slate-900">
             <img
               src={galleryImages[activePhoto] || galleryImages[0]}
               alt={pkg.title}
@@ -120,14 +115,9 @@ const PackageDetails = () => {
             
             <div className="absolute bottom-5 left-5 right-5 text-white">
               <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                <span className="rounded bg-[#0F2942] px-2.5 py-0.5 text-[10px] font-black uppercase text-white shadow border border-slate-700">
+                <span className="rounded-lg bg-[#0F2942] px-2.5 py-0.5 text-[10px] font-black uppercase text-white shadow border border-slate-700">
                   {pkg.tourType || pkg.category}
                 </span>
-                {discountPercent > 0 && (
-                  <span className="rounded bg-[#E11D48] px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-                    {discountPercent}% OFF Special Rate
-                  </span>
-                )}
               </div>
 
               <h1 className="font-display text-2xl md:text-4xl font-black text-white leading-tight">
@@ -142,7 +132,7 @@ const PackageDetails = () => {
               <div
                 key={idx}
                 onClick={() => setActivePhoto(idx)}
-                className={`h-16 w-24 md:h-20 md:w-32 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 transition-all ${
+                className={`h-16 w-24 md:h-20 md:w-32 shrink-0 cursor-pointer overflow-hidden rounded-2xl border-2 transition-all ${
                   activePhoto === idx
                     ? 'border-[#0F2942] dark:border-amber-400 scale-105 shadow-sm'
                     : 'border-transparent opacity-70 hover:opacity-100'
@@ -174,25 +164,22 @@ const PackageDetails = () => {
               <p className="flex items-center gap-1.5"><FiMapPin className="text-[#E11D48]" /> {pkg.destination}</p>
               <p className="flex items-center gap-1.5"><FiCalendar className="text-[#E11D48]" /> {pkg.durationDays} Days / {pkg.durationNights} Nights</p>
               <p className="flex items-center gap-1.5"><FaCar className="text-[#0F2942] dark:text-amber-400" /> Mode: <span className="font-semibold text-slate-900 dark:text-white">{pkg.travelMode}</span></p>
-              <div className="flex items-center gap-1">
-                <RatingStars rating={pkg.rating || 4.9} size={13} />
-                <span className="text-slate-400 font-normal">({pkg.reviewsCount || 45} reviews)</span>
-              </div>
+              <p className="flex items-center gap-1.5"><FiClock className="text-amber-500" /> Availability: <span className="font-semibold text-emerald-600 dark:text-emerald-400">Regular Departures</span></p>
             </div>
 
             {/* Overview */}
-            <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-3 shadow-sm">
+            <div className="rounded-3xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-3 shadow-sm">
               <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Trip Overview</h2>
               <p className="leading-relaxed text-slate-600 dark:text-slate-300 text-xs md:text-sm">{pkg.description}</p>
             </div>
 
             {/* Key Highlights */}
             {pkg.facilities?.length > 0 && (
-              <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-3 shadow-sm">
+              <div className="rounded-3xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-3 shadow-sm">
                 <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">Key Package Highlights</h2>
                 <div className="flex flex-wrap gap-2">
                   {pkg.facilities.map((f) => (
-                    <span key={f} className="flex items-center gap-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                    <span key={f} className="flex items-center gap-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
                       <FiCheckCircle className="text-[#E11D48]" /> {f}
                     </span>
                   ))}
@@ -202,13 +189,13 @@ const PackageDetails = () => {
 
             {/* Day-wise Itinerary */}
             {pkg.itinerary?.length > 0 && (
-              <div className="rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-sm">
+              <div className="rounded-3xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 space-y-4 shadow-sm">
                 <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Day-wise Tour Itinerary</h2>
                 <div className="space-y-3">
                   {pkg.itinerary.map((day) => (
-                    <div key={day.day} className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4">
+                    <div key={day.day} className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4">
                       <div className="flex items-center gap-2.5">
-                        <span className="flex h-6 w-6 items-center justify-center rounded bg-[#0F2942] text-xs font-black text-white font-mono shrink-0">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[#0F2942] text-xs font-black text-white font-mono shrink-0">
                           {day.day}
                         </span>
                         <h4 className="font-display text-xs md:text-sm font-bold text-slate-900 dark:text-white">Day {day.day}: {day.title}</h4>
@@ -222,7 +209,7 @@ const PackageDetails = () => {
 
             {/* Inclusions / Exclusions */}
             <div className="grid gap-6 sm:grid-cols-2">
-              <div className="rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/20 p-5 border border-emerald-500/20 space-y-3">
+              <div className="rounded-3xl bg-emerald-50/80 dark:bg-emerald-950/20 p-5 border border-emerald-500/20 space-y-3">
                 <h3 className="font-display text-sm font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
                   <FiCheck className="text-emerald-600" /> What's Included
                 </h3>
@@ -235,7 +222,7 @@ const PackageDetails = () => {
                 </ul>
               </div>
 
-              <div className="rounded-2xl bg-red-50/80 dark:bg-red-950/20 p-5 border border-red-500/20 space-y-3">
+              <div className="rounded-3xl bg-red-50/80 dark:bg-red-950/20 p-5 border border-red-500/20 space-y-3">
                 <h3 className="font-display text-sm font-bold text-red-700 dark:text-red-300 flex items-center gap-1.5">
                   <FiX className="text-red-500" /> What's Excluded
                 </h3>
@@ -251,58 +238,65 @@ const PackageDetails = () => {
 
           </div>
 
-          {/* Right Column: Sticky Booking Drawer */}
-          <div className="lg:sticky lg:top-24 h-fit rounded-2xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 shadow-xl space-y-4">
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Direct Operator Price</span>
-              <div className="flex items-baseline gap-2 mt-0.5">
-                {pkg.discountPrice ? (
-                  <>
-                    <span className="font-mono text-3xl font-black text-slate-900 dark:text-white">₹{pkg.discountPrice.toLocaleString('en-IN')}</span>
-                    <span className="font-mono text-sm text-slate-400 line-through">₹{pkg.price.toLocaleString('en-IN')}</span>
-                  </>
-                ) : (
-                  <span className="font-mono text-3xl font-black text-slate-900 dark:text-white">₹{pkg.price.toLocaleString('en-IN')}</span>
-                )}
-                <span className="text-xs text-slate-500">/ person</span>
+          {/* Right Column: Sticky Enquiry Drawer */}
+          <div className="lg:sticky lg:top-24 h-fit rounded-3xl bg-white dark:bg-[#0F1D30] border border-slate-200 dark:border-slate-800 p-6 shadow-xl space-y-4">
+            <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Package Fare</span>
+              <div className="flex items-center justify-between mt-1">
+                <span className="text-sm font-black text-amber-500 uppercase tracking-wide">
+                  On Request
+                </span>
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                  {pkg.durationDays}D / {pkg.durationNights}N
+                </span>
               </div>
             </div>
 
-            {pkg.availableSeats && (
-              <div className="flex items-center justify-between border-t border-b border-slate-100 dark:border-slate-800 py-2.5 text-xs">
-                <span className="text-slate-500">Available Group Seats:</span>
-                <span className="font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded">
-                  {pkg.availableSeats} seats left
-                </span>
-              </div>
-            )}
-
-            <button 
-              onClick={handleBook} 
-              className="w-full rounded-lg bg-[#0F2942] hover:bg-[#E11D48] text-white py-3 text-xs font-black uppercase tracking-wider shadow transition-all duration-200"
-            >
-              Book Now
-            </button>
-
+            {/* Primary Action: Student Registration & On Request Enquiry */}
             <button
-              onClick={() => setShowCustomModal(true)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              onClick={() => setShowStudentModal(true)}
+              className="flex items-center justify-center gap-2.5 w-full rounded-2xl bg-[#E11D48] hover:bg-[#BE123C] py-3.5 text-xs font-black uppercase tracking-wider text-white shadow-lg transition-all duration-200 hover:scale-105 cursor-pointer"
             >
-              Request Custom Changes
+              <FiSend size={16} /> Submit On Request Enquiry
             </button>
 
+            {/* Secondary Action: WhatsApp Know More */}
             <a
-              href={`https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20want%20to%20book%20${encodeURIComponent(pkg.title)}`}
+              href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-emerald-600 hover:bg-emerald-500 py-2.5 text-xs font-bold text-white shadow transition-colors"
+              className="flex items-center justify-center gap-2.5 w-full rounded-2xl bg-emerald-600 hover:bg-emerald-500 py-3 text-xs font-bold text-white shadow transition-all duration-200"
             >
-              <FaWhatsapp size={15} /> WhatsApp Booking Support
+              <FaWhatsapp size={17} /> Know More on WhatsApp
             </a>
 
+            {/* Tertiary Action: Custom Plan Request */}
+            <button
+              onClick={() => setShowCustomModal(true)}
+              className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 py-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              Request Custom Dates / Group Plan
+            </button>
+
+            {/* Quick Contact Hotline */}
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-xs space-y-2 text-slate-600 dark:text-slate-400">
+              <p className="flex items-center gap-2">
+                <FiPhone className="text-amber-500" />
+                <span>Helpline: </span>
+                <a href={`tel:+91${PHONE_NUMBER}`} className="font-mono font-bold text-slate-900 dark:text-white hover:text-[#E11D48]">
+                  {DISPLAY_PHONE}
+                </a>
+              </p>
+              <p className="flex items-center gap-2">
+                <FiMail className="text-amber-500" />
+                <a href={`mailto:${OFFICIAL_EMAIL}`} className="hover:text-[#E11D48] text-[11px]">
+                  {OFFICIAL_EMAIL}
+                </a>
+              </p>
+            </div>
 
             {pkg.meetingPoint && (
-              <div className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-3 rounded-2xl border border-slate-200 dark:border-slate-700">
                 <span className="font-bold text-slate-900 dark:text-white block mb-0.5">Meeting / Boarding Point:</span>
                 {pkg.meetingPoint}
               </div>
@@ -314,6 +308,17 @@ const PackageDetails = () => {
       </div>
 
       <CustomTourModal isOpen={showCustomModal} onClose={() => setShowCustomModal(false)} />
+      <StudentRegistrationModal
+        isOpen={showStudentModal}
+        onClose={() => setShowStudentModal(false)}
+        packageData={{
+          title: pkg.title,
+          destination: pkg.destination,
+          duration: `${pkg.durationNights} Night / ${pkg.durationDays} Days`,
+          price: 'On Request',
+        }}
+        requestType="On Request"
+      />
     </div>
   );
 };

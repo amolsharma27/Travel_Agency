@@ -41,6 +41,56 @@ export const mockUsers = {
 // 1. TOURS & PACKAGES (Group, Private, Adventure, Weekend)
 // -------------------------------------------------------------
 export const mockPackages = [
+  // 0. Upcoming Tour - Mussoorie Kempty Falls
+  {
+    _id: 'pkg_mussoorie_01',
+    slug: 'mussoorie-kempty-water-fall',
+    title: 'Mussoorie – Kempty Water Fall',
+    destination: 'Mussoorie & Kempty Falls, Uttarakhand',
+    tourType: 'Group Tour',
+    category: 'Group Tours',
+    theme: 'Hill Station & Waterfalls',
+    description: 'Queen of the Hills group tour. Enjoy a breathtaking trip to Mussoorie featuring the majestic Kempty Falls, picturesque Mall Road, mountain resort stay, evening bonfire with music, and all-inclusive group transfers.',
+    images: [
+      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+      'https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?auto=format&fit=crop&w=1200&q=80'
+    ],
+    price: 3800,
+    discountPrice: 3800,
+    durationDays: 2,
+    durationNights: 1,
+    totalSeats: 30,
+    availableSeats: 12,
+    startDates: [new Date(Date.now() + 3 * 86400000).toISOString(), new Date(Date.now() + 10 * 86400000).toISOString()],
+    meetingPoint: 'PCTE Campus Ludhiana / Tribune Chowk Chandigarh',
+    travelMode: 'AC Deluxe Coach / Pushback Traveller',
+    itinerary: [
+      { day: 1, title: 'Departure from Ludhiana / Chandigarh to Mussoorie', description: 'Early morning departure in comfortable AC Deluxe Coach. Scenic drive through Dehradun hills. Check-in to mountain resort, evening walk at Mall Road Mussoorie and bonfire.' },
+      { day: 2, title: 'Kempty Falls Excursion & Return Drive', description: 'Visit the famous Kempty Waterfalls. Enjoy fresh mountain water and viewpoints. After lunch, board the coach for evening return to Punjab.' }
+    ],
+    inclusions: [
+      'AC Deluxe Coach round-trip transport from Punjab',
+      '1 Night Stay in Scenic Mountain Resort',
+      'Delicious Breakfast & Dinner included',
+      'Guided Kempty Falls & Mall Road visit',
+      'Bonfire & group music evening',
+      'Dedicated PCTE Tour Coordinator'
+    ],
+    exclusions: [
+      'Lunch and personal cafe spending',
+      'Cable car or adventure ride tickets',
+      'Anything not mentioned in inclusions'
+    ],
+    facilities: ['PCTE Tour Lead', 'AC Coach Transfers', 'Resort Stay', 'Meals Included'],
+    gpsLocation: { lat: 30.4598, lng: 78.0644, address: 'Mussoorie, Uttarakhand' },
+    rating: 5.0,
+    reviewsCount: 180,
+    bookingsCount: 420,
+    status: 'approved',
+    isAffordableDeal: true,
+  },
   // 1. Group Tour - Himachal
   {
     _id: 'pkg_101',

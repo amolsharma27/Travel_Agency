@@ -9,6 +9,11 @@ import { mockPreviousTripGallery } from '../data/mockData.js';
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
 
+const PHONE_NUMBER = '9988110021';
+const DISPLAY_PHONE = '+91 99881 10021';
+const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
+const WHATSAPP_URL = `https://wa.me/919988110021?text=${encodeURIComponent('Hello PCTE Travels, I would like to enquire about travel packages.')}`;
+
 export const About = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [selectedSpot, setSelectedSpot] = useState(null);
@@ -39,7 +44,7 @@ export const About = () => {
             PCTE Travel Agency — Freedom To Evolve
           </h1>
           <p className="mx-auto mt-5 max-w-3xl text-sm leading-relaxed text-slate-300 md:text-base">
-            Official PCTE Travel Agency providing curated weekend getaways, group holiday departures, Himalayan trekking expeditions, stays, and official passport application assistance. We deliver transparent pricing, certified travel coordinators, and 100% safe travel experiences.
+            Official PCTE Travel Agency providing curated weekend getaways, group holiday departures, Himalayan trekking expeditions, stays, and official passport application assistance. We deliver transparent planning, certified travel coordinators, and 100% safe travel experiences.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -240,12 +245,12 @@ export const Contact = () => {
         <img src={pcteLogo} alt="PCTE Logo" className="h-14 w-auto mb-2 bg-white/90 rounded-lg p-1" />
         <p className="font-mono text-xs uppercase tracking-widest text-[#E11D48] font-extrabold">PCTE Travel Agency Support Desk</p>
         <h1 className="mt-1 font-display text-3xl font-black md:text-4xl text-slate-900 dark:text-white">Get in Touch with PCTE Travel Experts</h1>
-        <p className="mt-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">Freedom To Evolve — Have questions about weekend trips, stays, flight tickets, or passport assistance?</p>
+        <p className="mt-2 text-xs md:text-sm text-slate-600 dark:text-slate-400">Freedom To Evolve — Have questions about weekend trips, stays, group tours, or passport assistance?</p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-12">
         {/* Contact Info */}
-        <div className="md:col-span-5 rounded-2xl bg-[#0F2942] p-6 text-white shadow-xl space-y-5 border border-slate-800">
+        <div className="md:col-span-5 rounded-3xl bg-[#0F2942] p-6 sm:p-8 text-white shadow-xl space-y-6 border border-slate-800">
           <h3 className="font-display text-xl font-bold text-amber-300">PCTE Travel Desk</h3>
 
           <div className="space-y-4 text-xs">
@@ -253,7 +258,9 @@ export const Contact = () => {
               <FiPhone className="text-amber-400 shrink-0 text-base mt-0.5" />
               <div>
                 <p className="font-bold text-white">Call / Helpline</p>
-                <p className="text-slate-300 font-mono">+91 98765 43210 / +91 98765 43211</p>
+                <a href={`tel:+91${PHONE_NUMBER}`} className="text-slate-200 hover:text-amber-300 font-mono font-bold text-sm transition-colors">
+                  {DISPLAY_PHONE}
+                </a>
               </div>
             </div>
 
@@ -261,7 +268,9 @@ export const Contact = () => {
               <FiMail className="text-amber-400 shrink-0 text-base mt-0.5" />
               <div>
                 <p className="font-bold text-white">Official Email</p>
-                <p className="text-slate-300">info@pctetravels.com</p>
+                <a href={`mailto:${OFFICIAL_EMAIL}`} className="text-slate-200 hover:text-amber-300 font-medium transition-colors">
+                  {OFFICIAL_EMAIL}
+                </a>
               </div>
             </div>
 
@@ -269,25 +278,25 @@ export const Contact = () => {
               <FiMapPin className="text-amber-400 shrink-0 text-base mt-0.5" />
               <div>
                 <p className="font-bold text-white">Main Office Address</p>
-                <p className="text-slate-300">PCTE Group of Institutes, Baddowal Cantt, Ferozepur Road, Ludhiana, Punjab - 142021</p>
+                <p className="text-slate-300 leading-relaxed">PCTE Group of Institutes, Baddowal Cantt, Ferozepur Road, Ludhiana, Punjab - 142021</p>
               </div>
             </div>
 
-            <div className="pt-2 border-t border-slate-800 space-y-2">
+            <div className="pt-3 border-t border-slate-700/60 space-y-2.5">
               <a
-                href="https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency"
+                href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 py-3 text-xs font-bold text-white shadow hover:bg-emerald-500 transition-colors"
               >
-                <FaWhatsapp size={16} /> Direct WhatsApp Inquiry
+                <FaWhatsapp size={17} /> Direct WhatsApp Inquiry
               </a>
               <div className="flex gap-2">
                 <a
                   href="https://instagram.com/pctetravels"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 py-2 text-xs font-semibold text-slate-300 hover:border-pink-500 hover:text-pink-400 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 py-2.5 text-xs font-semibold text-slate-300 hover:border-pink-500 hover:text-pink-400 transition-colors"
                 >
                   <FaInstagram /> @pctetravels
                 </a>
@@ -295,7 +304,7 @@ export const Contact = () => {
                   href="https://facebook.com/pctetravels"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-1.5 rounded-lg border border-slate-700 py-2 text-xs font-semibold text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 rounded-xl border border-slate-700 py-2.5 text-xs font-semibold text-slate-300 hover:border-blue-500 hover:text-blue-400 transition-colors"
                 >
                   <FaFacebook /> PCTE Travels
                 </a>
@@ -305,8 +314,8 @@ export const Contact = () => {
         </div>
 
         {/* Contact Form */}
-        <div className="md:col-span-7 rounded-2xl bg-white dark:bg-[#0F1D30] p-6 shadow-md border border-slate-200 dark:border-slate-800">
-          <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white mb-4">Send Us a Message</h3>
+        <div className="md:col-span-7 rounded-3xl bg-white dark:bg-[#0F1D30] p-6 sm:p-8 shadow-md border border-slate-200 dark:border-slate-800">
+          <h3 className="font-display text-xl font-bold text-slate-900 dark:text-white mb-4">Send Us a Direct Message</h3>
           <form onSubmit={submit} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
@@ -318,11 +327,11 @@ export const Contact = () => {
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Subject / Tour Interest *</label>
-              <input required placeholder="e.g. Amritsar Golden Temple Weekend / Jibhi Group Package / Passport Help" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
+              <input required placeholder="e.g. Mussoorie Kempty Falls Tour / Jibhi Group Package / Passport Assistance" value={form.subject} onChange={(e) => setForm((f) => ({ ...f, subject: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
             </div>
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Message / Requirements *</label>
-              <textarea required rows={4} placeholder="Please provide details about your dates, number of travelers, budget preferences..." value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
+              <textarea required rows={4} placeholder="Please provide details about your travel dates, number of travelers, questions..." value={form.message} onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))} className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 px-4 py-2.5 text-xs text-slate-900 dark:text-white outline-none focus:border-[#0F2942]" />
             </div>
             <button disabled={sending} className="w-full rounded-xl bg-[#0F2942] hover:bg-[#E11D48] py-3 text-xs font-bold text-white shadow transition-all disabled:opacity-60 uppercase tracking-wider">
               {sending ? 'Sending Message…' : 'Send Message to PCTE Travel Desk'}
@@ -336,10 +345,11 @@ export const Contact = () => {
 
 export const FAQ = () => {
   const faqs = [
-    { q: 'What makes PCTE Travel Agency unique?', a: 'PCTE Travel Agency provides transparent, high-value weekend trips, group holiday journeys, stays, and official passport application assistance under the motto Freedom To Evolve with direct operator prices and zero hidden markups.' },
-    { q: 'Are all destination images accurate to the actual place?', a: 'Yes! All PCTE tour packages feature 100% authentic, high-definition photography representing the exact geographic spots (Amritsar Golden Temple, Jibhi, Spiti, Rajasthan forts, Rishikesh rafting, etc.).' },
-    { q: 'Can I request a custom tailor-made itinerary?', a: 'Absolutely! Click "Request Custom Plan" or contact our Ludhiana desk directly. Our PCTE tour consultant will prepare a day-wise customized plan within 2 hours.' },
-    { q: 'How do I cancel or manage my booking?', a: 'Log in and navigate to Dashboard → My Bookings to view your ticket pass, printable invoice, or request a booking update.' },
+    { q: 'What makes PCTE Travel Agency unique?', a: 'PCTE Travel Agency provides transparent, high-value weekend trips, group holiday journeys, stays, and official passport application assistance under the motto Freedom To Evolve with direct operator prices and personalized student & group care.' },
+    { q: 'How do I enquire and book a tour package?', a: 'Simply click "Know More" or "Enquire Now" on any tour package card to instantly chat with our PCTE Travel Desk on WhatsApp (+91 99881 10021), or call/email us at pcte_travels@pcte.edu.in.' },
+    { q: 'Are all destination images accurate to the actual place?', a: 'Yes! All PCTE tour packages feature authentic, high-definition photography representing the exact geographic spots (Mussoorie Kempty Falls, Amritsar Golden Temple, Jibhi, Spiti, Rajasthan forts, Rishikesh rafting, etc.).' },
+    { q: 'Can I request a custom tailor-made itinerary?', a: 'Absolutely! Click "Request Custom Plan" or contact our Ludhiana desk directly. Our PCTE tour consultant will prepare a customized day-wise itinerary for your group.' },
+    { q: 'What is the contact information for PCTE Travels?', a: 'You can call us directly at +91 99881 10021, WhatsApp us on 9988110021, or email us at pcte_travels@pcte.edu.in.' },
   ];
   return (
     <div className="mx-auto max-w-3xl px-5 py-16">
@@ -361,7 +371,7 @@ export const Privacy = () => (
   <div className="mx-auto max-w-3xl px-5 py-16">
     <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white">Privacy Policy</h1>
     <p className="mt-6 leading-relaxed text-slate-600 dark:text-slate-300 text-sm">
-      PCTE Travel Agency respects your privacy. We collect details provided during booking or inquiry (name, phone, email) solely for itinerary processing, group travel safety, and customer support. We do not sell personal data to third parties.
+      PCTE Travel Agency respects your privacy. We collect details provided during inquiry (name, phone, email) solely for itinerary processing, group travel safety, and customer support. We do not sell personal data to third parties.
     </p>
   </div>
 );
@@ -370,7 +380,7 @@ export const Terms = () => (
   <div className="mx-auto max-w-3xl px-5 py-16">
     <h1 className="font-display text-3xl font-black text-slate-900 dark:text-white">Terms &amp; Conditions</h1>
     <p className="mt-6 leading-relaxed text-slate-600 dark:text-slate-300 text-sm">
-      By booking through PCTE Travel Agency you agree to our cancellation guidelines and payment terms. High altitude treks and educational student group journeys require mandatory safety adherence.
+      By booking through PCTE Travel Agency you agree to our trip safety guidelines. High altitude treks and educational student group journeys require mandatory safety adherence.
     </p>
   </div>
 );

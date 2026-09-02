@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { FiHeart, FiMapPin, FiCheck } from 'react-icons/fi';
-import RatingStars from './RatingStars.jsx';
 
 const PLACEHOLDER = 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=60';
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
@@ -35,11 +34,6 @@ const HotelCard = ({ hotel, wishlisted, onToggleWishlist }) => {
           <span className="rounded bg-[#0F2942] px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm border border-slate-700">
             {hotel.propertyType || 'Hotel'}
           </span>
-          {hotel.starRating && (
-            <span className="rounded bg-amber-500 px-2 py-0.5 text-[9px] font-bold text-slate-900 shadow-sm">
-              {hotel.starRating}★ Rated
-            </span>
-          )}
         </div>
       </div>
 
@@ -55,11 +49,6 @@ const HotelCard = ({ hotel, wishlisted, onToggleWishlist }) => {
             <FiMapPin size={12} className="text-[#E11D48]" /> {hotel.city}
             {hotel.landmark ? ` · ${hotel.landmark}` : ''}
           </p>
-
-          <div className="mt-2 flex items-center gap-1.5">
-            <RatingStars rating={hotel.rating || 4.5} size={12} />
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">({hotel.reviewsCount || 85})</span>
-          </div>
 
           {hotel.amenities && (
             <div className="mt-2.5 flex flex-wrap gap-1">

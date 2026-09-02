@@ -6,7 +6,6 @@ import {
   FiCalendar, FiUsers, FiCreditCard, FiArrowLeft
 } from 'react-icons/fi';
 import { FaWhatsapp } from 'react-icons/fa';
-import RatingStars from '../components/RatingStars.jsx';
 import api from '../api/axios.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { getStoredActivities } from '../data/mockData.js';
@@ -62,9 +61,8 @@ const ActivityDetails = () => {
       toast.error('Please select an activity date');
       return;
     }
-    if (!user) {
-      toast.error('Please sign in to book this adventure activity');
-      navigate(`/login?redirect=/activities/${activity._id}`);
+    if (!contactName || !contactPhone) {
+      toast.error('Please enter your contact name and phone number');
       return;
     }
 
@@ -164,10 +162,7 @@ const ActivityDetails = () => {
             <div className="flex flex-wrap items-center gap-4 text-xs text-slate-200">
               <span className="flex items-center gap-1.5"><FiMapPin className="text-[#E11D48]" /> {activity.location}</span>
               <span className="flex items-center gap-1.5"><FiClock className="text-amber-400" /> {activity.duration}</span>
-              <div className="flex items-center gap-1">
-                <RatingStars rating={activity.rating} size={13} />
-                <span className="font-bold">({activity.reviewsCount} reviews)</span>
-              </div>
+              <span className="flex items-center gap-1.5 text-emerald-400 font-bold"><FiCheckCircle /> Verified Adventure</span>
             </div>
           </div>
         </div>
@@ -324,12 +319,12 @@ const ActivityDetails = () => {
               </button>
 
               <a
-                href={`https://wa.me/919876543210?text=Hi%2C%20I%20want%20to%20inquire%20about%20${encodeURIComponent(activity.title)}`}
+                href={`https://wa.me/919988110021?text=Hello%20PCTE%20Travels%2C%20I%20want%20to%20inquire%20about%20${encodeURIComponent(activity.title)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 text-xs font-bold shadow transition-colors"
+                className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-bold shadow transition-colors"
               >
-                <FaWhatsapp /> WhatsApp Activity Support
+                <FaWhatsapp size={16} /> WhatsApp Activity Support
               </a>
             </form>
           </div>

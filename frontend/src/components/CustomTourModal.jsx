@@ -241,7 +241,7 @@ const CustomTourModal = ({ isOpen, onClose }) => {
                       <FiPhone className="absolute left-3 top-3 text-slate-400" />
                       <input
                         type="tel"
-                        placeholder="+91 9876543210"
+                        placeholder="+91 9988110021"
                         required
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}

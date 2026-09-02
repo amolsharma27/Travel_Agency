@@ -51,11 +51,6 @@ const Transportation = () => {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    if (!user) {
-      toast.error('Please sign in or register to book transportation tickets');
-      navigate('/login?redirect=/transportation');
-      return;
-    }
     if (!formData.from || !formData.to || !formData.travelDate) {
       toast.error('Please enter source, destination and travel date');
       return;

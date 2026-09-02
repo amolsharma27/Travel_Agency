@@ -7,7 +7,6 @@ import {
 import { FaWhatsapp } from 'react-icons/fa';
 import api from '../api/axios.js';
 import { useAuth } from '../context/AuthContext.jsx';
-import RatingStars from '../components/RatingStars.jsx';
 import HotelCard from '../components/HotelCard.jsx';
 import { getStoredHotels } from '../data/mockData.js';
 
@@ -78,12 +77,11 @@ const HotelDetails = () => {
   };
 
   const bookRoom = (roomId) => {
-    if (!user) {
-      toast.error('Please log in to book a room');
-      navigate('/login');
-      return;
-    }
-    navigate(`/hotels/${hotel._id}/book/${roomId}`, { state: { checkIn, checkOut } });
+    const selectedRoom = rooms.find(r => r._id === roomId);
+    const roomName = selectedRoom?.name || 'Room';
+    const datesInfo = checkIn && checkOut ? ` for dates ${checkIn} to ${checkOut}` : '';
+    const msg = encodeURIComponent(`Hello PCTE Travels, I would like to reserve ${roomName} at ${hotel.name}${datesInfo}. Please assist me with the booking.`);
+    window.open(`https://wa.me/919988110021?text=${msg}`, '_blank');
   };
 
   if (loading) {
@@ -172,9 +170,8 @@ const HotelDetails = () => {
               </p>
             </div>
             
-            <div className="flex items-center gap-1.5">
-              <RatingStars rating={hotel.rating || 4.8} size={14} />
-              <span className="text-xs font-bold text-slate-500">({hotel.reviewsCount || 120} reviews)</span>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+              <FiCheckCircle /> Verified PCTE Partner Stay
             </div>
           </div>
 
@@ -265,12 +262,12 @@ const HotelDetails = () => {
           </div>
 
           <a
-            href={`https://wa.me/919876543210?text=Hi%20PCTE%20Travel%20Agency%2C%20I%20want%20to%20reserve%20a%20stay%20at%20${encodeURIComponent(hotel.name)}`}
+            href={`https://wa.me/919988110021?text=Hello%20PCTE%20Travels%2C%20I%20want%20to%20reserve%20a%20stay%20at%20${encodeURIComponent(hotel.name)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white py-2 text-xs font-bold shadow transition-colors"
+            className="flex items-center justify-center gap-2 w-full rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-3 text-xs font-bold shadow transition-colors"
           >
-            <FaWhatsapp size={15} /> WhatsApp Room Assistance
+            <FaWhatsapp size={16} /> WhatsApp Room Assistance
           </a>
 
         </div>
