@@ -1,7 +1,11 @@
 import mongoose from 'mongoose';
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/travel_hotel_platform';
+  const uri =
+    process.env.MONGO_URI ||
+    process.env.MONGODB_URI ||
+    process.env.DATABASE_URL ||
+    'mongodb://127.0.0.1:27017/travel_hotel_platform';
 
   try {
     const conn = await mongoose.connect(uri, {
