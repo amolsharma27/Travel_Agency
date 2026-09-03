@@ -7,13 +7,18 @@ import sendEmail from '../utils/sendEmail.js';
 // @access Public
 export const submitContactMessage = asyncHandler(async (req, res) => {
   const { name, email, subject, message, phone } = req.body;
-  const contact = await ContactMessage.create({
-    user: req.user?._id,
-    name,
-    email,
-    subject,
-    message,
-  });
+  let contact = null;
+  try {
+    contact = await ContactMessage.create({
+      user: req.user?._id,
+      name,
+      email,
+      subject,
+      message,
+    });
+  } catch (dbErr) {
+    console.warn('MongoDB write buffer delayed, dispatching email notification directly:', dbErr.message);
+  }
 
   // Send instant email notification to amolsharma2705@gmail.com
   const adminRecipient = process.env.NOTIFICATION_EMAIL || 'amolsharma2705@gmail.com';

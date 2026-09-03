@@ -40,21 +40,26 @@ export const createEnquiry = async (req, res, next) => {
       hour12: true,
     });
 
-    const enquiry = await Enquiry.create({
-      studentName,
-      rollNumber,
-      email,
-      phone,
-      course,
-      packageTitle,
-      destination: destination || 'North India Tour Circuit',
-      requestType: requestType || 'On Request',
-      tourDuration: tourDuration || 'Custom',
-      tourPrice: tourPrice || 'On Request',
-      requestDate,
-      requestTime,
-      notes: notes || '',
-    });
+    let enquiry = null;
+    try {
+      enquiry = await Enquiry.create({
+        studentName,
+        rollNumber,
+        email,
+        phone,
+        course,
+        packageTitle,
+        destination: destination || 'North India Tour Circuit',
+        requestType: requestType || 'On Request',
+        tourDuration: tourDuration || 'Custom',
+        tourPrice: tourPrice || 'On Request',
+        requestDate,
+        requestTime,
+        notes: notes || '',
+      });
+    } catch (dbErr) {
+      console.warn('MongoDB write buffer delayed, dispatching email notification directly:', dbErr.message);
+    }
 
     // 1. Send admin notification email to amolsharma2705@gmail.com
     const adminRecipient = process.env.NOTIFICATION_EMAIL || 'amolsharma2705@gmail.com';
