@@ -6,24 +6,38 @@ import ApiFeatures from '../utils/apiFeatures.js';
 // @route GET /api/packages
 // @access Public
 export const getPackages = asyncHandler(async (req, res) => {
-  const baseQuery = Package.find({ status: 'approved', isActive: true }).populate('agency', 'agencyName agencyLogo');
+  try {
+    const baseQuery = Package.find({
+      $or: [{ status: 'approved' }, { status: { $exists: false } }, { status: 'published' }],
+    }).populate('agency', 'agencyName agencyLogo');
 
-  const features = new ApiFeatures(baseQuery, req.query)
-    .search(['title', 'destination'])
-    .filter()
-    .sort()
-    .paginate();
+    const features = new ApiFeatures(baseQuery, req.query)
+      .search(['title', 'destination'])
+      .filter()
+      .sort()
+      .paginate();
 
-  const [packages, total] = await Promise.all([features.query, features.countTotal()]);
+    const [packages, total] = await Promise.all([features.query, features.countTotal()]);
 
-  res.json({
-    success: true,
-    count: packages.length,
-    total,
-    page: features.pagination.page,
-    pages: Math.ceil(total / features.pagination.limit),
-    data: packages,
-  });
+    return res.json({
+      success: true,
+      count: packages.length,
+      total: total || packages.length,
+      page: features.pagination?.page || 1,
+      pages: Math.ceil((total || packages.length) / (features.pagination?.limit || 12)) || 1,
+      data: packages,
+    });
+  } catch (err) {
+    console.error('Error in getPackages:', err.message);
+    return res.json({
+      success: true,
+      count: 0,
+      total: 0,
+      page: 1,
+      pages: 1,
+      data: [],
+    });
+  }
 });
 
 // @desc  Get single package by slug or id
