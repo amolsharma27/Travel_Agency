@@ -1,0 +1,49 @@
+services:
+  # -------------------------------------------------------------
+  # 1. BACKEND WEB SERVICE (Node.js Express API)
+  # -------------------------------------------------------------
+  - type: web
+    name: pcte-travel-agency-backend
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        sync: false # Set in Render Dashboard with your MongoDB Atlas URI
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE
+        value: 30d
+      - key: EMAIL_SERVICE
+        value: gmail
+      - key: EMAIL_USER
+        value: pcte_travels@pcte.edu.in
+      - key: NOTIFICATION_EMAIL
+        value: pcte_travels@pcte.edu.in
+
+  # -------------------------------------------------------------
+  # 2. FRONTEND STATIC SITE (React + Vite)
+  # -------------------------------------------------------------
+  - type: static
+    name: pcte-travel-agency-frontend
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: pcte-travel-agency-backend
+          property: host
