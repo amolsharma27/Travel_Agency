@@ -24,9 +24,9 @@ services:
       - key: EMAIL_SERVICE
         value: gmail
       - key: EMAIL_USER
-        value: pcte_travels@pcte.edu.in
+        value: amolsharma2705@gmail.com
       - key: NOTIFICATION_EMAIL
-        value: pcte_travels@pcte.edu.in
+        value: amolsharma2705@gmail.com
 
   # -------------------------------------------------------------
   # 2. FRONTEND STATIC SITE (React + Vite)

@@ -56,8 +56,8 @@ export const createEnquiry = async (req, res, next) => {
       notes: notes || '',
     });
 
-    // 1. Send admin notification email to pcte_travels@pcte.edu.in
-    const adminRecipient = process.env.NOTIFICATION_EMAIL || 'pcte_travels@pcte.edu.in';
+    // 1. Send admin notification email to amolsharma2705@gmail.com
+    const adminRecipient = process.env.NOTIFICATION_EMAIL || 'amolsharma2705@gmail.com';
     const emailSubject = `🚨 New Student Tour Registration: ${studentName} (Roll: ${rollNumber}) - ${packageTitle}`;
 
     const emailText = `

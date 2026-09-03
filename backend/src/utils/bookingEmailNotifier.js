@@ -1,6 +1,6 @@
 import sendEmail from './sendEmail.js';
 
-const ADMIN_NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'pcte_travels@pcte.edu.in';
+const ADMIN_NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'amolsharma2705@gmail.com';
 
 /**
  * Formats a date nicely for email display

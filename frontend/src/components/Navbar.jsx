@@ -15,7 +15,7 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 
 const PHONE_NUMBER = '9988110021';
 const DISPLAY_PHONE = '+91 99881 10021';
-const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
+const OFFICIAL_EMAIL = 'amolsharma2705@gmail.com';
 const WHATSAPP_NUMBER = '919988110021';
 const DEFAULT_WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello PCTE Travels, I would like to enquire about travel packages.')}`;
 

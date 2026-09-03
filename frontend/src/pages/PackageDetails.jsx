@@ -16,7 +16,7 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 
 const PHONE_NUMBER = '9988110021';
 const DISPLAY_PHONE = '+91 99881 10021';
-const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
+const OFFICIAL_EMAIL = 'amolsharma2705@gmail.com';
 
 const PackageDetails = () => {
   const { idOrSlug } = useParams();

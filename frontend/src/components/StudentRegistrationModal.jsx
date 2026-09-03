@@ -196,7 +196,7 @@ const StudentRegistrationModal = ({
               <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-3.5 text-left text-xs text-amber-800 dark:text-amber-200">
                 <p className="font-bold mb-1">📧 Email Notification Sent to Travel Desk:</p>
                 <p className="text-[11px] text-slate-600 dark:text-slate-300">
-                  A notification with your details (Roll No: <b>{formData.rollNumber}</b>, Course: <b>{formData.course}</b>) has been delivered to <b>pcte_travels@pcte.edu.in</b>. The PCTE tour coordinator will contact you shortly.
+                  A notification with your details (Roll No: <b>{formData.rollNumber}</b>, Course: <b>{formData.course}</b>) has been delivered to <b>amolsharma2705@gmail.com</b>. The tour coordinator will contact you shortly.
                 </p>
               </div>
 

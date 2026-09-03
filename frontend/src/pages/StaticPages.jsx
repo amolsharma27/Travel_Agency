@@ -11,7 +11,7 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 
 const PHONE_NUMBER = '9988110021';
 const DISPLAY_PHONE = '+91 99881 10021';
-const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
+const OFFICIAL_EMAIL = 'amolsharma2705@gmail.com';
 const WHATSAPP_URL = `https://wa.me/919988110021?text=${encodeURIComponent('Hello PCTE Travels, I would like to enquire about travel packages.')}`;
 
 export const About = () => {
@@ -346,10 +346,10 @@ export const Contact = () => {
 export const FAQ = () => {
   const faqs = [
     { q: 'What makes PCTE Travel Agency unique?', a: 'PCTE Travel Agency provides transparent, high-value weekend trips, group holiday journeys, stays, and official passport application assistance under the motto Freedom To Evolve with direct operator prices and personalized student & group care.' },
-    { q: 'How do I enquire and book a tour package?', a: 'Simply click "Know More" or "Enquire Now" on any tour package card to instantly chat with our PCTE Travel Desk on WhatsApp (+91 99881 10021), or call/email us at pcte_travels@pcte.edu.in.' },
+    { q: 'How do I enquire and book a tour package?', a: 'Simply click "Know More" or "Enquire Now" on any tour package card to instantly chat with our PCTE Travel Desk on WhatsApp (+91 99881 10021), or call/email us at amolsharma2705@gmail.com.' },
     { q: 'Are all destination images accurate to the actual place?', a: 'Yes! All PCTE tour packages feature authentic, high-definition photography representing the exact geographic spots (Mussoorie Kempty Falls, Amritsar Golden Temple, Jibhi, Spiti, Rajasthan forts, Rishikesh rafting, etc.).' },
     { q: 'Can I request a custom tailor-made itinerary?', a: 'Absolutely! Click "Request Custom Plan" or contact our Ludhiana desk directly. Our PCTE tour consultant will prepare a customized day-wise itinerary for your group.' },
-    { q: 'What is the contact information for PCTE Travels?', a: 'You can call us directly at +91 99881 10021, WhatsApp us on 9988110021, or email us at pcte_travels@pcte.edu.in.' },
+    { q: 'What is the contact information for PCTE Travels?', a: 'You can call us directly at +91 99881 10021, WhatsApp us on 9988110021, or email us at amolsharma2705@gmail.com.' },
   ];
   return (
     <div className="mx-auto max-w-3xl px-5 py-16">
