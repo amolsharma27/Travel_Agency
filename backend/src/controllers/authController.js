@@ -37,6 +37,39 @@ export const register = asyncHandler(async (req, res) => {
     }),
   });
 
+  // Dispatch email notification to admin inbox (amolsharma2705@gmail.com)
+  const adminRecipient = process.env.NOTIFICATION_EMAIL || process.env.EMAIL_USER || 'amolsharma2705@gmail.com';
+  try {
+    await sendEmail({
+      to: adminRecipient,
+      subject: `🎓 New Student / User Registration: ${name} (${email})`,
+      html: `
+        <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; color: #1e293b; background-color: #ffffff;">
+          <div style="background: linear-gradient(135deg, #0F2942 0%, #1B1464 100%); padding: 22px; color: #ffffff;">
+            <span style="background-color: #10B981; color: #ffffff; font-size: 11px; font-weight: bold; text-transform: uppercase; padding: 3px 8px; border-radius: 4px;">New Registration</span>
+            <h2 style="margin: 10px 0 2px 0; font-size: 20px; font-weight: 800; color: #ffffff;">Student / User Registered</h2>
+            <p style="margin: 0; font-size: 12px; color: #cbd5e1;">A new account was created on the PCTE Travel Agency portal.</p>
+          </div>
+          <div style="padding: 22px;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+              <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 8px 0; color: #64748b; width: 35%;">Full Name:</td><td style="padding: 8px 0; font-weight: 700; color: #0F2942;">${name}</td></tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 8px 0; color: #64748b;">Email Address:</td><td style="padding: 8px 0; font-weight: 600;"><a href="mailto:${email}" style="color: #2563eb; text-decoration: none;">${email}</a></td></tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 8px 0; color: #64748b;">Phone:</td><td style="padding: 8px 0; font-weight: 600;">${phone || 'Not provided'}</td></tr>
+              <tr style="border-bottom: 1px solid #f1f5f9;"><td style="padding: 8px 0; color: #64748b;">Role:</td><td style="padding: 8px 0; font-weight: 700; text-transform: uppercase; color: #059669;">${requestedRole}</td></tr>
+              <tr><td style="padding: 8px 0; color: #64748b;">Registration Time:</td><td style="padding: 8px 0; color: #334155;">${new Date().toLocaleString('en-IN')}</td></tr>
+            </table>
+          </div>
+          <div style="background-color: #0F2942; color: #94a3b8; padding: 12px 20px; text-align: center; font-size: 11px;">
+            PCTE Travels Platform · Alert delivered to: <b>${adminRecipient}</b>
+          </div>
+        </div>
+      `,
+      text: `New user registration:\nName: ${name}\nEmail: ${email}\nPhone: ${phone || 'N/A'}\nRole: ${requestedRole}`,
+    });
+  } catch (err) {
+    console.error('Registration email notification failed:', err.message);
+  }
+
   if (requestedRole === 'agency') {
     // Agencies need admin approval before they can list packages/hotels
     res.status(201).json({

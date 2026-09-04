@@ -25,6 +25,10 @@ services:
         value: gmail
       - key: EMAIL_USER
         value: amolsharma2705@gmail.com
+      - key: EMAIL_PASS
+        sync: false # Set in Render Dashboard with your 16-character Gmail App Password
+      - key: EMAIL_FROM
+        value: "PCTE Travel Agency <amolsharma2705@gmail.com>"
       - key: NOTIFICATION_EMAIL
         value: amolsharma2705@gmail.com
 

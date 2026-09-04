@@ -1,4 +1,5 @@
 import Enquiry from '../models/Enquiry.js';
+import InboxMessage from '../models/InboxMessage.js';
 import sendEmail from '../utils/sendEmail.js';
 
 // @desc    Create student enquiry or booking request & notify PCTE Travels by email
@@ -56,6 +57,35 @@ export const createEnquiry = async (req, res, next) => {
         requestDate,
         requestTime,
         notes: notes || '',
+      });
+
+      // Also create Inbox Message for Admin Email Hub
+      await InboxMessage.create({
+        sender: {
+          name: studentName,
+          email,
+          role: 'student',
+        },
+        recipient: {
+          name: 'PCTE Travel Operations Desk',
+          email: process.env.NOTIFICATION_EMAIL || 'admin@pctetravels.com',
+          role: 'admin',
+        },
+        subject: `Student Tour Registration: ${studentName} (${rollNumber}) - ${packageTitle}`,
+        bodyText: `Student Name: ${studentName}\nRoll Number: ${rollNumber}\nCourse: ${course}\nPhone: ${phone}\nEmail: ${email}\nPackage: ${packageTitle}\nDestination: ${destination || 'North India'}\nNotes: ${notes || 'None'}`,
+        category: 'student_registration',
+        folder: 'inbox',
+        isRead: false,
+        tags: ['Student Registration', rollNumber, course],
+        meta: {
+          rollNumber,
+          course,
+          phone,
+          packageTitle,
+          destination,
+          tourPrice,
+          enquiryId: enquiry?._id,
+        },
       });
     } catch (dbErr) {
       console.warn('MongoDB write buffer delayed, dispatching email notification directly:', dbErr.message);

@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import ContactMessage from '../models/ContactMessage.js';
+import InboxMessage from '../models/InboxMessage.js';
 import sendEmail from '../utils/sendEmail.js';
 
 // @desc  Submit a contact/support message / student question
@@ -15,6 +16,30 @@ export const submitContactMessage = asyncHandler(async (req, res) => {
       email,
       subject,
       message,
+    });
+
+    // Also record in InboxMessage
+    await InboxMessage.create({
+      sender: {
+        name: name || 'Student / Visitor',
+        email,
+        role: 'customer',
+      },
+      recipient: {
+        name: 'PCTE Support Desk',
+        email: process.env.NOTIFICATION_EMAIL || 'admin@pctetravels.com',
+        role: 'admin',
+      },
+      subject: subject || 'Website Support Inquiry',
+      bodyText: message,
+      category: 'support',
+      folder: 'inbox',
+      isRead: false,
+      tags: ['Support', 'Website Form'],
+      meta: {
+        phone,
+        contactMessageId: contact?._id,
+      },
     });
   } catch (dbErr) {
     console.warn('MongoDB write buffer delayed, dispatching email notification directly:', dbErr.message);

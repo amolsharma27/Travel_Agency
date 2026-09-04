@@ -29,6 +29,7 @@ import AdminLogin from './pages/AdminLogin.jsx';
 
 // Admin Sub-Modules
 import AdminOverview from './pages/dashboard/AdminOverview.jsx';
+import AdminInbox from './pages/dashboard/AdminInbox.jsx';
 import AdminEnquiries from './pages/AdminEnquiries.jsx';
 import AdminPackages from './pages/dashboard/AdminPackages.jsx';
 
@@ -109,6 +110,7 @@ function App() {
           >
             <Route index element={<Navigate to="/admin/overview" replace />} />
             <Route path="overview" element={<AdminOverview />} />
+            <Route path="inbox" element={<AdminInbox />} />
             <Route path="enquiries" element={<AdminEnquiries />} />
             <Route path="packages" element={<AdminPackages />} />
             <Route path="*" element={<Navigate to="/admin/overview" replace />} />

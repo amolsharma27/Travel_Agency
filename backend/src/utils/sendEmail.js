@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
 
 /**
  * Sends an email. If SMTP credentials aren't configured (dev/local), the
@@ -6,6 +7,9 @@ import nodemailer from 'nodemailer';
  * rest of the flow (OTP, booking confirmation, etc.) can still be tested.
  */
 const sendEmail = async ({ to, subject, html, text }) => {
+  // Always load freshest credentials from .env in real time
+  dotenv.config({ override: true });
+
   const user = process.env.EMAIL_USER;
   const pass = process.env.EMAIL_PASS;
   const isConfigured = Boolean(user && pass);
@@ -40,6 +44,16 @@ const sendEmail = async ({ to, subject, html, text }) => {
     return info;
   } catch (err) {
     console.error(`❌ [EMAIL SENDING ERROR TO ${to}]:`, err.message);
+    if (err.message && err.message.includes('535') || err.message.includes('BadCredentials') || err.message.includes('Username and Password not accepted')) {
+      console.log('\n⚠️ [GMAIL AUTHENTICATION FAILED - APP PASSWORD REQUIRED]');
+      console.log('👉 Google does NOT accept your normal account login password for automated emails.');
+      console.log('🔑 Please generate a 16-character Google App Password:');
+      console.log('   1. Go to: https://myaccount.google.com/apppasswords');
+      console.log('   2. Select App: "Mail" or type "PCTE Travels"');
+      console.log('   3. Copy the 16-character password (e.g. "abcd efgh ijkl mnop")');
+      console.log('   4. Paste into backend/.env -> EMAIL_PASS=abcd efgh ijkl mnop');
+      console.log('-------------------------------------------------------------\n');
+    }
     return { error: err.message };
   }
 };

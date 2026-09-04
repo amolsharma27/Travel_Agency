@@ -3,7 +3,7 @@ import { NavLink, Outlet, Link, useNavigate, useLocation } from 'react-router-do
 import {
   FiGrid, FiUsers, FiBookOpen, FiCalendar, FiPlusCircle,
   FiExternalLink, FiLogOut, FiMenu, FiX, FiMoon, FiSun,
-  FiShield, FiCheckCircle
+  FiShield, FiCheckCircle, FiInbox
 } from 'react-icons/fi';
 import { FaSuitcase } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext.jsx';
@@ -12,6 +12,7 @@ import pcteLogo from '../assets/pcte-logo.png';
 
 const adminNavItems = [
   { to: '/admin/overview', label: 'Dashboard Overview', icon: FiGrid },
+  { to: '/admin/inbox', label: 'Email & Inquiries Inbox', icon: FiInbox, badge: 'Live' },
   { to: '/admin/enquiries', label: 'Student Registrations', icon: FiBookOpen, badge: 'Desk' },
   { to: '/admin/packages', label: 'Tour Packages & Seats', icon: FaSuitcase, badge: 'Manager' },
 ];

@@ -1,6 +1,6 @@
 import sendEmail from './sendEmail.js';
 
-const ADMIN_NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'amolsharma2705@gmail.com';
+const getAdminEmail = () => process.env.NOTIFICATION_EMAIL || process.env.EMAIL_USER || 'amolsharma2705@gmail.com';
 
 /**
  * Formats a date nicely for email display
@@ -169,7 +169,7 @@ Notes: ${specialNotes || 'None'}
   // Send admin notification
   try {
     await sendEmail({
-      to: ADMIN_NOTIFICATION_EMAIL,
+      to: getAdminEmail(),
       subject: adminSubject,
       text: adminText,
       html: adminHtml,
