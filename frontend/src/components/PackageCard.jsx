@@ -12,14 +12,24 @@ const WHATSAPP_NUMBER = '919988110021';
 const PackageCard = ({ pkg, wishlisted, onToggleWishlist, onRequestClick }) => {
   const [showModal, setShowModal] = useState(false);
 
+  const isMussoorie =
+    pkg._id === 'pkg_mussoorie_01' ||
+    pkg.slug === 'mussoorie-trip' ||
+    pkg.slug === 'mussoorie-kempty-water-fall' ||
+    pkg.title?.toLowerCase().includes('mussoorie');
+
   const hasHotel = pkg.inclusions?.some(inc => /hotel|stay|resort|cottage|camp|tent/i.test(inc)) ?? true;
   const hasMeals = pkg.inclusions?.some(inc => /breakfast|dinner|lunch|meal/i.test(inc)) ?? true;
-  const hasTransfers = pkg.inclusions?.some(inc => /transfer|cab|volvo|coach|bus|suv/i.test(inc)) ?? true;
+  const hasTransfers = pkg.inclusions?.some(inc => /transfer|cab|volvo|coach|bus|suv|tempo/i.test(inc)) ?? true;
 
-  const durationStr = `${pkg.durationNights || 1} Night / ${pkg.durationDays || 2} Days`;
+  const durationStr = isMussoorie
+    ? '11 – 13 Sep (3 Days / 2 Nights)'
+    : `${pkg.durationNights || 1} Night / ${pkg.durationDays || 2} Days`;
 
   const prefilledMessage = encodeURIComponent(
-    `Hello PCTE Travels, I am interested in the ${pkg.title} tour. Please provide me with more details.`
+    isMussoorie
+      ? 'Hello PCTE Travels, I am interested in the official Mussoorie Excursion (11-13 Sep). Please provide me with booking details.'
+      : `Hello PCTE Travels, I am interested in the ${pkg.title} tour. Please provide me with more details.`
   );
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${prefilledMessage}`;
 
@@ -32,11 +42,11 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist, onRequestClick }) => {
   };
 
   return (
-    <div className="group overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F1D30] shadow-sm hover:shadow-xl transition-all duration-200 flex flex-col h-full">
-      
+    <div className={`group overflow-hidden rounded-2xl border ${isMussoorie ? 'border-amber-400 dark:border-amber-500 shadow-md ring-1 ring-amber-400/50' : 'border-slate-200 dark:border-slate-800'} bg-white dark:bg-[#0F1D30] shadow-sm hover:shadow-xl transition-all duration-200 flex flex-col h-full`}>
+
       {/* Thumbnail & Badges */}
       <div className="relative overflow-hidden h-52 bg-slate-900">
-        <Link to={`/packages/${pkg.slug || pkg._id}`}>
+        <Link to={`/packages/${isMussoorie ? 'mussoorie-trip' : (pkg.slug || pkg._id)}`}>
           <img
             src={pkg.images?.[0] || PLACEHOLDER}
             alt={pkg.title}
@@ -51,9 +61,15 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist, onRequestClick }) => {
 
         {/* Category Badge */}
         <div className="absolute left-3 top-3 flex flex-col gap-1.5 items-start z-10">
-          <span className="rounded-lg bg-[#0F2942]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm border border-slate-700">
-            {pkg.tourType || pkg.category || 'Tour Package'}
-          </span>
+          {isMussoorie ? (
+            <span className="rounded-lg bg-[#E11D48] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow border border-red-400/40">
+              ★ Official Excursion
+            </span>
+          ) : (
+            <span className="rounded-lg bg-[#0F2942]/90 backdrop-blur-sm px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shadow-sm border border-slate-700">
+              {pkg.tourType || pkg.category || 'Tour Package'}
+            </span>
+          )}
         </div>
 
         {onToggleWishlist && (
@@ -66,28 +82,26 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist, onRequestClick }) => {
           </button>
         )}
 
-        {pkg.travelMode && (
-          <div className="absolute bottom-2 right-2 rounded-lg bg-slate-900/85 backdrop-blur-sm px-2.5 py-0.5 text-[10px] font-semibold text-slate-200 border border-slate-700">
-            {pkg.travelMode}
-          </div>
-        )}
+        <div className="absolute bottom-2 right-2 rounded-lg bg-slate-900/85 backdrop-blur-sm px-2.5 py-0.5 text-[10px] font-semibold text-slate-200 border border-slate-700">
+          {isMussoorie ? 'Tempo Traveller' : (pkg.travelMode || 'Coach / Cabs')}
+        </div>
       </div>
 
       {/* Card Content */}
       <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
         <div>
-          <Link to={`/packages/${pkg.slug || pkg._id}`}>
+          <Link to={`/packages/${isMussoorie ? 'mussoorie-trip' : (pkg.slug || pkg._id)}`}>
             <h3 className="font-display text-sm md:text-base font-bold leading-snug text-slate-900 dark:text-white group-hover:text-[#0F2942] dark:group-hover:text-amber-400 transition-colors line-clamp-2 min-h-[2.5rem]">
-              {pkg.title}
+              {isMussoorie ? 'Mussoorie Trip (Official Excursion)' : pkg.title}
             </h3>
           </Link>
-          
+
           <div className="mt-2 space-y-1 text-xs text-slate-600 dark:text-slate-300">
             <p className="flex items-center gap-1.5">
               <FiMapPin size={13} className="text-[#E11D48] shrink-0" /> {pkg.destination}
             </p>
             <p className="flex items-center gap-1.5">
-              <FiCalendar size={13} className="text-[#E11D48] shrink-0" /> {durationStr}
+              <FiCalendar size={13} className={isMussoorie ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-[#E11D48]'} /> {durationStr}
             </p>
           </div>
 
@@ -99,53 +113,74 @@ const PackageCard = ({ pkg, wishlisted, onToggleWishlist, onRequestClick }) => {
         </div>
 
         <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-3">
-          {/* Price status: 'On Request' */}
+          {/* Price status */}
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              Package Fare
+              {isMussoorie ? 'Package Cost' : 'Package Fare'}
             </span>
-            <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-0.5 text-xs font-black tracking-wide border border-slate-200 dark:border-slate-700">
-              On Request
-            </span>
+            {isMussoorie ? (
+              <span className="text-xs font-black text-amber-600 dark:text-amber-400">
+                INR 3,700 <span className="text-[10px] text-slate-400 font-normal">/ person</span>
+              </span>
+            ) : (
+              <span className="rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-2.5 py-0.5 text-xs font-black tracking-wide border border-slate-200 dark:border-slate-700">
+                On Request
+              </span>
+            )}
           </div>
 
-          {/* Action Row: 'On Request' Button & WhatsApp 'Know More' */}
-          <div className="grid grid-cols-2 gap-2">
-            {/* 1. 'On Request' Button (Student Registration & Enquiry) */}
-            <button
-              onClick={handleEnquiryClick}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white py-2.5 px-3 text-xs font-black uppercase tracking-wider shadow transition-all hover:scale-[1.02] cursor-pointer"
-            >
-              <FiSend size={13} />
-              <span>On Request</span>
-            </button>
-
-            {/* 2. WhatsApp 'Know More' CTA */}
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-3 text-xs font-bold shadow transition-all hover:scale-[1.02]"
-              title={`Enquire on WhatsApp about ${pkg.title}`}
-            >
-              <FaWhatsapp size={14} />
-              <span>Know More</span>
-            </a>
-          </div>
+          {/* Action Row */}
+          {isMussoorie ? (
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                to="/packages/mussoorie-trip"
+                className="inline-flex items-center justify-center gap-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 py-2.5 px-2 text-xs font-black uppercase tracking-wider shadow transition-all hover:scale-[1.02] text-center"
+              >
+                <span>View Details</span>
+              </Link>
+              <button
+                onClick={handleEnquiryClick}
+                className="inline-flex items-center justify-center gap-1 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white py-2.5 px-2 text-xs font-black uppercase tracking-wider shadow transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                <FiSend size={12} />
+                <span>Register</span>
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={handleEnquiryClick}
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white py-2.5 px-3 text-xs font-black uppercase tracking-wider shadow transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                <FiSend size={13} />
+                <span>On Request</span>
+              </button>
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-3 text-xs font-bold shadow transition-all hover:scale-[1.02]"
+                title={`Enquire on WhatsApp about ${pkg.title}`}
+              >
+                <FaWhatsapp size={14} />
+                <span>Know More</span>
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Internal Student Registration Modal (if not handled by parent) */}
+      {/* Internal Student Registration Modal */}
       <StudentRegistrationModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         packageData={{
-          title: pkg.title,
-          destination: pkg.destination,
+          title: isMussoorie ? 'Mussoorie Trip' : pkg.title,
+          destination: isMussoorie ? 'Mussoorie, Uttarakhand' : pkg.destination,
           duration: durationStr,
-          price: 'On Request',
+          price: isMussoorie ? 'INR 3,700 per person' : 'On Request',
         }}
-        requestType="On Request"
+        requestType={isMussoorie ? 'Booking Request' : 'On Request'}
       />
     </div>
   );

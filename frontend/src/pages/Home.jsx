@@ -20,7 +20,7 @@ const Home = () => {
 
   return (
     <div className="bg-[#F8FAFC] text-slate-900 dark:bg-[#0B1727] dark:text-slate-100 min-h-screen">
-      
+
       {/* 1. DYNAMIC AUTO-ROTATING HERO SLIDER (6s Rotation: Mussoorie Upcoming Tour ⇄ Search Portal) */}
       <HeroSlider />
 

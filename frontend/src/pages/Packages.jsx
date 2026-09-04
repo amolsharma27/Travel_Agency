@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import {
   FiSearch, FiCompass, FiPhone, FiSend, FiMapPin,
   FiCalendar, FiClock, FiCheckCircle
@@ -20,6 +20,7 @@ const DISPLAY_PHONE = '+91 99881 10021';
 const MUSSOORIE_WHATSAPP_URL = `https://wa.me/91${PHONE_NUMBER}?text=${encodeURIComponent('Hello PCTE Travels, I am interested in the Mussoorie – Kempty Water Fall tour. Please provide me with more details.')}`;
 
 const Packages = () => {
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const [packages, setPackages] = useState([]);
   const [total, setTotal] = useState(0);
@@ -37,10 +38,10 @@ const Packages = () => {
   });
 
   const mussoorieTourData = {
-    title: 'Mussoorie – Kempty Water Fall',
-    destination: 'Mussoorie & Kempty Falls, Uttarakhand',
-    duration: '1 Night / 2 Days',
-    price: 'INR 3800 per person',
+    title: 'Mussoorie Trip',
+    destination: 'Mussoorie, Uttarakhand',
+    duration: '11 – 13 September (3 Days / 2 Nights)',
+    price: 'INR 3,700 per person',
   };
 
   useEffect(() => {
@@ -131,96 +132,110 @@ const Packages = () => {
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         
         {/* ========================================================================= */}
-        {/* 1. DEDICATED UPCOMING TOUR SPOTLIGHT CARD: MUSSOORIE – KEMPTY WATER FALL   */}
+        {/* 1. DEDICATED UPCOMING TOUR SPOTLIGHT CARD: MUSSOORIE TRIP (COMPACT 2-COL)  */}
         {/* ========================================================================= */}
-        <div className="relative mb-10 overflow-hidden rounded-3xl bg-[#0F2942] text-white shadow-2xl border border-white/10">
+        <div className="relative mb-8 overflow-hidden rounded-3xl bg-[#0F2942] text-white shadow-xl border border-white/10">
           
           {/* Background Image & Gradient Overlays */}
           <div
             className="absolute inset-0 bg-cover bg-center transition-transform duration-700 hover:scale-105"
             style={{ backgroundImage: `url(${mussoorieBg})` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-slate-950/80 to-black/85" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/92 via-slate-950/85 to-black/80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
 
-          {/* Banner Content */}
-          <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-12">
-            <div className="max-w-3xl space-y-4">
+          {/* Banner Content (2-Column Balanced Grid) */}
+          <div className="relative z-10 p-5 sm:p-6 md:p-7">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-5 lg:gap-8 items-center">
               
-              {/* Glowing Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full bg-[#E11D48] px-3.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-lg border border-red-400/40">
-                <span className="h-2 w-2 rounded-full bg-white animate-ping" />
-                UPCOMING TOUR SPOTLIGHT
+              {/* Left Column: Title, Subtitle, Actions */}
+              <div className="space-y-3">
+                
+                {/* Badges Row */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-1.5 rounded-full bg-[#E11D48] px-3 py-0.5 text-[10px] font-black uppercase tracking-wider text-white shadow border border-red-400/40">
+                    <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" />
+                    OFFICIAL SCHEDULED EXCURSION
+                  </div>
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#D99B26] text-slate-950 font-black px-3 py-0.5 text-[11px] shadow border border-amber-300">
+                    <FiCalendar className="text-slate-950 text-xs" />
+                    11 – 13 Sep | 3D / 2N
+                  </span>
+                </div>
+
+                {/* Title */}
+                <div>
+                  <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-black text-white leading-tight drop-shadow-md">
+                    Mussoorie Trip
+                  </h2>
+                  <p className="text-xs text-slate-300 font-semibold tracking-wider mt-0.5">
+                    An Official Excursion by PCTE Travel Desk
+                  </p>
+                </div>
+
+                {/* Short Subtitle */}
+                <p className="text-xs text-slate-200 leading-relaxed font-medium line-clamp-2 drop-shadow">
+                  Overnight Tempo Traveller from PCTE College at <b>9:00 PM</b> · Paonta Sahib · Laal Tibba · Gun Hill · <b>DJ Party (Musical Evening)</b> · Kempty Waterfall!
+                </p>
+
+                {/* Action Buttons Row */}
+                <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                  {/* 1. View Full Details Page */}
+                  <Link
+                    to="/packages/mussoorie-trip"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-5 py-2.5 text-xs font-black uppercase tracking-wider shadow-lg transition-all hover:scale-105 cursor-pointer text-center"
+                  >
+                    <span>View Full Details &rarr;</span>
+                  </Link>
+
+                  {/* 2. Submit Student Registration */}
+                  <button
+                    onClick={() => setShowMussoorieModal(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white px-4 py-2.5 text-xs font-black uppercase tracking-wider shadow-lg transition-all hover:scale-105 border border-red-400/40 cursor-pointer"
+                  >
+                    <FiSend className="text-xs" />
+                    <span>Register Interest</span>
+                  </button>
+
+                  {/* 3. WhatsApp */}
+                  <a
+                    href={MUSSOORIE_WHATSAPP_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2.5 text-xs font-bold uppercase tracking-wider shadow transition-all hover:scale-105 border border-emerald-400/40"
+                  >
+                    <FaWhatsapp className="text-sm" />
+                    <span>WhatsApp</span>
+                  </a>
+                </div>
+
               </div>
 
-              {/* Title */}
-              <h2 className="font-display text-2xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight drop-shadow-md">
-                Mussoorie – Kempty Water Fall
-              </h2>
-
-              {/* Date Badge */}
-              <div>
-                <span className="inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-950 font-black px-4 py-1 text-xs shadow-lg border border-amber-300">
-                  <FiCalendar className="text-slate-950 text-sm" />
-                  Trip Dates: 11 Sep to 13 September
-                </span>
-              </div>
-
-              {/* Subtitle */}
-              <p className="text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed font-medium drop-shadow max-w-2xl">
-                Queen of the Hills · Scenic Himalayan Group Getaway departing on <b>11th September</b> with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
-              </p>
-
-              {/* 4 Feature Highlights */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 max-w-2xl text-center">
-                <div className="rounded-xl bg-black/65 backdrop-blur-md p-2.5 border border-amber-400/50">
-                  <span className="block text-[9px] uppercase font-bold text-amber-300">Trip Dates</span>
-                  <span className="text-xs font-black text-amber-300">11 – 13 Sep</span>
+              {/* Right Column: 4 Feature Highlights Grid & Seats Note */}
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2.5 text-center">
+                  <div className="rounded-xl bg-black/65 backdrop-blur-md p-2.5 border border-amber-400/50">
+                    <span className="block text-[9px] uppercase font-bold text-amber-300">Trip Dates</span>
+                    <span className="text-xs font-black text-amber-300">11 – 13 Sep (3D/2N)</span>
+                  </div>
+                  <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 border border-emerald-500/40">
+                    <span className="block text-[9px] uppercase font-bold text-emerald-400">Package Cost</span>
+                    <span className="text-xs font-black text-amber-300">INR 3,700 <span className="text-[9px] font-normal text-slate-300">/ person</span></span>
+                  </div>
+                  <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 border border-white/15">
+                    <span className="block text-[9px] uppercase font-bold text-sky-300">Transfers</span>
+                    <span className="text-xs font-bold text-white">Tempo Traveller</span>
+                  </div>
+                  <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 border border-white/15">
+                    <span className="block text-[9px] uppercase font-bold text-purple-300">Inclusions</span>
+                    <span className="text-xs font-bold text-white">DJ Party + Stay + Meals</span>
+                  </div>
                 </div>
-                <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 border border-emerald-500/40">
-                  <span className="block text-[9px] uppercase font-bold text-emerald-400">Tour Package Fare</span>
-                  <span className="text-xs font-black text-amber-400">INR 3800 <span className="text-[9px] font-normal text-slate-300">/ person</span></span>
-                </div>
-                <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 border border-white/15">
-                  <span className="block text-[9px] uppercase font-bold text-sky-300">Transportation</span>
-                  <span className="text-xs font-bold text-white">AC Deluxe Coach</span>
-                </div>
-                <div className="rounded-xl bg-black/50 backdrop-blur-md p-2.5 border border-white/15">
-                  <span className="block text-[9px] uppercase font-bold text-rose-300">Hospitality</span>
-                  <span className="text-xs font-bold text-white">Stay + Meals + Guide</span>
-                </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3 pt-3">
-                {/* 1. Book Now -> Student Registration Modal */}
-                <button
-                  onClick={() => setShowMussoorieModal(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white px-7 py-3 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all hover:scale-105 border border-red-400/40 cursor-pointer"
-                >
-                  <FiSend className="text-sm" />
-                  <span>Book Now</span>
-                </button>
-
-                {/* 2. WhatsApp 'Know More' */}
-                <a
-                  href={MUSSOORIE_WHATSAPP_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all hover:scale-105 border border-emerald-400/40"
-                >
-                  <FaWhatsapp className="text-base" />
-                  <span>Know More</span>
-                </a>
-
-                {/* 3. Direct Phone Call */}
-                <a
-                  href={`tel:+91${PHONE_NUMBER}`}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white px-5 py-3 text-xs font-bold tracking-wider backdrop-blur-md transition-all"
-                >
-                  <FiPhone />
-                  <span>Call Desk: {DISPLAY_PHONE}</span>
-                </a>
+                {/* Important Seats & Payment Note */}
+                <div className="rounded-xl bg-red-950/70 border border-red-500/50 p-2.5 text-[11px] text-red-200 font-medium leading-snug">
+                  ⚠️ <b>Seats limited to 47 students only.</b> First-come, first-served basis. Seats booked by <b>cash payment only, at the Accounts Section</b>.
+                </div>
               </div>
 
             </div>

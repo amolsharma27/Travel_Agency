@@ -10,12 +10,13 @@ import { FaWhatsapp, FaInstagram, FaFacebook } from 'react-icons/fa';
 import { useTheme } from '../context/ThemeContext.jsx';
 import { getStoredPackages, getStoredHotels, getStoredActivities } from '../data/mockData.js';
 import pcteLogo from '../assets/pcte-logo.png';
+import ContactModal from './ContactModal.jsx';
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='500' viewBox='0 0 800 500'%3E%3Crect width='100%25' height='100%25' fill='%231e293b'/%3E%3Cpath d='M360 210a40 40 0 1 0 80 0a40 40 0 1 0-80 0' fill='%23475569'/%3E%3Cpath d='M200 380l160-140l100 80l140-120l120 180z' fill='%23334155'/%3E%3Ctext x='50%25' y='85%25' dominant-baseline='middle' text-anchor='middle' fill='%2394a3b8' font-family='sans-serif' font-size='20' font-weight='600'%3EPCTE Travel%3C/text%3E%3C/svg%3E";
 
 const PHONE_NUMBER = '9988110021';
 const DISPLAY_PHONE = '+91 99881 10021';
-const OFFICIAL_EMAIL = 'amolsharma2705@gmail.com';
+const OFFICIAL_EMAIL = 'pcte_travels@pcte.edu.in';
 const WHATSAPP_NUMBER = '919988110021';
 const DEFAULT_WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hello PCTE Travels, I would like to enquire about travel packages.')}`;
 
@@ -26,6 +27,7 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   const { dark, toggle } = useTheme();
   const navigate = useNavigate();
@@ -103,41 +105,50 @@ const Navbar = () => {
             </a>
           </div>
 
-          {/* Right: Social Media, Passport & WhatsApp */}
-          <div className="flex items-center gap-3 text-[11px] font-medium text-slate-300">
+          {/* Right: Social Media Icon Logos & Passport */}
+          <div className="flex items-center gap-2.5 text-[11px] font-medium text-slate-300">
+            {/* Instagram Logo */}
             <a
               href="https://instagram.com/pctetravels"
               target="_blank"
               rel="noreferrer"
-              title="Instagram @pctetravels"
-              className="hidden md:flex items-center gap-1 text-pink-400 hover:text-pink-300 transition-colors"
+              title="Follow on Instagram"
+              className="flex items-center justify-center h-6 w-6 rounded-full bg-white/10 hover:bg-pink-600/90 text-pink-400 hover:text-white transition-all duration-200 hover:scale-110"
             >
-              <FaInstagram /> <span className="hidden xl:inline">@pctetravels</span>
+              <FaInstagram size={13} />
             </a>
+
+            {/* Facebook Logo */}
             <a
               href="https://facebook.com/pctetravels"
               target="_blank"
               rel="noreferrer"
-              title="Facebook PCTE Travels"
-              className="hidden md:flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors"
+              title="Follow on Facebook"
+              className="flex items-center justify-center h-6 w-6 rounded-full bg-white/10 hover:bg-blue-600/90 text-blue-400 hover:text-white transition-all duration-200 hover:scale-110"
             >
-              <FaFacebook /> <span className="hidden xl:inline">PCTE Travels</span>
+              <FaFacebook size={13} />
             </a>
+
+            {/* WhatsApp Logo */}
+            <a
+              href={DEFAULT_WHATSAPP_URL}
+              target="_blank"
+              rel="noreferrer"
+              title="Chat on WhatsApp"
+              className="flex items-center justify-center h-6 w-6 rounded-full bg-white/10 hover:bg-emerald-600/90 text-emerald-400 hover:text-white transition-all duration-200 hover:scale-110"
+            >
+              <FaWhatsapp size={13} />
+            </a>
+
             <span className="hidden sm:inline text-slate-600">|</span>
+            
+            {/* Passport Help Link */}
             <Link
               to="/passport-services"
               className="hidden sm:flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-bold"
             >
               <FiShield className="text-amber-400" /> Passport Help
             </Link>
-            <a
-              href={DEFAULT_WHATSAPP_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-bold"
-            >
-              <FaWhatsapp className="text-emerald-400" /> <span className="hidden sm:inline">WhatsApp</span>
-            </a>
           </div>
         </div>
       </div>
@@ -367,49 +378,44 @@ const Navbar = () => {
             </NavLink>
           </div>
 
-          {/* Quick Enquire CTA & Theme Toggle (No Login / Sign In) */}
-          <div className="hidden items-center gap-3 lg:flex">
+          {/* Right Actions: Dark mode toggle & Compact Contact Us Button */}
+          <div className="hidden items-center gap-3 lg:flex shrink-0">
             {/* Dark mode toggle */}
             <button
               onClick={toggle}
               aria-label="Toggle theme"
-              className="rounded-full p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+              className="rounded-full p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             >
-              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+              {dark ? <FiSun size={15} /> : <FiMoon size={15} />}
             </button>
 
-            {/* Direct WhatsApp Enquiry Button */}
-            <a
-              href={DEFAULT_WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 text-xs font-bold shadow-sm transition-all hover:scale-105"
+            {/* Sleek Pill-Shaped "Contact Us" Button */}
+            <button
+              onClick={() => setShowContactModal(true)}
+              className="inline-flex items-center justify-center whitespace-nowrap rounded-full bg-white text-slate-900 hover:bg-slate-100 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 px-5 py-2 text-xs font-bold shadow-sm hover:shadow-md border border-slate-300 transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shrink-0"
             >
-              <FaWhatsapp size={15} />
-              <span>Enquire Now</span>
-            </a>
-
-            {/* Direct Call Button */}
-            <a
-              href={`tel:+91${PHONE_NUMBER}`}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 text-slate-800 dark:text-slate-200 hover:border-[#0F2942] px-3 py-2 text-xs font-bold shadow-sm transition-colors"
-            >
-              <FiPhone size={13} className="text-[#E11D48]" />
-              <span className="font-mono">{DISPLAY_PHONE}</span>
-            </a>
+              Contact Us
+            </button>
           </div>
 
           {/* Mobile Menu Actions */}
           <div className="flex items-center gap-2 lg:hidden">
-            <button onClick={toggle} className="p-2 text-slate-700 dark:text-slate-200">
-              {dark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            {/* Mobile Contact Us Pill */}
+            <button
+              onClick={() => setShowContactModal(true)}
+              className="inline-flex items-center whitespace-nowrap rounded-full bg-white text-slate-900 border border-slate-300 px-3 py-1 text-[11px] font-bold shadow-sm active:scale-95 cursor-pointer"
+            >
+              Contact Us
+            </button>
+            <button onClick={toggle} className="p-1.5 text-slate-700 dark:text-slate-200">
+              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
             </button>
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="rounded-xl border border-slate-200 dark:border-slate-700 p-2 text-slate-800 dark:text-white"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 p-1.5 text-slate-800 dark:text-white"
             >
-              <FiMenu size={20} />
+              <FiMenu size={18} />
             </button>
           </div>
         </div>
@@ -484,17 +490,28 @@ const Navbar = () => {
                 <Link to="/passport-services" className="flex items-center gap-2.5 py-2.5 border-b border-slate-100 dark:border-slate-800 text-amber-500">
                   <FiShield className="text-amber-400" /> Passport Application Assistance
                 </Link>
-                <Link to="/about" className="flex items-center gap-2.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
-                  <FiCompass className="text-[#E11D48]" /> About PCTE Travels
-                </Link>
-                <Link to="/contact" className="flex items-center gap-2.5 py-2.5 border-b border-slate-100 dark:border-slate-800">
-                  <FiPhone className="text-[#E11D48]" /> Contact &amp; Support Desk
-                </Link>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    setShowContactModal(true);
+                  }}
+                  className="flex items-center gap-2.5 py-2.5 w-full text-left border-b border-slate-100 dark:border-slate-800 text-[#E11D48] font-black"
+                >
+                  <FiPhone className="text-[#E11D48]" /> Contact Desk (Phone &amp; Email)
+                </button>
               </div>
 
-              {/* Direct Enquiry Footer (Replacing Login/Register) */}
+              {/* Direct Enquiry Footer */}
               <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2 bg-slate-50 dark:bg-slate-800/50">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Direct Travel Support</p>
+                <button
+                  onClick={() => {
+                    setOpen(false);
+                    setShowContactModal(true);
+                  }}
+                  className="flex items-center justify-center gap-2 w-full rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-2.5 text-xs font-black shadow-md"
+                >
+                  <FiPhone /> Open Contact &amp; Desk Info
+                </button>
                 <a
                   href={DEFAULT_WHATSAPP_URL}
                   target="_blank"
@@ -505,21 +522,21 @@ const Navbar = () => {
                 </a>
                 <a
                   href={`tel:+91${PHONE_NUMBER}`}
-                  className="flex items-center justify-center gap-2 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2 text-xs font-bold text-slate-800 dark:text-slate-100"
+                  className="flex items-center justify-center gap-2 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2 text-xs font-bold text-slate-800 dark:text-slate-100 font-mono"
                 >
-                  <FiPhone className="text-[#E11D48]" /> Call {DISPLAY_PHONE}
-                </a>
-                <a
-                  href={`mailto:${OFFICIAL_EMAIL}`}
-                  className="block text-center text-[11px] text-slate-500 dark:text-slate-400 hover:text-amber-400 pt-1"
-                >
-                  {OFFICIAL_EMAIL}
+                  <FiPhone className="text-[#E11D48]" /> {DISPLAY_PHONE}
                 </a>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Global Contact & Support Desk Modal */}
+      <ContactModal
+        isOpen={showContactModal}
+        onClose={() => setShowContactModal(false)}
+      />
     </header>
   );
 };

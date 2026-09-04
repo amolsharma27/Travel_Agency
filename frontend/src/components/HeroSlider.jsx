@@ -83,10 +83,10 @@ const HeroSlider = () => {
   };
 
   const mussoorieTourData = {
-    title: 'Mussoorie – Kempty Water Fall',
-    destination: 'Mussoorie & Kempty Falls, Uttarakhand',
-    duration: '1 Night / 2 Days',
-    price: 'INR 3800 per person',
+    title: 'Mussoorie Trip',
+    destination: 'Mussoorie, Uttarakhand',
+    duration: '11 – 13 September (3 Days / 2 Nights)',
+    price: 'INR 3,700 per person',
   };
 
   return (
@@ -95,7 +95,7 @@ const HeroSlider = () => {
       <AnimatePresence mode="wait">
         {currentSlide === 0 ? (
           /* ========================================================================= */
-          /* SLIDE 1: UPCOMING TOUR PROMOTION (MUSSOORIE & KEMPTY FALLS)               */
+          /* SLIDE 1: UPCOMING TOUR PROMOTION (MUSSOORIE TRIP OFFICIAL EXCURSION)      */
           /* ========================================================================= */
           <motion.div
             key="slide-upcoming"
@@ -118,16 +118,16 @@ const HeroSlider = () => {
 
             {/* Slide Content */}
             <div className="relative z-10 mx-auto w-full max-w-4xl text-center flex flex-col items-center">
-              
+
               {/* Upcoming Tour Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
-                className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[#E11D48] px-4 py-1 text-xs font-black uppercase tracking-widest text-white shadow-xl border border-red-400/40"
+                className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-[#E11D48] px-4 py-1 text-xs font-black uppercase tracking-widest text-white shadow-xl border border-red-400/40"
               >
                 <span className="h-2 w-2 rounded-full bg-white animate-ping" />
-                UPCOMING TOUR
+                OFFICIAL SCHEDULED EXCURSION
               </motion.div>
 
               {/* Title */}
@@ -135,20 +135,30 @@ const HeroSlider = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="font-display text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.85)] max-w-3xl"
+                className="font-display text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-[0_8px_20px_rgba(0,0,0,0.85)] max-w-3xl"
               >
-                Mussoorie – Kempty Water Fall
+                Mussoorie Trip
               </motion.h1>
+
+              {/* Subtitle / Department note */}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.22 }}
+                className="text-xs sm:text-sm text-slate-300 font-semibold tracking-wider"
+              >
+                An Official Excursion by PCTE Travel Desk
+              </motion.p>
 
               {/* Date & Location Pill */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.25 }}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-400 text-slate-950 font-black px-4 py-1 text-xs sm:text-sm shadow-xl border border-amber-300"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#D99B26] text-slate-950 font-black px-4 py-1 text-xs sm:text-sm shadow-xl border border-amber-300"
               >
                 <FiCalendar className="text-slate-950 text-sm animate-pulse" />
-                <span>Trip Dates: 11 Sep to 13 September</span>
+                <span>Trip Duration: 11 – 13 September | 3 Days / 2 Nights</span>
               </motion.div>
 
               {/* Subtitle */}
@@ -158,7 +168,7 @@ const HeroSlider = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="mx-auto mt-2 sm:mt-3 max-w-xl text-xs sm:text-sm md:text-base text-slate-200 leading-relaxed font-medium drop-shadow"
               >
-                Queen of the Hills · Scenic Himalayan Group Getaway departing on <b>11th September</b> with Kempty Waterfall excursion, Mall Road, mountain resort stay, evening bonfire, and round-trip transfers from Punjab.
+                Departing <b>11th September at 9:00 PM</b> from PCTE College by Tempo Traveller · Paonta Sahib visit · Laal Tibba &amp; Gun Hill · <b>DJ Party (Musical Evening)</b> · Kempty Waterfall!
               </motion.p>
 
               {/* 4 Feature Badges */}
@@ -166,79 +176,89 @@ const HeroSlider = () => {
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
-                className="mt-4 sm:mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full max-w-2xl"
+                className="mt-3 sm:mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full max-w-2xl"
               >
                 <div className="rounded-xl bg-black/65 backdrop-blur-md p-2.5 sm:p-3 border border-amber-400/50 text-center shadow-lg">
                   <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-300 mb-0.5">
                     Trip Dates
                   </span>
                   <span className="font-display font-black text-xs sm:text-sm text-amber-300">
-                    11 Sep – 13 Sep
+                    11 – 13 Sep (3D/2N)
                   </span>
                 </div>
 
                 <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 sm:p-3 border border-emerald-500/40 text-center shadow-lg">
                   <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-0.5">
-                    Tour Package Fare
+                    Package Cost
                   </span>
-                  <span className="font-display font-black text-xs sm:text-sm text-amber-400">
-                    INR 3800 <span className="text-[9px] sm:text-[10px] font-normal text-slate-300">/ person</span>
+                  <span className="font-display font-black text-xs sm:text-sm text-amber-300">
+                    INR 3,700 <span className="text-[9px] sm:text-[10px] font-normal text-slate-300">/ person</span>
                   </span>
                 </div>
 
                 <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 sm:p-3 border border-white/15 text-center shadow-lg">
                   <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-sky-300 mb-0.5">
-                    Transportation
+                    Transfers
                   </span>
                   <span className="font-display font-bold text-xs sm:text-sm text-white">
-                    AC Deluxe Coach
+                    Tempo Traveller
                   </span>
                 </div>
 
                 <div className="rounded-xl bg-black/55 backdrop-blur-md p-2.5 sm:p-3 border border-white/15 text-center shadow-lg">
-                  <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-rose-300 mb-0.5">
-                    Hospitality
+                  <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-purple-300 mb-0.5">
+                    Night Stay
                   </span>
                   <span className="font-display font-bold text-xs sm:text-sm text-white">
-                    Stay + Meals + Guide
+                    DJ Party + Meals
                   </span>
                 </div>
               </motion.div>
 
-              {/* Action Buttons: [ Book Now ] & [ Know More ] */}
+              {/* Limited Seats Strip */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5, delay: 0.45 }}
+                className="mt-2.5 rounded-lg bg-red-950/70 border border-red-500/40 px-3 py-1 text-[11px] text-red-200 font-semibold"
+              >
+                ⚠️ Limited to 47 students only · Cash payment at Accounts Section
+              </motion.div>
+
+              {/* Action Buttons: [ View Details ] & [ Register Interest ] & [ WhatsApp ] */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.55 }}
-                className="mt-5 sm:mt-6 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+                className="mt-4 sm:mt-5 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3"
               >
-                {/* 1. Book Now -> Student Registration Modal */}
+                {/* 1. View Full Details Page */}
                 <button
-                  onClick={() => setShowBookingModal(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white px-7 sm:px-9 py-3 sm:py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all duration-200 hover:scale-105 border border-red-400/40 cursor-pointer"
+                  onClick={() => navigate('/packages/mussoorie-trip')}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 px-6 sm:px-7 py-3 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all duration-200 hover:scale-105 cursor-pointer"
                 >
-                  <FiSend className="text-base" />
-                  <span>Book Now</span>
+                  <span>View Full Details &rarr;</span>
                 </button>
 
-                {/* 2. Know More -> WhatsApp */}
+                {/* 2. Register Student Interest */}
+                <button
+                  onClick={() => setShowBookingModal(true)}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white px-6 sm:px-7 py-3 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all duration-200 hover:scale-105 border border-red-400/40 cursor-pointer"
+                >
+                  <FiSend className="text-sm" />
+                  <span>Register Interest</span>
+                </button>
+
+                {/* 3. WhatsApp */}
                 <a
                   href={WHATSAPP_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-6 sm:px-8 py-3 sm:py-3.5 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all duration-200 hover:scale-105 border border-emerald-400/40"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white px-5 sm:px-6 py-3 text-xs sm:text-sm font-black uppercase tracking-wider shadow-2xl transition-all duration-200 hover:scale-105 border border-emerald-400/40"
                 >
-                  <FaWhatsapp className="text-lg sm:text-xl" />
-                  <span>Know More</span>
+                  <FaWhatsapp className="text-base" />
+                  <span>WhatsApp</span>
                 </a>
-
-                {/* 3. Switch to Main Search Portal */}
-                <button
-                  onClick={() => setCurrentSlide(1)}
-                  className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/20 text-white px-4 py-3 text-xs font-bold tracking-wider backdrop-blur-md transition-all cursor-pointer"
-                >
-                  <span>Search Dashboard &rarr;</span>
-                </button>
               </motion.div>
 
             </div>
@@ -267,7 +287,7 @@ const HeroSlider = () => {
 
             {/* Portal Content */}
             <div className="relative z-10 mx-auto w-full max-w-5xl text-center flex flex-col items-center">
-              
+
               {/* Trust Badge */}
               <motion.div
                 initial={{ opacity: 0, y: 15 }}
@@ -315,11 +335,10 @@ const HeroSlider = () => {
                         key={tab.id}
                         type="button"
                         onClick={() => setActiveHeroTab(tab.id)}
-                        className={`flex items-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition-all ${
-                          isActive
+                        className={`flex items-center gap-1.5 rounded-xl px-3 sm:px-4 py-2 text-xs font-bold transition-all ${isActive
                             ? 'bg-[#E11D48] text-white shadow-md'
                             : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                        }`}
+                          }`}
                       >
                         <Icon className="text-xs" />
                         <span>{tab.label}</span>
@@ -330,7 +349,7 @@ const HeroSlider = () => {
 
                 {/* Search Form Inputs */}
                 <form onSubmit={handleHeroSearch} className="mt-4 grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
-                  
+
                   {/* Destination Input */}
                   <div className="sm:col-span-5">
                     <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
@@ -431,15 +450,14 @@ const HeroSlider = () => {
 
       {/* Bottom Slider Pills & Indicators */}
       <div className="absolute bottom-4 sm:bottom-6 left-0 right-0 z-30 flex items-center justify-center gap-2 sm:gap-3 px-4">
-        
+
         {/* Slide 1 Pill */}
         <button
           onClick={() => setCurrentSlide(0)}
-          className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-md cursor-pointer ${
-            currentSlide === 0
+          className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-md cursor-pointer ${currentSlide === 0
               ? 'bg-[#E11D48] text-white border border-red-300/40 scale-105'
               : 'bg-black/50 hover:bg-black/70 text-slate-300 border border-white/15 backdrop-blur-md'
-          }`}
+            }`}
         >
           <span className="h-2 w-2 rounded-full bg-white animate-ping" />
           <span>🔥 Mussoorie Tour (INR 3800)</span>
@@ -448,11 +466,10 @@ const HeroSlider = () => {
         {/* Slide 2 Pill */}
         <button
           onClick={() => setCurrentSlide(1)}
-          className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-md cursor-pointer ${
-            currentSlide === 1
+          className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-bold transition-all shadow-md cursor-pointer ${currentSlide === 1
               ? 'bg-[#0F2942] text-white border border-amber-400/40 scale-105'
               : 'bg-black/50 hover:bg-black/70 text-slate-300 border border-white/15 backdrop-blur-md'
-          }`}
+            }`}
         >
           <span>🏔️ Search Tours &amp; Stays</span>
         </button>

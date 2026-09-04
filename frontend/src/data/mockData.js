@@ -41,56 +41,95 @@ export const mockUsers = {
 // 1. TOURS & PACKAGES (Group, Private, Adventure, Weekend)
 // -------------------------------------------------------------
 export const mockPackages = [
-  // 0. Upcoming Tour - Mussoorie Kempty Falls
+  // 0. Upcoming Tour - Mussoorie Trip (Official Excursion by PCTE Travel Desk)
   {
     _id: 'pkg_mussoorie_01',
-    slug: 'mussoorie-kempty-water-fall',
-    title: 'Mussoorie – Kempty Water Fall',
-    destination: 'Mussoorie & Kempty Falls, Uttarakhand',
-    tourType: 'Group Tour',
+    slug: 'mussoorie-trip',
+    title: 'Mussoorie Trip',
+    subtitle: 'An Official Excursion by PCTE Travel Desk',
+    destination: 'Mussoorie, Uttarakhand',
+    tourType: 'Official Excursion',
     category: 'Group Tours',
-    theme: 'Hill Station & Waterfalls',
-    description: 'Queen of the Hills group tour. Enjoy a breathtaking trip to Mussoorie featuring the majestic Kempty Falls, picturesque Mall Road, mountain resort stay, evening bonfire with music, and all-inclusive group transfers.',
+    theme: 'Official Student Excursion',
+    description: 'An official student excursion organized by the PCTE Travel Desk. Experience the Queen of the Hills with an overnight journey by Tempo Traveller, Paonta Sahib visit, Laal Tibba, Gun Hill Point, an electrifying DJ Party musical evening, and Kempty Waterfall excursion.',
     images: [
       'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
       'https://images.unsplash.com/photo-1597075687490-8f673c6c17f6?auto=format&fit=crop&w=1200&q=80'
     ],
-    price: 3800,
-    discountPrice: 3800,
-    durationDays: 2,
-    durationNights: 1,
-    travelDates: '11 Sep – 13 September 2026',
-    totalSeats: 30,
-    availableSeats: 12,
-    startDates: ['2026-09-11T05:00:00.000Z', '2026-09-13T20:00:00.000Z'],
-    meetingPoint: 'PCTE Campus Ludhiana / Tribune Chowk Chandigarh',
-    travelMode: 'AC Deluxe Coach / Pushback Traveller',
+    price: 3700,
+    discountPrice: 3700,
+    durationDays: 3,
+    durationNights: 2,
+    travelDates: '11 – 13 September (3 Days / 2 Nights)',
+    totalSeats: 47,
+    availableSeats: 47,
+    meetingPoint: 'PCTE College (Departure at 9:00 PM on 11th Sep)',
+    travelMode: 'Tempo Traveller',
     itinerary: [
-      { day: 1, title: 'Departure from Ludhiana / Chandigarh to Mussoorie', description: 'Early morning departure in comfortable AC Deluxe Coach. Scenic drive through Dehradun hills. Check-in to mountain resort, evening walk at Mall Road Mussoorie and bonfire.' },
-      { day: 2, title: 'Kempty Falls Excursion & Return Drive', description: 'Visit the famous Kempty Waterfalls. Enjoy fresh mountain water and viewpoints. After lunch, board the coach for evening return to Punjab.' }
+      {
+        day: 1,
+        date: '11 September',
+        title: 'Departure from PCTE College',
+        highlights: ['Departure from PCTE College at 9:00 PM', 'Overnight journey by Tempo Traveller to Mussoorie'],
+        description: 'Departure from PCTE College at 9:00 PM. Overnight journey by Tempo Traveller to Mussoorie.'
+      },
+      {
+        day: 2,
+        date: '12 September',
+        title: 'Paonta Sahib, Sightseeing & DJ Party',
+        highlights: [
+          'En-route visit to Paonta Sahib',
+          'Arrival & check-in at Mussoorie hotel',
+          'Sightseeing at Laal Tibba and Gun Hill Point',
+          'Evening DJ Party (Musical Evening)',
+          'Dinner and overnight stay at Mussoorie'
+        ],
+        description: 'En-route visit to Paonta Sahib. Arrival & check-in at Mussoorie hotel. Sightseeing at Laal Tibba and Gun Hill Point. Evening DJ Party (Musical Evening). Dinner and overnight stay at Mussoorie.'
+      },
+      {
+        day: 3,
+        date: '13 September',
+        title: 'Kempty Waterfall & Return Drive',
+        highlights: [
+          'Visit to Kempty Waterfall',
+          'Local sightseeing at Mussoorie',
+          'Departure from Mussoorie at 3:00 PM, back to PCTE'
+        ],
+        description: 'Visit to Kempty Waterfall. Local sightseeing at Mussoorie. Departure from Mussoorie at 3:00 PM, back to PCTE.'
+      }
     ],
     inclusions: [
-      'AC Deluxe Coach round-trip transport from Punjab',
-      '1 Night Stay in Scenic Mountain Resort',
-      'Delicious Breakfast & Dinner included',
-      'Guided Kempty Falls & Mall Road visit',
-      'Bonfire & group music evening',
-      'Dedicated PCTE Tour Coordinator'
+      '1 Breakfast and 1 Dinner',
+      'Quad Sharing Accommodation',
+      'Transfers and Sightseeing by Tempo Traveller',
+      '1 Night Stay with Musical Evening (DJ Party)'
     ],
     exclusions: [
-      'Lunch and personal cafe spending',
-      'Cable car or adventure ride tickets',
-      'Anything not mentioned in inclusions'
+      'Personal cafe or personal shopping expenses',
+      'Any extra meals or beverages not specified',
+      'Ropeway / entry tickets if any'
     ],
-    facilities: ['PCTE Tour Lead', 'AC Coach Transfers', 'Resort Stay', 'Meals Included'],
+    importantNotes: [
+      'Seats are strictly limited to 47 students only — no further seats will be extended.',
+      'Booking is on a first-come, first-served basis.',
+      'Seats can be booked by cash payment only, at the Accounts Section.',
+      'For any queries, feel free to contact the Tourism Department, HM Block, or write to us at pcte_travels@pcte.edu.in.',
+      'Hurry — seats are limited!'
+    ],
+    contactInfo: {
+      department: 'Tourism Department, HM Block',
+      email: 'pcte_travels@pcte.edu.in',
+      helpline: '+91 99881 10021'
+    },
+    facilities: ['Official Excursion', 'Tempo Traveller Transfers', 'DJ Party Musical Evening', '1 Breakfast & 1 Dinner', 'Quad Sharing Stay'],
     gpsLocation: { lat: 30.4598, lng: 78.0644, address: 'Mussoorie, Uttarakhand' },
     rating: 5.0,
-    reviewsCount: 180,
-    bookingsCount: 420,
+    reviewsCount: 240,
+    bookingsCount: 47,
     status: 'approved',
-    isAffordableDeal: true,
+    isOfficialUpcomingTour: true,
   },
   // 1. Group Tour - Himachal
   {
@@ -1339,7 +1378,7 @@ export const domesticDestinations = [
 // -------------------------------------------------------------
 // LOCAL PERSISTENCE HELPERS
 // -------------------------------------------------------------
-const STORAGE_KEY_PACKAGES = 'travelagency_packages_v10';
+const STORAGE_KEY_PACKAGES = 'travelagency_packages_v12';
 const STORAGE_KEY_HOTELS = 'travelagency_hotels_v10';
 const STORAGE_KEY_ACTIVITIES = 'travelagency_activities_v10';
 const STORAGE_KEY_BOOKINGS = 'travelagency_bookings_v10';
