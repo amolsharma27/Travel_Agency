@@ -84,29 +84,29 @@ const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 w-full transition-all duration-200">
       {/* PCTE TOP CONTACT & HELPLINE BAR */}
-      <div className="bg-[#0F2942] px-4 py-1.5 text-white border-b border-slate-700/50 text-xs">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+      <div className="bg-[#0F2942] px-3 sm:px-4 py-1.5 text-white border-b border-slate-700/50 text-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-3">
           
           {/* Left: Contact Numbers & Email */}
-          <div className="flex items-center gap-3.5 text-slate-300 font-medium text-[11px] md:text-xs">
+          <div className="flex items-center gap-2 sm:gap-3.5 text-slate-300 font-medium text-[11px] md:text-xs min-w-0">
             <span className="hidden lg:inline text-slate-400 font-bold">PCTE Travel Desk:</span>
             <a
               href={`tel:+91${PHONE_NUMBER}`}
-              className="flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors font-mono font-bold"
+              className="flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors font-mono font-bold whitespace-nowrap"
             >
-              <FiPhone className="text-amber-400" /> {DISPLAY_PHONE}
+              <FiPhone className="text-amber-400 text-xs shrink-0" /> {DISPLAY_PHONE}
             </a>
             <span className="hidden sm:inline text-slate-600">|</span>
             <a
               href={`mailto:${OFFICIAL_EMAIL}`}
-              className="hidden sm:flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors"
+              className="hidden sm:flex items-center gap-1.5 text-slate-200 hover:text-amber-300 transition-colors whitespace-nowrap"
             >
-              <FiMail className="text-amber-400" /> {OFFICIAL_EMAIL}
+              <FiMail className="text-amber-400 shrink-0" /> {OFFICIAL_EMAIL}
             </a>
           </div>
 
           {/* Right: Social Media Icon Logos & Passport */}
-          <div className="flex items-center gap-2.5 text-[11px] font-medium text-slate-300">
+          <div className="flex items-center gap-2 sm:gap-2.5 text-[11px] font-medium text-slate-300 shrink-0">
             {/* Instagram Logo */}
             <a
               href="https://instagram.com/pctetravels"
@@ -115,7 +115,7 @@ const Navbar = () => {
               title="Follow on Instagram"
               className="flex items-center justify-center h-6 w-6 rounded-full bg-white/10 hover:bg-pink-600/90 text-pink-400 hover:text-white transition-all duration-200 hover:scale-110"
             >
-              <FaInstagram size={13} />
+              <FaInstagram size={12} />
             </a>
 
             {/* Facebook Logo */}
@@ -126,7 +126,7 @@ const Navbar = () => {
               title="Follow on Facebook"
               className="flex items-center justify-center h-6 w-6 rounded-full bg-white/10 hover:bg-blue-600/90 text-blue-400 hover:text-white transition-all duration-200 hover:scale-110"
             >
-              <FaFacebook size={13} />
+              <FaFacebook size={12} />
             </a>
 
             {/* WhatsApp Logo */}
@@ -145,9 +145,9 @@ const Navbar = () => {
             {/* Passport Help Link */}
             <Link
               to="/passport-services"
-              className="hidden sm:flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-bold"
+              className="hidden sm:flex items-center gap-1 text-amber-300 hover:text-amber-200 transition-colors font-bold whitespace-nowrap"
             >
-              <FiShield className="text-amber-400" /> Passport Help
+              <FiShield className="text-amber-400 shrink-0" /> Passport Help
             </Link>
           </div>
         </div>
@@ -158,32 +158,32 @@ const Navbar = () => {
         className={`transition-all duration-200 border-b ${
           scrolled
             ? 'bg-white/95 dark:bg-[#0B1727]/95 backdrop-blur-md border-slate-200 dark:border-slate-800 shadow-md py-2'
-            : 'bg-white dark:bg-[#0B1727] border-slate-200 dark:border-slate-800 py-2.5'
+            : 'bg-white dark:bg-[#0B1727] border-slate-200 dark:border-slate-800 py-2 sm:py-2.5'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 md:px-8 gap-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-3 sm:px-4 md:px-8 gap-2 sm:gap-4">
           
           {/* Brand Logo & Name */}
-          <Link to="/" className="flex items-center gap-3 shrink-0 group">
+          <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0 group shrink">
             <img
               src={pcteLogo}
               alt="PCTE Logo"
-              className="h-10 w-auto md:h-12 object-contain transition-transform group-hover:scale-105"
+              className="h-8 sm:h-10 md:h-11 w-auto object-contain transition-transform group-hover:scale-105 shrink-0"
             />
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="leading-none text-[#0F2942] dark:text-white font-black text-lg md:text-xl tracking-tight">
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1">
+                <span className="leading-tight text-[#0F2942] dark:text-white font-black text-sm xs:text-base md:text-xl tracking-tight whitespace-nowrap">
                   PCTE <span className="text-[#E11D48]">TRAVEL AGENCY</span>
                 </span>
               </div>
-              <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase">
+              <span className="text-[8px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 tracking-wider uppercase whitespace-nowrap hidden sm:block">
                 Freedom To Evolve · Tours · Stays · Passport
               </span>
             </div>
           </Link>
 
           {/* Quick Search Input (Desktop) */}
-          <div className="relative hidden xl:block w-56">
+          <div className="relative hidden xl:block w-56 shrink-0">
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
@@ -378,7 +378,7 @@ const Navbar = () => {
             </NavLink>
           </div>
 
-          {/* Right Actions: Dark mode toggle & Compact Contact Us Button */}
+          {/* Right Actions: Dark mode toggle & Compact Contact Us Button (Desktop) */}
           <div className="hidden items-center gap-3 lg:flex shrink-0">
             {/* Dark mode toggle */}
             <button
@@ -398,22 +398,30 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* Mobile Menu Actions */}
-          <div className="flex items-center gap-2 lg:hidden">
-            {/* Mobile Contact Us Pill */}
+          {/* Mobile Menu Actions (Visible on screens < lg) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden shrink-0">
+            {/* Tablet Contact Us Button (hidden on phone, visible on sm/md) */}
             <button
               onClick={() => setShowContactModal(true)}
-              className="inline-flex items-center whitespace-nowrap rounded-full bg-white text-slate-900 border border-slate-300 px-3 py-1 text-[11px] font-bold shadow-sm active:scale-95 cursor-pointer"
+              className="hidden sm:inline-flex items-center whitespace-nowrap rounded-full bg-white text-slate-900 border border-slate-300 px-3 py-1.5 text-[11px] font-bold shadow-sm active:scale-95 cursor-pointer"
             >
               Contact Us
             </button>
-            <button onClick={toggle} className="p-1.5 text-slate-700 dark:text-slate-200">
-              {dark ? <FiSun size={16} /> : <FiMoon size={16} />}
+
+            {/* Dark Mode Toggle */}
+            <button
+              onClick={toggle}
+              aria-label="Toggle theme"
+              className="p-2 rounded-xl text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center justify-center"
+            >
+              {dark ? <FiSun size={17} /> : <FiMoon size={17} />}
             </button>
+
+            {/* Hamburger Menu Toggle */}
             <button
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="rounded-xl border border-slate-200 dark:border-slate-700 p-1.5 text-slate-800 dark:text-white"
+              className="rounded-xl border border-slate-200 dark:border-slate-700 p-2 text-slate-800 dark:text-white bg-slate-50 dark:bg-slate-800/80 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors shadow-sm active:scale-95 flex items-center justify-center shrink-0"
             >
               <FiMenu size={18} />
             </button>
